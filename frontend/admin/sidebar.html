@@ -1,0 +1,165 @@
+<!-- 사이드바 컴포넌트 -->
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <div class="logo">
+            <span class="logo-icon">🤖</span>
+            <h2 class="logo-text">AI Auto Blog</h2>
+        </div>
+        <button class="sidebar-toggle" onclick="toggleSidebar()">
+            <span>◀</span>
+        </button>
+    </div>
+    
+    <nav class="sidebar-nav">
+        <!-- 대시보드 -->
+        <a href="dashboard.html" class="nav-item" data-page="dashboard">
+            <span class="nav-icon">📊</span>
+            <span class="nav-text">대시보드</span>
+        </a>
+        
+        <!-- AI 콘텐츠 섹션 -->
+        <div class="nav-section">
+            <h3 class="nav-section-title">
+                <span class="section-icon">🤖</span>
+                <span class="section-text">AI 콘텐츠</span>
+            </h3>
+            <div class="nav-section-items">
+                <a href="ai-news.html" class="nav-item" data-page="ai-news">
+                    <span class="nav-icon">📰</span>
+                    <span class="nav-text">AI 뉴스</span>
+                </a>
+                <a href="ai-tools.html" class="nav-item" data-page="ai-tools">
+                    <span class="nav-icon">🛠️</span>
+                    <span class="nav-text">AI 도구 리뷰</span>
+                </a>
+                <a href="ai-analysis.html" class="nav-item" data-page="ai-analysis">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">트렌드 분석</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 강좌 시리즈 섹션 -->
+        <div class="nav-section">
+            <h3 class="nav-section-title">
+                <span class="section-icon">📚</span>
+                <span class="section-text">강좌 시리즈</span>
+            </h3>
+            <div class="nav-section-items">
+                <a href="courses.html?type=notion" class="nav-item" data-page="notion-course">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-text">노션 마스터</span>
+                    <span class="nav-badge">30강</span>
+                </a>
+                <a href="courses.html?type=obsidian" class="nav-item" data-page="obsidian-course">
+                    <span class="nav-icon">🗂️</span>
+                    <span class="nav-text">옵시디언 마스터</span>
+                    <span class="nav-badge">35강</span>
+                </a>
+                <a href="course-import.html" class="nav-item" data-page="course-import">
+                    <span class="nav-icon">⬇️</span>
+                    <span class="nav-text">강좌 임포트</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 콘텐츠 관리 섹션 -->
+        <div class="nav-section">
+            <h3 class="nav-section-title">
+                <span class="section-icon">✍️</span>
+                <span class="section-text">콘텐츠 관리</span>
+            </h3>
+            <div class="nav-section-items">
+                <a href="write.html" class="nav-item" data-page="write">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-text">새 글 작성</span>
+                </a>
+                <a href="posts.html" class="nav-item" data-page="posts">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-text">글 목록</span>
+                </a>
+                <a href="categories.html" class="nav-item" data-page="categories">
+                    <span class="nav-icon">🏷️</span>
+                    <span class="nav-text">카테고리/태그</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 자동화 섹션 -->
+        <div class="nav-section">
+            <h3 class="nav-section-title">
+                <span class="section-icon">⚡</span>
+                <span class="section-text">자동화</span>
+            </h3>
+            <div class="nav-section-items">
+                <a href="scheduler.html" class="nav-item" data-page="scheduler">
+                    <span class="nav-icon">📅</span>
+                    <span class="nav-text">예약 발행</span>
+                </a>
+                <a href="automation.html" class="nav-item" data-page="automation">
+                    <span class="nav-icon">🔄</span>
+                    <span class="nav-text">자동 생성</span>
+                </a>
+                <a href="workflow.html" class="nav-item" data-page="workflow">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-text">워크플로우</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 분석 섹션 -->
+        <div class="nav-section">
+            <h3 class="nav-section-title">
+                <span class="section-icon">📊</span>
+                <span class="section-text">분석</span>
+            </h3>
+            <div class="nav-section-items">
+                <a href="analytics.html" class="nav-item" data-page="analytics">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-text">트래픽 분석</span>
+                </a>
+                <a href="revenue.html" class="nav-item" data-page="revenue">
+                    <span class="nav-icon">💰</span>
+                    <span class="nav-text">수익 리포트</span>
+                </a>
+                <a href="seo.html" class="nav-item" data-page="seo">
+                    <span class="nav-icon">🔍</span>
+                    <span class="nav-text">SEO 최적화</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 설정 섹션 -->
+        <div class="nav-section">
+            <h3 class="nav-section-title">
+                <span class="section-icon">⚙️</span>
+                <span class="section-text">설정</span>
+            </h3>
+            <div class="nav-section-items">
+                <a href="api-keys.html" class="nav-item" data-page="api-keys">
+                    <span class="nav-icon">🔑</span>
+                    <span class="nav-text">API 키 관리</span>
+                </a>
+                <a href="ai-settings.html" class="nav-item" data-page="ai-settings">
+                    <span class="nav-icon">🤖</span>
+                    <span class="nav-text">AI 모델 설정</span>
+                </a>
+                <a href="backup.html" class="nav-item" data-page="backup">
+                    <span class="nav-icon">💾</span>
+                    <span class="nav-text">백업/복구</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 하단 정보 -->
+    <div class="sidebar-footer">
+        <div class="status-info">
+            <span class="status-dot active"></span>
+            <span class="status-text">시스템 정상</span>
+        </div>
+        <div class="version-info">
+            v1.0.0
+        </div>
+    </div>
+</aside>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대시보드 - AI Auto Blog Admin</title>
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div id="sidebar-placeholder"></div>
+        
+        <!-- 메인 콘텐츠 -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1>대시보드</h1>
+                <button class="btn-primary" onclick="runDailyAutomation()">
+                    🤖 일일 자동화 실행
+                </button>
+            </header>
+            
+            <!-- 실시간 통계 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>오늘 발행</h3>
+                    <div class="stat-value" id="todayPosts">0</div>
+                    <div class="stat-change">준비 중...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>예약된 포스트</h3>
+                    <div class="stat-value" id="scheduledPosts">0</div>
+                    <div class="stat-change">다음 발행: <span id="nextPublish">-</span></div>
+                </div>
+                <div class="stat-card">
+                    <h3>AI 뉴스</h3>
+                    <div class="stat-value" id="aiNewsCount">0</div>
+                    <div class="stat-change">새 뉴스: <span id="newNewsCount">0</span>개</div>
+                </div>
+                <div class="stat-card">
+                    <h3>강좌 진행률</h3>
+                    <div class="stat-value" id="courseProgress">0/65</div>
+                    <div class="stat-change"><span id="coursePercent">0</span>% 완료</div>
+                </div>
+            </div>
+            
+            <!-- 자동화 상태 -->
+            <section class="automation-status">
+                <h2>자동화 시스템 상태</h2>
+                <div class="automation-grid">
+                    <div class="automation-item">
+                        <div class="automation-header">
+                            <span class="status-indicator" id="crawlerStatus"></span>
+                            <h3>뉴스 크롤러</h3>
+                        </div>
+                        <p>마지막 실행: <span id="lastCrawl">-</span></p>
+                        <button class="btn-secondary" onclick="runNewsCrawler()">수동 실행</button>
+                    </div>
+                    <div class="automation-item">
+                        <div class="automation-header">
+                            <span class="status-indicator" id="aiStatus"></span>
+                            <h3>AI 콘텐츠 생성</h3>
+                        </div>
+                        <p>활성 모델: Claude, GPT-4, Gemini</p>
+                        <button class="btn-secondary" onclick="generateContent()">콘텐츠 생성</button>
+                    </div>
+                    <div class="automation-item">
+                        <div class="automation-header">
+                            <span class="status-indicator" id="publisherStatus"></span>
+                            <h3>자동 발행</h3>
+                        </div>
+                        <p>다음 발행: <span id="nextAutoPublish">09:00</span></p>
+                        <button class="btn-secondary" onclick="viewSchedule()">일정 보기</button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 예약 발행 타임라인 -->
+            <section class="upcoming-posts">
+                <h2>오늘의 발행 일정</h2>
+                <div class="timeline" id="publishTimeline">
+                    <div class="timeline-item">
+                        <div class="timeline-time">09:00</div>
+                        <div class="timeline-content">
+                            <h4>AI 뉴스 종합</h4>
+                            <p>오늘의 주요 AI 뉴스 10선</p>
+                            <span class="badge badge-news">AI 뉴스</span>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">12:30</div>
+                        <div class="timeline-content">
+                            <h4>노션 마스터 클래스 - 1강</h4>
+                            <p>노션 시작하기: 첫 페이지 만들기</p>
+                            <span class="badge badge-course">강좌</span>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">19:00</div>
+                        <div class="timeline-content">
+                            <h4>Claude vs GPT-4 실전 비교</h4>
+                            <p>2025년 최신 AI 모델 성능 분석</p>
+                            <span class="badge badge-analysis">분석</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 최근 AI 뉴스 -->
+            <section class="recent-news">
+                <h2>최신 AI 뉴스</h2>
+                <div class="news-list" id="newsList">
+                    <div class="news-item">
+                        <div class="news-source">OpenAI</div>
+                        <h3>GPT-4 Turbo 새로운 기능 발표</h3>
+                        <p>더 빠른 응답 속도와 향상된 코딩 능력...</p>
+                        <div class="news-actions">
+                            <button class="btn-small">번역하기</button>
+                            <button class="btn-small">발행하기</button>
+                        </div>
+                    </div>
+                    <div class="news-item">
+                        <div class="news-source">Anthropic</div>
+                        <h3>Claude 3.5 Sonnet 업데이트</h3>
+                        <p>컴퓨터 사용 능력과 향상된 추론...</p>
+                        <div class="news-actions">
+                            <button class="btn-small">번역하기</button>
+                            <button class="btn-small">발행하기</button>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-secondary" onclick="location.href='ai-news.html'">
+                    모든 뉴스 보기 →
+                </button>
+            </section>
+            
+            <!-- 빠른 작업 -->
+            <section class="quick-actions">
+                <h2>빠른 작업</h2>
+                <div class="action-grid">
+                    <button class="action-card" onclick="location.href='write.html'">
+                        <span class="action-icon">📝</span>
+                        <span class="action-text">새 글 작성</span>
+                    </button>
+                    <button class="action-card" onclick="location.href='ai-news.html'">
+                        <span class="action-icon">📰</span>
+                        <span class="action-text">AI 뉴스 관리</span>
+                    </button>
+                    <button class="action-card" onclick="location.href='scheduler.html'">
+                        <span class="action-icon">📅</span>
+                        <span class="action-text">예약 발행</span>
+                    </button>
+                    <button class="action-card" onclick="location.href='courses.html'">
+                        <span class="action-icon">📚</span>
+                        <span class="action-text">강좌 관리</span>
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <style>
+        /* 대시보드 전용 스타일 */
+        .automation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .automation-item {
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .automation-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #10b981;
+        }
+        
+        .status-indicator.inactive {
+            background-color: #ef4444;
+        }
+        
+        .btn-secondary {
+            background-color: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e5e7eb;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e5e7eb;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 0.5rem;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #3b82f6;
+            box-shadow: 0 0 0 3px #dbeafe;
+        }
+        
+        .timeline-time {
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+        
+        .timeline-content h4 {
+            margin-bottom: 0.25rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+        
+        .badge-news {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .badge-course {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .badge-analysis {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .news-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .news-item {
+            background: #f9fafb;
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .news-source {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+        
+        .news-item h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
+        }
+        
+        .news-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .btn-small {
+            padding: 0.375rem 0.875rem;
+            font-size: 0.75rem;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-small:hover {
+            background: #f3f4f6;
+        }
+        
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .action-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1.5rem;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .action-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .action-icon {
+            font-size: 2rem;
+        }
+        
+        .action-text {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+        }
+    </style>
+    
+    <script src="js/sidebar.js"></script>
+    <script>
+        // 대시보드 기능
+        function runDailyAutomation() {
+            if (confirm('일일 자동화를 실행하시겠습니까?')) {
+                alert('자동화가 시작되었습니다. 진행 상황은 자동화 상태에서 확인하세요.');
+                // API 호출
+            }
+        }
+        
+        function runNewsCrawler() {
+            alert('뉴스 크롤러를 실행합니다...');
+            // API 호출
+        }
+        
+        function generateContent() {
+            location.href = 'automation.html';
+        }
+        
+        function viewSchedule() {
+            location.href = 'scheduler.html';
+        }
+        
+        // 대시보드 데이터 로드 (시뮬레이션)
+        function loadDashboardData() {
+            // 실제로는 API에서 데이터를 가져옴
+            document.getElementById('todayPosts').textContent = '3';
+            document.getElementById('scheduledPosts').textContent = '12';
+            document.getElementById('aiNewsCount').textContent = '47';
+            document.getElementById('newNewsCount').textContent = '8';
+            document.getElementById('courseProgress').textContent = '5/65';
+            document.getElementById('coursePercent').textContent = '7.7';
+            document.getElementById('nextPublish').textContent = '2시간 후';
+            document.getElementById('lastCrawl').textContent = '30분 전';
+            
+            // 상태 인디케이터 설정
+            document.getElementById('crawlerStatus').classList.add('active');
+            document.getElementById('aiStatus').classList.add('active');
+            document.getElementById('publisherStatus').classList.add('active');
+        }
+        
+        // 페이지 로드 시 데이터 로드
+        document.addEventListener('DOMContentLoaded', loadDashboardData);
+    </script>
+</body>
+</html>

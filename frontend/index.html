@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Auto Blog - AI 기술과 자동화의 모든 것</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header-content {
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        nav {
+            background: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #667eea;
+        }
+        
+        main {
+            padding: 2rem 0;
+        }
+        
+        .hero {
+            background: white;
+            padding: 3rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .hero h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+        
+        .hero p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .post-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .post-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .post-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+        }
+        
+        .post-category {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+        
+        .post-title {
+            font-size: 1.25rem;
+            margin: 0.5rem 0;
+        }
+        
+        .post-content {
+            padding: 1.5rem;
+        }
+        
+        .post-excerpt {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .post-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            color: #999;
+        }
+        
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <h1>🤖 AI Auto Blog</h1>
+                <p class="tagline">AI 기술과 자동화의 모든 것을 다루는 블로그</p>
+            </div>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="container">
+            <ul class="nav-links">
+                <li><a href="/">홈</a></li>
+                <li><a href="#ai-news">AI 뉴스</a></li>
+                <li><a href="#courses">강좌</a></li>
+                <li><a href="#analysis">분석</a></li>
+                <li><a href="#about">소개</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main>
+        <div class="container">
+            <section class="hero">
+                <h2>AI 자동화로 만드는 미래</h2>
+                <p>최신 AI 뉴스, 실용적인 강좌, 깊이 있는 분석을 매일 자동으로 제공합니다</p>
+                <div class="cta-buttons">
+                    <a href="#latest" class="btn btn-primary">최신 글 보기</a>
+                    <a href="/admin/dashboard.html" class="btn btn-secondary">관리자 페이지</a>
+                </div>
+            </section>
+            
+            <section id="latest">
+                <h2 style="margin-bottom: 2rem;">최신 포스트</h2>
+                <div class="posts-grid">
+                    <article class="post-card">
+                        <div class="post-header">
+                            <div class="post-category">AI 뉴스</div>
+                            <h3 class="post-title">GPT-4 Turbo 새로운 기능 발표</h3>
+                        </div>
+                        <div class="post-content">
+                            <p class="post-excerpt">OpenAI가 발표한 GPT-4 Turbo의 혁신적인 기능들을 살펴봅니다. 더 빠른 응답 속도와 향상된 코딩 능력이 주목받고 있습니다.</p>
+                            <div class="post-meta">
+                                <span>2025-07-01</span>
+                                <span>5분 읽기</span>
+                            </div>
+                        </div>
+                    </article>
+                    
+                    <article class="post-card">
+                        <div class="post-header">
+                            <div class="post-category">강좌</div>
+                            <h3 class="post-title">노션 마스터 클래스 - 1강</h3>
+                        </div>
+                        <div class="post-content">
+                            <p class="post-excerpt">노션을 처음 시작하는 분들을 위한 완벽 가이드. 첫 페이지 만들기부터 기본 블록 사용법까지 상세히 알아봅니다.</p>
+                            <div class="post-meta">
+                                <span>2025-07-01</span>
+                                <span>10분 읽기</span>
+                            </div>
+                        </div>
+                    </article>
+                    
+                    <article class="post-card">
+                        <div class="post-header">
+                            <div class="post-category">분석</div>
+                            <h3 class="post-title">Claude vs GPT-4 실전 비교</h3>
+                        </div>
+                        <div class="post-content">
+                            <p class="post-excerpt">2025년 최신 AI 모델들의 성능을 실제 사용 사례를 통해 비교 분석합니다. 각 모델의 장단점과 적합한 사용 시나리오를 제시합니다.</p>
+                            <div class="post-meta">
+                                <span>2025-06-30</span>
+                                <span>15분 읽기</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 AI Auto Blog. 모든 콘텐츠는 AI와 함께 자동으로 생성됩니다.</p>
+        </div>
+    </footer>
+</body>
+</html>
