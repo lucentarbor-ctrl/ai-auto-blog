@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="ko">
+<!-- 메인 블로그는 blog.html로 이동했습니다 -->
+<script>window.location.href = 'blog.html';</script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Auto Blog - AI 기술과 자동화의 모든 것</title>
+    <link rel="stylesheet" href="admin/css/admin.css">
     <style>
         * {
             margin: 0;
@@ -19,10 +22,12 @@
         }
         
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
         
         .container {
@@ -35,41 +40,85 @@
             text-align: center;
         }
         
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .tagline {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-        
-        nav {
-            background: white;
-            padding: 1rem 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .nav-links {
+        /* 블로그 레이아웃 */
+        .blog-container {
             display: flex;
-            justify-content: center;
-            gap: 2rem;
-            list-style: none;
+            min-height: 100vh;
         }
         
-        .nav-links a {
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
+        .blog-sidebar {
+            width: 280px;
+            background-color: #111827;
+            color: #f9fafb;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s ease;
         }
         
-        .nav-links a:hover {
-            color: #667eea;
+        .blog-main {
+            margin-left: 280px;
+            flex: 1;
+            background-color: #f5f5f5;
+        }
+        
+        /* 헤더 스타일 */
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .search-bar {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .search-input {
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            width: 300px;
+        }
+        
+        h1 {
+            font-size: 1.875rem;
+            color: #111827;
+        }
+        
+        /* 카테고리 필터 */
+        .category-filter {
+            background: white;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .filter-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-tag {
+            padding: 0.5rem 1rem;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-tag.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .filter-tag:hover {
+            background: #e5e7eb;
         }
         
         main {
@@ -187,40 +236,122 @@
     </style>
 </head>
 <body>
-    <header>
+    <div class="blog-container">
+        <!-- 사이드바 -->
+        <aside class="blog-sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🤖</span>
+                    <h2 class="logo-text">AI Auto Blog</h2>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <!-- 홈 -->
+                <a href="#home" class="nav-item active">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-text">홈</span>
+                </a>
+                
+                <!-- 카테고리 섹션 -->
+                <div class="nav-section">
+                    <h3 class="nav-section-title">
+                        <span class="section-icon">📂</span>
+                        <span class="section-text">카테고리</span>
+                    </h3>
+                    <div class="nav-section-items">
+                        <a href="#ai-news" class="nav-item">
+                            <span class="nav-icon">📰</span>
+                            <span class="nav-text">AI 뉴스</span>
+                            <span class="nav-badge">156</span>
+                        </a>
+                        <a href="#courses" class="nav-item">
+                            <span class="nav-icon">📚</span>
+                            <span class="nav-text">강좌</span>
+                            <span class="nav-badge">65</span>
+                        </a>
+                        <a href="#tools" class="nav-item">
+                            <span class="nav-icon">🛠️</span>
+                            <span class="nav-text">AI 도구 리뷰</span>
+                            <span class="nav-badge">32</span>
+                        </a>
+                        <a href="#analysis" class="nav-item">
+                            <span class="nav-icon">📊</span>
+                            <span class="nav-text">기술 분석</span>
+                            <span class="nav-badge">24</span>
+                        </a>
+                        <a href="#tips" class="nav-item">
+                            <span class="nav-icon">💡</span>
+                            <span class="nav-text">활용 팁</span>
+                            <span class="nav-badge">87</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 강좌 시리즈 섹션 -->
+                <div class="nav-section">
+                    <h3 class="nav-section-title">
+                        <span class="section-icon">🎓</span>
+                        <span class="section-text">강좌 시리즈</span>
+                    </h3>
+                    <div class="nav-section-items">
+                        <a href="#notion-course" class="nav-item">
+                            <span class="nav-icon">📝</span>
+                            <span class="nav-text">노션 마스터</span>
+                        </a>
+                        <a href="#obsidian-course" class="nav-item">
+                            <span class="nav-icon">🗂️</span>
+                            <span class="nav-text">옵시디언 마스터</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 관리 섹션 -->
+                <div class="nav-section">
+                    <h3 class="nav-section-title">
+                        <span class="section-icon">⚙️</span>
+                        <span class="section-text">관리</span>
+                    </h3>
+                    <div class="nav-section-items">
+                        <a href="/admin/dashboard.html" class="nav-item">
+                            <span class="nav-icon">📊</span>
+                            <span class="nav-text">관리자 대시보드</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- 메인 콘텐츠 -->
+        <div class="blog-main">
+            <header>
         <div class="container">
             <div class="header-content">
-                <h1>🤖 AI Auto Blog</h1>
-                <p class="tagline">AI 기술과 자동화의 모든 것을 다루는 블로그</p>
+                <h1>최신 포스트</h1>
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="검색...">
+                    <button class="btn btn-primary">검색</button>
+                </div>
             </div>
         </div>
     </header>
     
-    <nav>
-        <div class="container">
-            <ul class="nav-links">
-                <li><a href="/">홈</a></li>
-                <li><a href="#ai-news">AI 뉴스</a></li>
-                <li><a href="#courses">강좌</a></li>
-                <li><a href="#analysis">분석</a></li>
-                <li><a href="#about">소개</a></li>
-            </ul>
-        </div>
-    </nav>
-    
     <main>
         <div class="container">
-            <section class="hero">
-                <h2>AI 자동화로 만드는 미래</h2>
-                <p>최신 AI 뉴스, 실용적인 강좌, 깊이 있는 분석을 매일 자동으로 제공합니다</p>
-                <div class="cta-buttons">
-                    <a href="#latest" class="btn btn-primary">최신 글 보기</a>
-                    <a href="/admin/dashboard.html" class="btn btn-secondary">관리자 페이지</a>
+            <!-- 카테고리 필터 -->
+            <div class="category-filter">
+                <h3 style="margin-bottom: 1rem;">카테고리</h3>
+                <div class="filter-tags">
+                    <span class="filter-tag active">전체</span>
+                    <span class="filter-tag">AI 뉴스</span>
+                    <span class="filter-tag">강좌</span>
+                    <span class="filter-tag">AI 도구 리뷰</span>
+                    <span class="filter-tag">기술 분석</span>
+                    <span class="filter-tag">활용 팁</span>
                 </div>
-            </section>
+            </div>
             
-            <section id="latest">
-                <h2 style="margin-bottom: 2rem;">최신 포스트</h2>
+            <section id="posts">
                 <div class="posts-grid">
                     <article class="post-card">
                         <div class="post-header">
@@ -267,8 +398,33 @@
             </section>
         </div>
     </main>
+        </div>
+    </div>
     
-    <footer>
+    <script>
+        // 카테고리 필터 기능
+        document.querySelectorAll('.filter-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                // 여기에 필터링 로직 추가
+            });
+        });
+        
+        // 사이드바 메뉴 활성화
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (!this.href.includes('admin')) {
+                    e.preventDefault();
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    // 여기에 콘텐츠 로드 로직 추가
+                }
+            });
+        });
+    </script>
+    
+    <footer style="display: none;">
         <div class="container">
             <p>&copy; 2025 AI Auto Blog. 모든 콘텐츠는 AI와 함께 자동으로 생성됩니다.</p>
         </div>

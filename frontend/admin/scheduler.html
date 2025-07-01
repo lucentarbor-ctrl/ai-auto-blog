@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약 발행 - AI Auto Blog Admin</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .scheduler-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .view-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .view-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .view-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        /* 캘린더 뷰 */
+        .calendar-container {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e5e7eb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .calendar-cell {
+            background: white;
+            min-height: 100px;
+            padding: 0.5rem;
+        }
+        
+        .calendar-cell.header {
+            background: #f9fafb;
+            font-weight: 600;
+            text-align: center;
+            min-height: auto;
+            padding: 1rem 0.5rem;
+        }
+        
+        .calendar-cell.other-month {
+            background: #f9fafb;
+            color: #9ca3af;
+        }
+        
+        .calendar-date {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .calendar-events {
+            font-size: 0.75rem;
+        }
+        
+        .calendar-event {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            margin-bottom: 0.25rem;
+            cursor: pointer;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .calendar-event.ai-news {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .calendar-event.course {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        /* 타임라인 뷰 */
+        .timeline-container {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+        
+        .timeline-date {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .timeline-items {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .timeline-items::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e5e7eb;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.5rem;
+            top: 0.25rem;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #e5e7eb;
+        }
+        
+        .timeline-time {
+            font-weight: 600;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .timeline-content {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .timeline-meta {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        /* 발행 큐 */
+        .queue-section {
+            margin-top: 2rem;
+        }
+        
+        .queue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .queue-list {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .queue-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s;
+        }
+        
+        .queue-item:hover {
+            background: #f9fafb;
+        }
+        
+        .queue-item:last-child {
+            border-bottom: none;
+        }
+        
+        .queue-info {
+            flex: 1;
+        }
+        
+        .queue-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .queue-details {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .queue-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        /* 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .time-slot {
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .time-slot:hover {
+            background: #f3f4f6;
+        }
+        
+        .time-slot.selected {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div id="sidebar-placeholder"></div>
+        
+        <!-- 메인 콘텐츠 -->
+        <main class="main-content">
+            <div class="scheduler-header">
+                <h1>예약 발행</h1>
+                <div class="view-controls">
+                    <button class="view-btn active" onclick="changeView('calendar')">📅 캘린더</button>
+                    <button class="view-btn" onclick="changeView('timeline')">📋 타임라인</button>
+                    <button class="btn-primary" onclick="openScheduleModal()">+ 새 예약</button>
+                </div>
+            </div>
+            
+            <!-- 캘린더 뷰 -->
+            <div id="calendarView" class="calendar-container">
+                <div class="calendar-header">
+                    <button class="btn-secondary" onclick="previousMonth()">◀</button>
+                    <h2 id="currentMonth">2025년 7월</h2>
+                    <button class="btn-secondary" onclick="nextMonth()">▶</button>
+                </div>
+                
+                <div class="calendar-grid">
+                    <!-- 요일 헤더 -->
+                    <div class="calendar-cell header">일</div>
+                    <div class="calendar-cell header">월</div>
+                    <div class="calendar-cell header">화</div>
+                    <div class="calendar-cell header">수</div>
+                    <div class="calendar-cell header">목</div>
+                    <div class="calendar-cell header">금</div>
+                    <div class="calendar-cell header">토</div>
+                    
+                    <!-- 날짜 셀들 -->
+                    <div class="calendar-cell other-month">
+                        <div class="calendar-date">30</div>
+                    </div>
+                    <div class="calendar-cell">
+                        <div class="calendar-date">1</div>
+                        <div class="calendar-events">
+                            <div class="calendar-event ai-news">09:00 AI 뉴스</div>
+                            <div class="calendar-event course">12:30 노션 1강</div>
+                            <div class="calendar-event">19:00 기술분석</div>
+                        </div>
+                    </div>
+                    <div class="calendar-cell">
+                        <div class="calendar-date">2</div>
+                        <div class="calendar-events">
+                            <div class="calendar-event ai-news">09:00 AI 뉴스</div>
+                            <div class="calendar-event course">12:30 옵시디언 1강</div>
+                        </div>
+                    </div>
+                    <!-- ... 더 많은 날짜 셀들 ... -->
+                </div>
+            </div>
+            
+            <!-- 타임라인 뷰 -->
+            <div id="timelineView" class="timeline-container" style="display: none;">
+                <div class="timeline-date">2025년 7월 1일 (월요일)</div>
+                <div class="timeline-items">
+                    <div class="timeline-item">
+                        <div class="timeline-time">09:00</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">오늘의 AI 뉴스 종합</div>
+                            <div class="timeline-meta">AI 뉴스 • 자동 생성 • 예약됨</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">12:30</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">노션 마스터 클래스 - 1강</div>
+                            <div class="timeline-meta">강좌 • GitHub 임포트 • 예약됨</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">19:00</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Claude vs GPT-4 실전 비교</div>
+                            <div class="timeline-meta">기술 분석 • 수동 작성 • 예약됨</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-date">2025년 7월 2일 (화요일)</div>
+                <div class="timeline-items">
+                    <div class="timeline-item">
+                        <div class="timeline-time">09:00</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">오늘의 AI 뉴스 종합</div>
+                            <div class="timeline-meta">AI 뉴스 • 자동 생성 • 예약됨</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 발행 큐 섹션 -->
+            <section class="queue-section">
+                <div class="queue-header">
+                    <h2>발행 대기 중 (12)</h2>
+                    <button class="btn-secondary" onclick="manageQueue()">큐 관리</button>
+                </div>
+                
+                <div class="queue-list">
+                    <div class="queue-item">
+                        <div class="queue-info">
+                            <div class="queue-title">GPT-4 Turbo의 새로운 비전 기능 발표</div>
+                            <div class="queue-details">AI 뉴스 • 2025-07-01 09:00 예약</div>
+                        </div>
+                        <div class="queue-actions">
+                            <button class="btn-secondary btn-small">수정</button>
+                            <button class="btn-secondary btn-small">삭제</button>
+                            <button class="btn-primary btn-small">즉시 발행</button>
+                        </div>
+                    </div>
+                    
+                    <div class="queue-item">
+                        <div class="queue-info">
+                            <div class="queue-title">노션 마스터 클래스 - 1강: 노션 시작하기</div>
+                            <div class="queue-details">강좌 • 2025-07-01 12:30 예약</div>
+                        </div>
+                        <div class="queue-actions">
+                            <button class="btn-secondary btn-small">수정</button>
+                            <button class="btn-secondary btn-small">삭제</button>
+                            <button class="btn-primary btn-small">즉시 발행</button>
+                        </div>
+                    </div>
+                    
+                    <div class="queue-item">
+                        <div class="queue-info">
+                            <div class="queue-title">Claude 3.5 Sonnet vs GPT-4o 실전 비교</div>
+                            <div class="queue-details">기술 분석 • 2025-07-01 19:00 예약</div>
+                        </div>
+                        <div class="queue-actions">
+                            <button class="btn-secondary btn-small">수정</button>
+                            <button class="btn-secondary btn-small">삭제</button>
+                            <button class="btn-primary btn-small">즉시 발행</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 자동화 규칙 -->
+            <section class="automation-rules" style="margin-top: 2rem;">
+                <h2>자동화 규칙</h2>
+                <div class="rules-grid" style="display: grid; gap: 1rem; margin-top: 1rem;">
+                    <div class="rule-card" style="background: white; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+                        <h3 style="margin-bottom: 0.5rem;">AI 뉴스 자동 발행</h3>
+                        <p style="color: #6b7280; font-size: 0.875rem;">매일 오전 9시에 수집된 AI 뉴스 중 상위 10개를 자동으로 번역하여 발행</p>
+                        <div style="margin-top: 1rem;">
+                            <span style="background: #d1fae5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem;">활성화됨</span>
+                        </div>
+                    </div>
+                    
+                    <div class="rule-card" style="background: white; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+                        <h3 style="margin-bottom: 0.5rem;">강좌 시리즈 순차 발행</h3>
+                        <p style="color: #6b7280; font-size: 0.875rem;">GitHub에서 가져온 강좌를 매일 1개씩 점심 시간(12:30)에 발행</p>
+                        <div style="margin-top: 1rem;">
+                            <span style="background: #d1fae5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem;">활성화됨</span>
+                        </div>
+                    </div>
+                    
+                    <div class="rule-card" style="background: white; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+                        <h3 style="margin-bottom: 0.5rem;">최적 시간대 자동 배정</h3>
+                        <p style="color: #6b7280; font-size: 0.875rem;">콘텐츠 유형에 따라 최적의 발행 시간을 자동으로 선택</p>
+                        <div style="margin-top: 1rem;">
+                            <span style="background: #d1fae5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem;">활성화됨</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- 예약 모달 -->
+    <div class="modal" id="scheduleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>새 예약 만들기</h2>
+                <button class="modal-close" onclick="closeScheduleModal()">×</button>
+            </div>
+            
+            <form id="scheduleForm">
+                <div class="form-group">
+                    <label class="form-label">콘텐츠 선택</label>
+                    <select class="form-select" id="contentSelect">
+                        <option value="">선택하세요</option>
+                        <option value="draft">작성된 초안에서 선택</option>
+                        <option value="ai-news">AI 뉴스 자동 생성</option>
+                        <option value="course">강좌 시리즈에서 선택</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">제목</label>
+                    <input type="text" class="form-input" id="scheduleTitle" placeholder="포스트 제목을 입력하세요">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">카테고리</label>
+                    <select class="form-select" id="categorySelect">
+                        <option value="ai-news">AI 뉴스</option>
+                        <option value="course">강좌</option>
+                        <option value="tools">AI 도구 리뷰</option>
+                        <option value="analysis">기술 분석</option>
+                        <option value="tips">활용 팁</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">발행 날짜</label>
+                    <input type="date" class="form-input" id="publishDate">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">발행 시간</label>
+                    <div class="time-slots">
+                        <div class="time-slot" data-time="09:00">09:00</div>
+                        <div class="time-slot" data-time="10:00">10:00</div>
+                        <div class="time-slot" data-time="11:00">11:00</div>
+                        <div class="time-slot" data-time="12:00">12:00</div>
+                        <div class="time-slot" data-time="13:00">13:00</div>
+                        <div class="time-slot" data-time="14:00">14:00</div>
+                        <div class="time-slot" data-time="15:00">15:00</div>
+                        <div class="time-slot" data-time="16:00">16:00</div>
+                        <div class="time-slot" data-time="17:00">17:00</div>
+                        <div class="time-slot" data-time="18:00">18:00</div>
+                        <div class="time-slot" data-time="19:00">19:00</div>
+                        <div class="time-slot" data-time="20:00">20:00</div>
+                        <div class="time-slot" data-time="21:00">21:00</div>
+                        <div class="time-slot" data-time="22:00">22:00</div>
+                        <div class="time-slot" data-time="23:00">23:00</div>
+                        <div class="time-slot">커스텀</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">메모 (선택사항)</label>
+                    <textarea class="form-textarea" id="scheduleMemo" placeholder="예약에 대한 메모를 남겨주세요"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn-secondary" onclick="closeScheduleModal()">취소</button>
+                    <button type="submit" class="btn-primary">예약 생성</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="js/sidebar.js"></script>
+    <script>
+        // 뷰 전환
+        function changeView(view) {
+            const calendarView = document.getElementById('calendarView');
+            const timelineView = document.getElementById('timelineView');
+            const viewBtns = document.querySelectorAll('.view-btn');
+            
+            viewBtns.forEach(btn => btn.classList.remove('active'));
+            
+            if (view === 'calendar') {
+                calendarView.style.display = 'block';
+                timelineView.style.display = 'none';
+                viewBtns[0].classList.add('active');
+            } else {
+                calendarView.style.display = 'none';
+                timelineView.style.display = 'block';
+                viewBtns[1].classList.add('active');
+            }
+        }
+        
+        // 모달 제어
+        function openScheduleModal() {
+            document.getElementById('scheduleModal').classList.add('active');
+        }
+        
+        function closeScheduleModal() {
+            document.getElementById('scheduleModal').classList.remove('active');
+        }
+        
+        // 시간 슬롯 선택
+        document.querySelectorAll('.time-slot').forEach(slot => {
+            slot.addEventListener('click', function() {
+                document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+        
+        // 폼 제출
+        document.getElementById('scheduleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // 예약 생성 로직
+            alert('예약이 생성되었습니다!');
+            closeScheduleModal();
+        });
+        
+        // 캘린더 네비게이션
+        function previousMonth() {
+            // 이전 달로 이동
+        }
+        
+        function nextMonth() {
+            // 다음 달로 이동
+        }
+        
+        // 큐 관리
+        function manageQueue() {
+            // 큐 관리 페이지로 이동
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 뉴스 - AI Auto Blog Admin</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .news-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+        
+        .news-filters {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .news-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .news-card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .news-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .news-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .news-source {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: #dbeafe;
+            color: #1e40af;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .news-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+        
+        .news-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .news-content {
+            padding: 1.5rem;
+        }
+        
+        .news-summary {
+            color: #374151;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .news-actions {
+            display: flex;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .btn-translate {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-translate:hover {
+            background: #059669;
+        }
+        
+        .btn-publish {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-publish:hover {
+            background: #2563eb;
+        }
+        
+        .translated-badge {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .published-badge {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div id="sidebar-placeholder"></div>
+        
+        <!-- 메인 콘텐츠 -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1>AI 뉴스 관리</h1>
+                <button class="btn-primary" onclick="crawlNews()">
+                    🔄 뉴스 크롤링
+                </button>
+            </header>
+            
+            <!-- 뉴스 컨트롤 -->
+            <div class="news-controls">
+                <div class="news-filters">
+                    <select id="sourceFilter" class="form-select">
+                        <option value="">모든 소스</option>
+                        <option value="openai">OpenAI</option>
+                        <option value="anthropic">Anthropic</option>
+                        <option value="google">Google AI</option>
+                        <option value="reddit">Reddit</option>
+                        <option value="hackernews">Hacker News</option>
+                    </select>
+                    
+                    <select id="statusFilter" class="form-select">
+                        <option value="">모든 상태</option>
+                        <option value="new">새 뉴스</option>
+                        <option value="translated">번역됨</option>
+                        <option value="published">발행됨</option>
+                    </select>
+                </div>
+                
+                <div class="news-stats">
+                    <span>전체: <strong id="totalCount">156</strong></span>
+                    <span>새 뉴스: <strong id="newCount">12</strong></span>
+                    <span>오늘 발행: <strong id="todayCount">3</strong></span>
+                </div>
+            </div>
+            
+            <!-- 뉴스 목록 -->
+            <div class="news-grid" id="newsGrid">
+                <!-- 뉴스 카드 1 -->
+                <article class="news-card">
+                    <div class="news-header">
+                        <span class="news-source">OpenAI</span>
+                        <h2 class="news-title">GPT-4 Turbo의 새로운 비전 기능 발표</h2>
+                        <div class="news-meta">
+                            <span>2025-07-01 09:30</span>
+                            <span>•</span>
+                            <span>조회수 1,234</span>
+                        </div>
+                    </div>
+                    <div class="news-content">
+                        <p class="news-summary">
+                            OpenAI가 GPT-4 Turbo에 향상된 비전 기능을 추가했습니다. 이제 이미지 분석 능력이 크게 향상되어 
+                            복잡한 차트와 다이어그램도 정확하게 해석할 수 있습니다. 특히 코드 스크린샷을 분석하고 
+                            디버깅 제안을 하는 기능이 개발자들 사이에서 큰 호응을 얻고 있습니다.
+                        </p>
+                        <div class="news-tags">
+                            <span class="tag">GPT-4</span>
+                            <span class="tag">Computer Vision</span>
+                            <span class="tag">AI Update</span>
+                        </div>
+                    </div>
+                    <div class="news-actions">
+                        <button class="btn-secondary btn-small">원문 보기</button>
+                        <button class="btn-translate btn-small">한국어 번역</button>
+                        <button class="btn-publish btn-small">즉시 발행</button>
+                        <button class="btn-secondary btn-small">예약 발행</button>
+                    </div>
+                </article>
+                
+                <!-- 뉴스 카드 2 (번역됨) -->
+                <article class="news-card">
+                    <div class="news-header">
+                        <span class="news-source">Anthropic</span>
+                        <span class="translated-badge">번역됨</span>
+                        <h2 class="news-title">Claude 3.5 Sonnet의 컴퓨터 사용 능력 업데이트</h2>
+                        <div class="news-meta">
+                            <span>2025-07-01 08:15</span>
+                            <span>•</span>
+                            <span>조회수 2,456</span>
+                        </div>
+                    </div>
+                    <div class="news-content">
+                        <p class="news-summary">
+                            Anthropic이 Claude 3.5 Sonnet의 컴퓨터 사용 능력을 대폭 개선했습니다. 
+                            이제 웹 브라우저를 직접 조작하고, 복잡한 멀티스텝 작업을 수행할 수 있게 되었습니다. 
+                            특히 소프트웨어 테스팅과 자동화 분야에서 혁신적인 변화를 가져올 것으로 예상됩니다.
+                        </p>
+                        <div class="news-korean">
+                            <h4>🇰🇷 한국어 요약</h4>
+                            <p>
+                                앤스로픽이 클로드 3.5 소네트의 컴퓨터 사용 능력을 크게 향상시켰습니다. 
+                                웹 브라우저 직접 조작과 복잡한 작업 수행이 가능해져, 
+                                소프트웨어 테스팅 및 자동화 분야에 큰 변화가 예상됩니다.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="news-actions">
+                        <button class="btn-secondary btn-small">원문 보기</button>
+                        <button class="btn-secondary btn-small" disabled>✓ 번역 완료</button>
+                        <button class="btn-publish btn-small">즉시 발행</button>
+                        <button class="btn-secondary btn-small">예약 발행</button>
+                    </div>
+                </article>
+                
+                <!-- 뉴스 카드 3 (발행됨) -->
+                <article class="news-card">
+                    <div class="news-header">
+                        <span class="news-source">Google AI</span>
+                        <span class="published-badge">발행됨</span>
+                        <h2 class="news-title">Gemini Pro 1.5의 멀티모달 기능 강화</h2>
+                        <div class="news-meta">
+                            <span>2025-06-30 19:00</span>
+                            <span>•</span>
+                            <span>조회수 3,789</span>
+                            <span>•</span>
+                            <span>블로그 조회 523</span>
+                        </div>
+                    </div>
+                    <div class="news-content">
+                        <p class="news-summary">
+                            구글이 Gemini Pro 1.5의 멀티모달 처리 능력을 대폭 강화했습니다. 
+                            동영상, 오디오, 이미지를 동시에 처리하여 더욱 정확한 컨텍스트 이해가 가능해졌습니다.
+                        </p>
+                        <div class="publish-info">
+                            <p><strong>발행 정보:</strong></p>
+                            <p>발행일시: 2025-06-30 21:00</p>
+                            <p>카테고리: AI 뉴스</p>
+                            <p>조회수: 523회</p>
+                            <p>댓글: 12개</p>
+                        </div>
+                    </div>
+                    <div class="news-actions">
+                        <button class="btn-secondary btn-small">발행된 글 보기</button>
+                        <button class="btn-secondary btn-small">통계 확인</button>
+                        <button class="btn-secondary btn-small">수정하기</button>
+                    </div>
+                </article>
+            </div>
+            
+            <!-- 페이지네이션 -->
+            <div class="pagination" style="margin-top: 2rem;">
+                <button class="btn-secondary">이전</button>
+                <span>1 / 16 페이지</span>
+                <button class="btn-secondary">다음</button>
+            </div>
+        </main>
+    </div>
+    
+    <style>
+        .form-select {
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            background: white;
+            min-width: 150px;
+        }
+        
+        .news-stats {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .news-stats strong {
+            color: #111827;
+            font-weight: 600;
+        }
+        
+        .news-tags {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .tag {
+            padding: 0.25rem 0.5rem;
+            background: #f3f4f6;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            color: #374151;
+        }
+        
+        .news-korean {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .news-korean h4 {
+            margin-bottom: 0.5rem;
+            color: #111827;
+            font-size: 0.875rem;
+        }
+        
+        .publish-info {
+            background: #f0f9ff;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .publish-info p {
+            margin: 0.25rem 0;
+            color: #0369a1;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .btn-small {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+        }
+    </style>
+    
+    <script src="js/sidebar.js"></script>
+    <script>
+        // AI 뉴스 관리 기능
+        function crawlNews() {
+            if (confirm('모든 뉴스 소스에서 최신 뉴스를 크롤링하시겠습니까?')) {
+                alert('크롤링을 시작합니다. 완료까지 약 2-3분 소요됩니다.');
+                // API 호출
+                fetch('/api/automation/run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ automation_type: 'news_crawler' })
+                });
+            }
+        }
+        
+        // 필터 기능
+        document.getElementById('sourceFilter').addEventListener('change', filterNews);
+        document.getElementById('statusFilter').addEventListener('change', filterNews);
+        
+        function filterNews() {
+            const source = document.getElementById('sourceFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            // 필터링 로직 구현
+        }
+        
+        // 번역 기능
+        function translateNews(newsId) {
+            // AI 번역 API 호출
+        }
+        
+        // 발행 기능
+        function publishNews(newsId, scheduled = false) {
+            // 발행 API 호출
+        }
+    </script>
+</body>
+</html>
