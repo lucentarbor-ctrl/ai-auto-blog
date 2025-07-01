@@ -1,0 +1,515 @@
+<!-- 향상된 사이드바 컴포넌트 -->
+<aside class="blog-sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <a href="/blog.html" class="blog-logo">
+            <span class="logo-icon">🤖</span>
+            <div>
+                <h1 class="logo-text">AI Auto Blog</h1>
+                <p style="font-size: 0.75rem; color: var(--gray); font-weight: normal;">AI 기술의 모든 것</p>
+            </div>
+        </a>
+    </div>
+    
+    <nav class="sidebar-nav">
+        <!-- 개인화 섹션 -->
+        <div class="nav-section personal-section">
+            <div class="user-profile">
+                <div class="avatar">👤</div>
+                <div class="user-info">
+                    <div class="user-name">방문자</div>
+                    <div class="user-stats">
+                        <span>📚 학습 5개</span>
+                        <span>🔥 연속 3일</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 메인 메뉴 -->
+        <div class="nav-section">
+            <h3 class="nav-section-title">메인 메뉴</h3>
+            <a href="/blog.html" class="nav-item" data-page="home">
+                <span class="nav-item-content">
+                    <span>🏠</span>
+                    <span>홈</span>
+                </span>
+                <span class="nav-badge new">NEW</span>
+            </a>
+            <a href="/courses.html" class="nav-item" data-page="courses">
+                <span class="nav-item-content">
+                    <span>📚</span>
+                    <span>강좌</span>
+                </span>
+                <span class="nav-count">68</span>
+            </a>
+            <a href="/ai-news.html" class="nav-item" data-page="news">
+                <span class="nav-item-content">
+                    <span>📰</span>
+                    <span>AI 뉴스</span>
+                </span>
+                <span class="nav-badge live">LIVE</span>
+            </a>
+            <a href="/ai-tools.html" class="nav-item" data-page="tools">
+                <span class="nav-item-content">
+                    <span>🛠️</span>
+                    <span>AI 도구</span>
+                </span>
+                <span class="nav-count">156</span>
+            </a>
+            <a href="/prompts.html" class="nav-item" data-page="prompts">
+                <span class="nav-item-content">
+                    <span>📝</span>
+                    <span>프롬프트</span>
+                </span>
+                <span class="nav-count">500+</span>
+            </a>
+            <a href="/automation.html" class="nav-item" data-page="automation">
+                <span class="nav-item-content">
+                    <span>⚡</span>
+                    <span>자동화</span>
+                </span>
+                <span class="nav-count">89</span>
+            </a>
+            <a href="/lab.html" class="nav-item" data-page="lab">
+                <span class="nav-item-content">
+                    <span>🧪</span>
+                    <span>실험실</span>
+                </span>
+                <span class="nav-badge beta">BETA</span>
+            </a>
+            <a href="/community.html" class="nav-item" data-page="community">
+                <span class="nav-item-content">
+                    <span>👥</span>
+                    <span>커뮤니티</span>
+                </span>
+                <span class="nav-badge">12</span>
+            </a>
+        </div>
+        
+        <!-- 인기 카테고리 -->
+        <div class="nav-section">
+            <h3 class="nav-section-title">🔥 인기 카테고리</h3>
+            <a href="/category/chatgpt" class="nav-item">
+                <span class="nav-item-content">
+                    <span>💬</span>
+                    <span>ChatGPT 활용법</span>
+                </span>
+                <span class="trend-up">↑12%</span>
+            </a>
+            <a href="/category/midjourney" class="nav-item">
+                <span class="nav-item-content">
+                    <span>🎨</span>
+                    <span>Midjourney 작품</span>
+                </span>
+                <span class="trend-up">↑8%</span>
+            </a>
+            <a href="/category/automation" class="nav-item">
+                <span class="nav-item-content">
+                    <span>🔄</span>
+                    <span>업무 자동화</span>
+                </span>
+                <span class="trend-up">↑15%</span>
+            </a>
+        </div>
+        
+        <!-- 빠른 실행 -->
+        <div class="nav-section">
+            <h3 class="nav-section-title">🚀 빠른 실행</h3>
+            <div class="quick-actions">
+                <button class="quick-action-btn" onclick="openAIPlayground()">
+                    <span>🎮</span>
+                    <span>AI 플레이그라운드</span>
+                </button>
+                <button class="quick-action-btn" onclick="openPromptTester()">
+                    <span>🧪</span>
+                    <span>프롬프트 테스터</span>
+                </button>
+                <button class="quick-action-btn" onclick="openCodeSnippets()">
+                    <span>📋</span>
+                    <span>코드 스니펫</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 실시간 트렌드 -->
+        <div class="nav-section">
+            <h3 class="nav-section-title">📊 실시간 트렌드</h3>
+            <div class="trend-list">
+                <div class="trend-item">
+                    <span class="trend-rank">1</span>
+                    <span class="trend-keyword">GPT-4 Turbo Vision</span>
+                    <span class="trend-badge hot">HOT</span>
+                </div>
+                <div class="trend-item">
+                    <span class="trend-rank">2</span>
+                    <span class="trend-keyword">Claude Computer Use</span>
+                    <span class="trend-badge new">NEW</span>
+                </div>
+                <div class="trend-item">
+                    <span class="trend-rank">3</span>
+                    <span class="trend-keyword">Gemini 1.5 Pro</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 학습 진행률 -->
+        <div class="nav-section">
+            <h3 class="nav-section-title">📈 나의 학습</h3>
+            <div class="learning-progress">
+                <div class="course-progress-item">
+                    <div class="course-name">노션 마스터 클래스</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 16%;"></div>
+                    </div>
+                    <div class="progress-text">5/30강 완료</div>
+                </div>
+                <div class="course-progress-item">
+                    <div class="course-name">ChatGPT 프롬프트</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 40%;"></div>
+                    </div>
+                    <div class="progress-text">8/20강 완료</div>
+                </div>
+            </div>
+            <a href="/my-learning.html" class="view-all-link">전체 보기 →</a>
+        </div>
+        
+        <!-- AI 서비스 상태 -->
+        <div class="nav-section">
+            <h3 class="nav-section-title">🟢 AI 서비스 상태</h3>
+            <div class="service-status">
+                <div class="status-item">
+                    <span class="status-dot online"></span>
+                    <span>OpenAI API</span>
+                    <span class="status-text">정상</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-dot online"></span>
+                    <span>Claude API</span>
+                    <span class="status-text">정상</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-dot warning"></span>
+                    <span>Midjourney</span>
+                    <span class="status-text">지연</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 설정 & 정보 -->
+        <div class="nav-section">
+            <h3 class="nav-section-title">⚙️ 설정</h3>
+            <a href="/settings.html" class="nav-item">
+                <span class="nav-item-content">
+                    <span>🎨</span>
+                    <span>테마 설정</span>
+                </span>
+            </a>
+            <a href="/bookmarks.html" class="nav-item">
+                <span class="nav-item-content">
+                    <span>🔖</span>
+                    <span>북마크</span>
+                </span>
+                <span class="nav-count">23</span>
+            </a>
+            <a href="/admin/dashboard.html" class="nav-item" style="color: var(--primary);">
+                <span class="nav-item-content">
+                    <span>🔧</span>
+                    <span>관리자</span>
+                </span>
+            </a>
+        </div>
+    </nav>
+    
+    <!-- 사이드바 푸터 -->
+    <div class="sidebar-footer">
+        <div class="daily-tip">
+            <h4>💡 오늘의 팁</h4>
+            <p>ChatGPT에서 "Let's think step by step"을 추가하면 더 논리적인 답변을 받을 수 있어요!</p>
+        </div>
+        <div class="sidebar-meta">
+            <span>v2.0</span>
+            <span>•</span>
+            <span>© 2025 AI Auto Blog</span>
+        </div>
+    </div>
+</aside>
+
+<style>
+/* 추가 스타일 */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: var(--light-gray);
+    border-radius: 0.5rem;
+    margin: 0 1rem;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.user-info {
+    flex: 1;
+}
+
+.user-name {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.user-stats {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+    color: var(--gray);
+}
+
+.nav-badge {
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.625rem;
+    font-weight: 700;
+}
+
+.nav-badge.new {
+    background: #10b981;
+    color: white;
+}
+
+.nav-badge.live {
+    background: #ef4444;
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+.nav-badge.beta {
+    background: #8b5cf6;
+    color: white;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+}
+
+.trend-up {
+    color: #10b981;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.quick-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0 1rem;
+}
+
+.quick-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--light-gray);
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.875rem;
+}
+
+.quick-action-btn:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.trend-list {
+    padding: 0 1rem;
+}
+
+.trend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.trend-rank {
+    width: 20px;
+    height: 20px;
+    background: var(--light-gray);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.trend-keyword {
+    flex: 1;
+}
+
+.trend-badge {
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+}
+
+.trend-badge.hot {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.trend-badge.new {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.learning-progress {
+    padding: 0 1rem;
+}
+
+.course-progress-item {
+    margin-bottom: 1rem;
+}
+
+.course-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.progress-bar {
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 2px;
+    margin-bottom: 0.25rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 2px;
+    transition: width 0.3s;
+}
+
+.progress-text {
+    font-size: 0.75rem;
+    color: var(--gray);
+}
+
+.view-all-link {
+    display: block;
+    text-align: center;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.875rem;
+    padding: 0.5rem;
+}
+
+.service-status {
+    padding: 0 1rem;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-dot.online {
+    background: #10b981;
+}
+
+.status-dot.warning {
+    background: #f59e0b;
+}
+
+.status-dot.offline {
+    background: #ef4444;
+}
+
+.status-text {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--gray);
+}
+
+.daily-tip {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    color: white;
+    padding: 1rem;
+    margin: 1rem;
+    border-radius: 0.5rem;
+}
+
+.daily-tip h4 {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.daily-tip p {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    opacity: 0.9;
+}
+
+.sidebar-meta {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.75rem;
+    color: var(--gray);
+}
+</style>
+
+<script>
+// 사이드바 기능
+function openAIPlayground() {
+    window.location.href = '/playground.html';
+}
+
+function openPromptTester() {
+    window.location.href = '/prompt-tester.html';
+}
+
+function openCodeSnippets() {
+    window.location.href = '/snippets.html';
+}
+
+// 현재 페이지 활성화
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPath = window.location.pathname;
+    const navItems = document.querySelectorAll('.nav-item[data-page]');
+    
+    navItems.forEach(item => {
+        const page = item.getAttribute('data-page');
+        if (currentPath.includes(page) || (page === 'home' && currentPath === '/blog.html')) {
+            item.classList.add('active');
+        }
+    });
+});
+</script>

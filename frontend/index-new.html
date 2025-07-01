@@ -35,7 +35,7 @@
             min-height: 100vh;
         }
         
-        /* 사이드바 */
+        /* 사이드바 스타일은 components/sidebar.html에 포함 */
         .blog-sidebar {
             width: 280px;
             background: var(--white);
@@ -121,6 +121,11 @@
         
         .nav-item.active .nav-count {
             background: rgba(255,255,255,0.2);
+        }
+        
+        .sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid #e5e7eb;
         }
         
         /* 메인 콘텐츠 */
@@ -427,106 +432,6 @@
         
         <!-- 사이드바 -->
         <div id="sidebar-container"></div>
-            
-            <nav class="sidebar-nav">
-                <!-- 카테고리 -->
-                <div class="nav-section">
-                    <h3 class="nav-section-title">카테고리</h3>
-                    <a href="#all" class="nav-item active">
-                        <span class="nav-item-content">
-                            <span>🏠</span>
-                            <span>전체 글</span>
-                        </span>
-                        <span class="nav-count">364</span>
-                    </a>
-                    <a href="#ai-news" class="nav-item">
-                        <span class="nav-item-content">
-                            <span>📰</span>
-                            <span>AI 뉴스</span>
-                        </span>
-                        <span class="nav-count">156</span>
-                    </a>
-                    <a href="#tools" class="nav-item">
-                        <span class="nav-item-content">
-                            <span>🛠️</span>
-                            <span>AI 도구 리뷰</span>
-                        </span>
-                        <span class="nav-count">48</span>
-                    </a>
-                    <a href="#analysis" class="nav-item">
-                        <span class="nav-item-content">
-                            <span>📊</span>
-                            <span>기술 분석</span>
-                        </span>
-                        <span class="nav-count">32</span>
-                    </a>
-                    <a href="#tips" class="nav-item">
-                        <span class="nav-item-content">
-                            <span>💡</span>
-                            <span>활용 팁</span>
-                        </span>
-                        <span class="nav-count">63</span>
-                    </a>
-                </div>
-                
-                <!-- 강좌 시리즈 -->
-                <div class="nav-section">
-                    <h3 class="nav-section-title">강좌 시리즈</h3>
-                    <a href="#notion" class="nav-item">
-                        <span class="nav-item-content">
-                            <span>📝</span>
-                            <span>노션 마스터 클래스</span>
-                        </span>
-                        <span class="nav-count">5/30</span>
-                    </a>
-                    <a href="#obsidian" class="nav-item">
-                        <span class="nav-item-content">
-                            <span>🗂️</span>
-                            <span>옵시디언 마스터</span>
-                        </span>
-                        <span class="nav-count">8/35</span>
-                    </a>
-                    <a href="#python" class="nav-item">
-                        <span class="nav-item-content">
-                            <span>🐍</span>
-                            <span>Python 자동화</span>
-                        </span>
-                        <span class="nav-count">곧 시작</span>
-                    </a>
-                </div>
-                
-                <!-- 인기 태그 -->
-                <div class="nav-section">
-                    <h3 class="nav-section-title">인기 태그</h3>
-                    <div style="padding: 0 1.5rem;">
-                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                            <span style="padding: 0.25rem 0.75rem; background: var(--light-gray); border-radius: 9999px; font-size: 0.75rem; cursor: pointer;">#ChatGPT</span>
-                            <span style="padding: 0.25rem 0.75rem; background: var(--light-gray); border-radius: 9999px; font-size: 0.75rem; cursor: pointer;">#Claude</span>
-                            <span style="padding: 0.25rem 0.75rem; background: var(--light-gray); border-radius: 9999px; font-size: 0.75rem; cursor: pointer;">#Midjourney</span>
-                            <span style="padding: 0.25rem 0.75rem; background: var(--light-gray); border-radius: 9999px; font-size: 0.75rem; cursor: pointer;">#자동화</span>
-                            <span style="padding: 0.25rem 0.75rem; background: var(--light-gray); border-radius: 9999px; font-size: 0.75rem; cursor: pointer;">#프롬프트</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 정보 -->
-                <div class="nav-section">
-                    <h3 class="nav-section-title">정보</h3>
-                    <a href="#about" class="nav-item">
-                        <span class="nav-item-content">
-                            <span>ℹ️</span>
-                            <span>블로그 소개</span>
-                        </span>
-                    </a>
-                    <a href="/admin/dashboard.html" class="nav-item" style="color: var(--primary);">
-                        <span class="nav-item-content">
-                            <span>⚙️</span>
-                            <span>관리자</span>
-                        </span>
-                    </a>
-                </div>
-            </nav>
-        </aside>
         
         <!-- 메인 콘텐츠 -->
         <main class="blog-main">
@@ -534,7 +439,7 @@
             <header class="blog-header">
                 <div class="header-content">
                     <div class="header-left">
-                        <h1 class="page-title">최신 포스트</h1>
+                        <h1 class="page-title">AI Auto Blog</h1>
                         <nav class="header-nav">
                             <a href="#trending" class="active">인기</a>
                             <a href="#latest">최신</a>
@@ -583,12 +488,12 @@
                 <p class="hero-subtitle">3개의 AI가 협업하여 24시간 자동으로 콘텐츠를 생성하고 발행합니다</p>
                 <div class="hero-stats">
                     <div class="stat-item">
-                        <div class="stat-value">364</div>
+                        <div class="stat-value">500+</div>
                         <div class="stat-label">전체 포스트</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-value">12K+</div>
-                        <div class="stat-label">월간 방문자</div>
+                        <div class="stat-value">68</div>
+                        <div class="stat-label">강좌 시리즈</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-value">24/7</div>
@@ -603,7 +508,7 @@
                 <section class="featured-section">
                     <div class="section-header">
                         <h2 class="section-title">🔥 오늘의 AI 뉴스</h2>
-                        <a href="#ai-news" class="view-all">전체 보기 →</a>
+                        <a href="/ai-news.html" class="view-all">전체 보기 →</a>
                     </div>
                     <div class="posts-grid">
                         <article class="post-card">
@@ -651,7 +556,7 @@
                 <section class="featured-section">
                     <div class="section-header">
                         <h2 class="section-title">📚 인기 강좌</h2>
-                        <a href="#courses" class="view-all">전체 보기 →</a>
+                        <a href="/courses.html" class="view-all">전체 보기 →</a>
                     </div>
                     <div class="posts-grid">
                         <article class="post-card">
@@ -699,7 +604,7 @@
                 <section class="featured-section">
                     <div class="section-header">
                         <h2 class="section-title">🛠️ AI 도구 리뷰</h2>
-                        <a href="#tools" class="view-all">전체 보기 →</a>
+                        <a href="/ai-tools.html" class="view-all">전체 보기 →</a>
                     </div>
                     <div class="posts-grid">
                         <article class="post-card">
@@ -758,28 +663,9 @@
         // 사이드바 토글
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('active');
-        }
-        
-        // 사이드바 네비게이션
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function(e) {
-                if (!this.href || this.href.includes('#')) {
-                    e.preventDefault();
-                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // 여기에 카테고리별 콘텐츠 로드 로직 추가
-                    const category = this.getAttribute('href').replace('#', '');
-                    loadCategoryContent(category);
-                }
-            });
-        });
-        
-        // 카테고리 콘텐츠 로드
-        function loadCategoryContent(category) {
-            console.log('Loading category:', category);
-            // API 호출하여 해당 카테고리 콘텐츠 로드
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            }
         }
         
         // 검색 기능

@@ -17,9 +17,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 정적 파일 서빙
-app.mount("/", StaticFiles(directory="../frontend", html=True), name="frontend")
-app.mount("/admin", StaticFiles(directory="../frontend/admin", html=True), name="admin")
+# 정적 파일 서빙 설정 수정
+import os
+from pathlib import Path
+
+# 현재 파일의 디렉토리를 기준으로 경로 설정
+BASE_DIR = Path(__file__).resolve().parent
+FRONTEND_DIR = BASE_DIR.parent / "frontend"
+ADMIN_DIR = FRONTEND_DIR / "admin"
+
+# 정적 파일 마운트 (순서 중요!)
+if ADMIN_DIR.exists():
+    app.mount("/admin", StaticFiles(directory=str(ADMIN_DIR), html=True), name="admin")
+
+if FRONTEND_DIR.exists():
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
 
 # 데이터 모델
 class Post(BaseModel):
@@ -206,4 +218,8 @@ def get_schedule():
 
 if __name__ == "__main__":
     import uvicorn
+    print(f"Frontend directory: {FRONTEND_DIR}")
+    print(f"Admin directory: {ADMIN_DIR}")
+    print(f"Frontend exists: {FRONTEND_DIR.exists()}")
+    print(f"Admin exists: {ADMIN_DIR.exists()}")
     uvicorn.run(app, host="0.0.0.0", port=8000)

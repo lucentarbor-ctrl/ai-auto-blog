@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>강좌 - AI Auto Blog</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #10b981;
+            --accent: #8b5cf6;
+            --dark: #111827;
+            --gray: #6b7280;
+            --light-gray: #f3f4f6;
+            --white: #ffffff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--light-gray);
+        }
+        
+        /* 레이아웃 */
+        .blog-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* 사이드바 */
+        .blog-sidebar {
+            width: 280px;
+            background: var(--white);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .blog-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--dark);
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+        }
+        
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+        
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+        
+        .nav-section-title {
+            padding: 0 1.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--gray);
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.5rem;
+            color: var(--dark);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .nav-item:hover {
+            background: var(--light-gray);
+            color: var(--primary);
+        }
+        
+        .nav-item.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+        
+        .nav-item-content {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .nav-count {
+            background: var(--light-gray);
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .nav-item.active .nav-count {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        /* 메인 콘텐츠 */
+        .blog-main {
+            margin-left: 280px;
+            flex: 1;
+            min-height: 100vh;
+        }
+        
+        /* 헤더 */
+        .blog-header {
+            background: var(--white);
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .header-content {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        /* 강좌 히어로 */
+        .course-hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: var(--white);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        
+        .course-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .course-hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+        }
+        
+        /* 강좌 카테고리 */
+        .course-categories {
+            padding: 2rem;
+        }
+        
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .category-card {
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--dark);
+        }
+        
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .category-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .category-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .category-description {
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+        
+        .category-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+        
+        .category-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        /* 진행중인 강좌 */
+        .ongoing-courses {
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .course-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .course-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: var(--light-gray);
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: var(--dark);
+            transition: all 0.3s;
+        }
+        
+        .course-item:hover {
+            background: #e5e7eb;
+        }
+        
+        .course-thumbnail {
+            width: 80px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 0.5rem;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+        }
+        
+        .course-info {
+            flex: 1;
+        }
+        
+        .course-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .course-progress {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+        
+        .progress-bar {
+            width: 100px;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+        
+        .continue-btn {
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: var(--white);
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .continue-btn:hover {
+            background: var(--primary-dark);
+        }
+        
+        /* 모든 강좌 */
+        .all-courses {
+            padding: 0 2rem 2rem;
+        }
+        
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .course-card {
+            background: var(--white);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .course-banner {
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--white);
+        }
+        
+        .course-content {
+            padding: 1.5rem;
+        }
+        
+        .course-category {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--light-gray);
+            color: var(--gray);
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+        }
+        
+        .course-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .course-description {
+            color: var(--gray);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+        
+        .course-lessons {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .course-difficulty {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .difficulty-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e5e7eb;
+        }
+        
+        .difficulty-dot.active {
+            background: var(--primary);
+        }
+        
+        /* 모바일 반응형 */
+        @media (max-width: 768px) {
+            .blog-sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+            
+            .blog-sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .blog-main {
+                margin-left: 0;
+            }
+            
+            .categories-grid,
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="blog-layout">
+        <!-- 사이드바 -->
+        <aside class="blog-sidebar">
+            <div class="sidebar-header">
+                <a href="/blog.html" class="blog-logo">
+                    <span class="logo-icon">🤖</span>
+                    <div>
+                        <h1 class="logo-text">AI Auto Blog</h1>
+                        <p style="font-size: 0.75rem; color: var(--gray); font-weight: normal;">AI 기술의 모든 것</p>
+                    </div>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <!-- 메인 메뉴 -->
+                <div class="nav-section">
+                    <h3 class="nav-section-title">메뉴</h3>
+                    <a href="/blog.html" class="nav-item">
+                        <span class="nav-item-content">
+                            <span>🏠</span>
+                            <span>홈</span>
+                        </span>
+                    </a>
+                    <a href="/courses.html" class="nav-item active">
+                        <span class="nav-item-content">
+                            <span>📚</span>
+                            <span>강좌</span>
+                        </span>
+                    </a>
+                    <a href="#ai-news" class="nav-item">
+                        <span class="nav-item-content">
+                            <span>📰</span>
+                            <span>AI 뉴스</span>
+                        </span>
+                    </a>
+                    <a href="#community" class="nav-item">
+                        <span class="nav-item-content">
+                            <span>👥</span>
+                            <span>커뮤니티</span>
+                        </span>
+                    </a>
+                </div>
+                
+                <!-- 강좌 카테고리 -->
+                <div class="nav-section">
+                    <h3 class="nav-section-title">강좌 카테고리</h3>
+                    <a href="#productivity" class="nav-item">
+                        <span class="nav-item-content">
+                            <span>🎯</span>
+                            <span>생산성 도구</span>
+                        </span>
+                        <span class="nav-count">15</span>
+                    </a>
+                    <a href="#ai-tools" class="nav-item">
+                        <span class="nav-item-content">
+                            <span>🤖</span>
+                            <span>AI 도구 활용</span>
+                        </span>
+                        <span class="nav-count">23</span>
+                    </a>
+                    <a href="#programming" class="nav-item">
+                        <span class="nav-item-content">
+                            <span>💻</span>
+                            <span>프로그래밍</span>
+                        </span>
+                        <span class="nav-count">18</span>
+                    </a>
+                    <a href="#automation" class="nav-item">
+                        <span class="nav-item-content">
+                            <span>⚡</span>
+                            <span>자동화</span>
+                        </span>
+                        <span class="nav-count">12</span>
+                    </a>
+                </div>
+                
+                <!-- 정보 -->
+                <div class="nav-section">
+                    <h3 class="nav-section-title">정보</h3>
+                    <a href="/admin/dashboard.html" class="nav-item" style="color: var(--primary);">
+                        <span class="nav-item-content">
+                            <span>⚙️</span>
+                            <span>관리자</span>
+                        </span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- 메인 콘텐츠 -->
+        <main class="blog-main">
+            <!-- 헤더 -->
+            <header class="blog-header">
+                <div class="header-content">
+                    <h1 class="page-title">강좌</h1>
+                    <div class="search-box">
+                        <input type="text" placeholder="강좌 검색..." style="padding: 0.5rem 1rem; border: 1px solid #e5e7eb; border-radius: 0.375rem;">
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 강좌 히어로 -->
+            <section class="course-hero">
+                <h1>무료로 배우는 최신 기술 강좌</h1>
+                <p>AI, 생산성 도구, 프로그래밍까지 다양한 주제의 강좌를 만나보세요</p>
+            </section>
+            
+            <!-- 강좌 카테고리 -->
+            <section class="course-categories">
+                <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">강좌 카테고리</h2>
+                
+                <div class="categories-grid">
+                    <a href="#productivity" class="category-card">
+                        <div class="category-icon">🎯</div>
+                        <h3 class="category-title">생산성 도구</h3>
+                        <p class="category-description">노션, 옵시디언 등 생산성 도구 마스터하기</p>
+                        <div class="category-stats">
+                            <span class="category-stat">📚 15개 강좌</span>
+                            <span class="category-stat">👥 2.3K 수강생</span>
+                        </div>
+                    </a>
+                    
+                    <a href="#ai-tools" class="category-card">
+                        <div class="category-icon">🤖</div>
+                        <h3 class="category-title">AI 도구 활용</h3>
+                        <p class="category-description">ChatGPT, Claude, Midjourney 완벽 활용법</p>
+                        <div class="category-stats">
+                            <span class="category-stat">📚 23개 강좌</span>
+                            <span class="category-stat">👥 5.1K 수강생</span>
+                        </div>
+                    </a>
+                    
+                    <a href="#programming" class="category-card">
+                        <div class="category-icon">💻</div>
+                        <h3 class="category-title">프로그래밍</h3>
+                        <p class="category-description">Python, JavaScript 기초부터 실전까지</p>
+                        <div class="category-stats">
+                            <span class="category-stat">📚 18개 강좌</span>
+                            <span class="category-stat">👥 3.7K 수강생</span>
+                        </div>
+                    </a>
+                    
+                    <a href="#automation" class="category-card">
+                        <div class="category-icon">⚡</div>
+                        <h3 class="category-title">자동화</h3>
+                        <p class="category-description">업무 자동화로 생산성 10배 높이기</p>
+                        <div class="category-stats">
+                            <span class="category-stat">📚 12개 강좌</span>
+                            <span class="category-stat">👥 1.8K 수강생</span>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- 진행중인 강좌 -->
+                <div class="ongoing-courses">
+                    <div class="section-header">
+                        <h2 class="section-title">📖 진행 중인 강좌</h2>
+                        <a href="#" style="color: var(--primary); text-decoration: none; font-size: 0.875rem;">모두 보기 →</a>
+                    </div>
+                    
+                    <div class="course-list">
+                        <a href="/course/notion-1.html" class="course-item">
+                            <div class="course-thumbnail">📝</div>
+                            <div class="course-info">
+                                <div class="course-name">노션 마스터 클래스</div>
+                                <div class="course-progress">
+                                    <span>진행률 16%</span>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 16%;"></div>
+                                    </div>
+                                    <span>5/30강 완료</span>
+                                </div>
+                            </div>
+                            <div class="continue-btn">이어서 학습</div>
+                        </a>
+                        
+                        <a href="/course/obsidian-1.html" class="course-item">
+                            <div class="course-thumbnail">🗂️</div>
+                            <div class="course-info">
+                                <div class="course-name">옵시디언 마스터 클래스</div>
+                                <div class="course-progress">
+                                    <span>진행률 23%</span>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 23%;"></div>
+                                    </div>
+                                    <span>8/35강 완료</span>
+                                </div>
+                            </div>
+                            <div class="continue-btn">이어서 학습</div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 모든 강좌 -->
+            <section class="all-courses">
+                <div class="section-header">
+                    <h2 class="section-title">📚 모든 강좌</h2>
+                    <select style="padding: 0.5rem 1rem; border: 1px solid #e5e7eb; border-radius: 0.375rem;">
+                        <option>최신순</option>
+                        <option>인기순</option>
+                        <option>난이도순</option>
+                    </select>
+                </div>
+                
+                <div class="courses-grid">
+                    <!-- 노션 마스터 클래스 -->
+                    <div class="course-card" onclick="location.href='/course/notion-master.html'">
+                        <div class="course-banner" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            📝
+                        </div>
+                        <div class="course-content">
+                            <span class="course-category">생산성 도구</span>
+                            <h3 class="course-title">노션 마스터 클래스</h3>
+                            <p class="course-description">노션을 활용한 개인 지식 관리 시스템 구축부터 팀 협업까지</p>
+                            <div class="course-meta">
+                                <span class="course-lessons">📚 30개 강의</span>
+                                <div class="course-difficulty">
+                                    <span class="difficulty-dot active"></span>
+                                    <span class="difficulty-dot"></span>
+                                    <span class="difficulty-dot"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 옵시디언 마스터 클래스 -->
+                    <div class="course-card" onclick="location.href='/course/obsidian-master.html'">
+                        <div class="course-banner" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            🗂️
+                        </div>
+                        <div class="course-content">
+                            <span class="course-category">생산성 도구</span>
+                            <h3 class="course-title">옵시디언 마스터 클래스</h3>
+                            <p class="course-description">마크다운 기반 지식 관리와 제텔카스텐 방법론 완벽 마스터</p>
+                            <div class="course-meta">
+                                <span class="course-lessons">📚 35개 강의</span>
+                                <div class="course-difficulty">
+                                    <span class="difficulty-dot active"></span>
+                                    <span class="difficulty-dot active"></span>
+                                    <span class="difficulty-dot"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ChatGPT 프롬프트 엔지니어링 -->
+                    <div class="course-card" onclick="location.href='/course/chatgpt-prompt.html'">
+                        <div class="course-banner" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            💬
+                        </div>
+                        <div class="course-content">
+                            <span class="course-category">AI 도구 활용</span>
+                            <h3 class="course-title">ChatGPT 프롬프트 엔지니어링</h3>
+                            <p class="course-description">효과적인 프롬프트 작성법과 실무 활용 사례</p>
+                            <div class="course-meta">
+                                <span class="course-lessons">📚 20개 강의</span>
+                                <div class="course-difficulty">
+                                    <span class="difficulty-dot active"></span>
+                                    <span class="difficulty-dot"></span>
+                                    <span class="difficulty-dot"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Python 자동화 -->
+                    <div class="course-card" onclick="location.href='/course/python-automation.html'">
+                        <div class="course-banner" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                            🐍
+                        </div>
+                        <div class="course-content">
+                            <span class="course-category">프로그래밍</span>
+                            <h3 class="course-title">Python으로 업무 자동화하기</h3>
+                            <p class="course-description">엑셀, 이메일, 웹 크롤링 등 반복 업무 자동화</p>
+                            <div class="course-meta">
+                                <span class="course-lessons">📚 25개 강의</span>
+                                <div class="course-difficulty">
+                                    <span class="difficulty-dot active"></span>
+                                    <span class="difficulty-dot active"></span>
+                                    <span class="difficulty-dot"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Midjourney 마스터 -->
+                    <div class="course-card" onclick="location.href='/course/midjourney-master.html'">
+                        <div class="course-banner" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                            🎨
+                        </div>
+                        <div class="course-content">
+                            <span class="course-category">AI 도구 활용</span>
+                            <h3 class="course-title">Midjourney 아트워크 마스터</h3>
+                            <p class="course-description">AI로 만드는 놀라운 이미지, 프롬프트부터 스타일까지</p>
+                            <div class="course-meta">
+                                <span class="course-lessons">📚 18개 강의</span>
+                                <div class="course-difficulty">
+                                    <span class="difficulty-dot active"></span>
+                                    <span class="difficulty-dot"></span>
+                                    <span class="difficulty-dot"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Make.com 자동화 -->
+                    <div class="course-card" onclick="location.href='/course/make-automation.html'">
+                        <div class="course-banner" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+                            ⚡
+                        </div>
+                        <div class="course-content">
+                            <span class="course-category">자동화</span>
+                            <h3 class="course-title">Make.com으로 노코드 자동화</h3>
+                            <p class="course-description">코딩 없이 만드는 강력한 업무 자동화 시스템</p>
+                            <div class="course-meta">
+                                <span class="course-lessons">📚 22개 강의</span>
+                                <div class="course-difficulty">
+                                    <span class="difficulty-dot active"></span>
+                                    <span class="difficulty-dot"></span>
+                                    <span class="difficulty-dot"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script>
+        // 카테고리 필터링
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (this.getAttribute('href').startsWith('#')) {
+                    e.preventDefault();
+                    // 카테고리 필터링 로직
+                    const category = this.getAttribute('href').substring(1);
+                    filterCourses(category);
+                }
+            });
+        });
+        
+        function filterCourses(category) {
+            console.log('Filtering courses by:', category);
+            // 실제 필터링 구현
+        }
+        
+        // 검색 기능
+        document.querySelector('.search-box input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const searchTerm = this.value;
+                console.log('Searching for:', searchTerm);
+                // 검색 구현
+            }
+        });
+    </script>
+</body>
+</html>
