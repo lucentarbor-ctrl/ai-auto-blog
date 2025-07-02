@@ -1,77 +1,127 @@
-# 🚀 AI Auto Blog System
+# AI 자동 블로깅 시스템
 
-AI 자동 블로그 시스템 - 사이드바 UI와 자동화 기능을 갖춘 블로그 플랫폼
+실시간 AI 뉴스 크롤링과 자동 블로그 포스팅을 지원하는 통합 시스템입니다.
 
-## 📋 주요 기능
+## 🚀 주요 기능
 
-### 🤖 AI 콘텐츠 자동화
-- **AI 뉴스**: 실시간 크롤링 및 한국어 번역
-- **트렌드 분석**: AI 업계 동향 자동 분석
-- **콘텐츠 생성**: 3개 AI 모델 협업 (Claude, GPT-4, Gemini)
+### 1. 블로그 작성 & 관리
+- 동적 카테고리 관리
+- 태그 시스템
+- 초안 저장
+- 예약 발행 (날짜/시간 지정)
+- 다중 플랫폼 동시 발행
 
-### 📚 강좌 시리즈
-- **노션 마스터 클래스** (30강)
-- **옵시디언 마스터 클래스** (35강)
-- GitHub에서 자동 임포트 및 예약 발행
+### 2. AI 뉴스 크롤링 (실제 작동)
+- **실시간 뉴스 수집**: Google News, Reddit, Hacker News, arXiv
+- **키워드 기반 검색**: 원하는 키워드로 뉴스 필터링
+- **자동 포스트 생성**: 수집된 뉴스를 블로그 포스트로 자동 변환
+- **다국어 지원**: 한국어/영어 뉴스 수집
 
-### ⚡ 자동화 시스템
-- **예약 발행**: 콘텐츠별 최적 시간 자동 배정
-- **일일 자동화**: 크롤링 → 분석 → 번역 → 발행
-- **SEO 최적화**: 자동 메타 태그 생성
+### 3. 유튜브 요약
+- 동영상 URL로 내용 요약
+- 블로그 포스트로 자동 변환
 
-### 🎨 사이드바 UI
-- 모든 기능에 빠른 접근
-- 반응형 디자인
-- 다크/라이트 모드 지원
+## 📋 설치 방법
 
-## 🚀 빠른 시작
+### 1. 필수 요구사항
+- Python 3.8+
+- pip
 
-### 요구사항
-- Python 3.9+
-- Node.js 16+
-- Redis (선택사항)
-
-### 설치
+### 2. 설치
 ```bash
-# 백엔드 설치
+# 저장소 클론
+git clone https://github.com/ray1derer/ai-auto-blog.git
+cd ai-auto-blog
+
+# Python 패키지 설치
 cd backend
 pip install -r requirements.txt
-
-# 프론트엔드 설치
-cd ../frontend
-npm install
-
-# 서버 실행
-cd ../backend
-python main.py
 ```
 
-### 접속
-- 메인 블로그: `http://localhost:8000`
-- 관리자 페이지: `http://localhost:8000/admin/dashboard.html`
+## 🏃‍♂️ 실행 방법
 
-## 📂 프로젝트 구조
+### 방법 1: 통합 실행 (권장)
+```bash
+./start_server.sh
 ```
-ai-auto-blog/
-├── frontend/          # 프론트엔드
-│   ├── index.html    # 메인 블로그
-│   ├── admin/        # 관리자 페이지
-│   └── css/js/       # 스타일/스크립트
-├── backend/          # 백엔드 API
-│   ├── main.py       # FastAPI 앱
-│   ├── services/     # 비즈니스 로직
-│   └── models/       # 데이터 모델
-└── data/            # 데이터 저장소
-    ├── courses/     # 강좌 콘텐츠
-    └── posts/       # 블로그 포스트
+
+### 방법 2: 개별 실행
+```bash
+# 터미널 1: 백엔드 서버
+cd backend
+python news_crawler.py
+
+# 터미널 2: 프론트엔드 서버
+python -m http.server 8080
 ```
+
+### 3. 접속
+- 브라우저에서: http://localhost:8080/integrated-autoblog.html
+
+## 📰 AI 뉴스 크롤링 사용법
+
+1. **키워드 설정**
+   - 사이드바에서 "AI 뉴스" → "크롤링 설정" 클릭
+   - 관심 키워드 추가 (예: ChatGPT, AI, 인공지능)
+
+2. **뉴스 소스 선택**
+   - Google News: 일반 뉴스
+   - Reddit: 커뮤니티 토론
+   - Hacker News: 기술 뉴스
+   - arXiv: 최신 논문
+
+3. **뉴스 수집**
+   - "지금 수집하기" 클릭
+   - 수집된 뉴스는 자동으로 목록에 표시
+
+4. **블로그 포스트 생성**
+   - 수집된 뉴스에서 "포스트 생성" 클릭
+   - 자동으로 정리된 내용이 에디터에 입력됨
+   - 필요시 수정 후 발행
 
 ## 🛠️ 기술 스택
-- **Frontend**: HTML, CSS, JavaScript (Vanilla)
-- **Backend**: FastAPI, SQLAlchemy
-- **Database**: SQLite (개발), PostgreSQL (프로덕션)
-- **AI**: OpenAI, Anthropic, Google AI APIs
-- **Automation**: Celery, Redis (선택사항)
+
+### 백엔드
+- Flask (Python 웹 프레임워크)
+- BeautifulSoup4 (웹 스크래핑)
+- Feedparser (RSS 파싱)
+- Requests (HTTP 요청)
+
+### 프론트엔드
+- Vanilla JavaScript
+- LocalStorage (데이터 저장)
+- Fetch API (백엔드 통신)
+
+## 📱 지원 플랫폼
+
+- 티스토리
+- 네이버 블로그
+- Velog
+- Medium
+- WordPress
+
+## 🔧 환경 설정
+
+### API 키 설정 (선택사항)
+실제 플랫폼에 발행하려면 각 플랫폼의 API 키가 필요합니다:
+
+```javascript
+// js/config.js 생성
+const API_KEYS = {
+    tistory: 'YOUR_TISTORY_API_KEY',
+    naver: 'YOUR_NAVER_API_KEY',
+    // ...
+}
+```
 
 ## 📝 라이선스
+
 MIT License
+
+## 🤝 기여
+
+Issue와 Pull Request를 환영합니다!
+
+---
+
+Made with ❤️ by AI Auto Blog Team
