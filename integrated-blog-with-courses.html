@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 블로그 & 강좌 통합 시스템</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <style>
+        /* 강좌 관련 추가 스타일 */
+        .course-section {
+            background: #1a252f;
+            margin: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .course-header {
+            padding: 15px 20px;
+            background: #34495e;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.3s;
+        }
+        
+        .course-header:hover {
+            background: #3e4e61;
+        }
+        
+        .course-header i {
+            font-size: 20px;
+        }
+        
+        .course-info {
+            flex: 1;
+        }
+        
+        .course-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .course-subtitle {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .course-lessons {
+            display: none;
+            background: rgba(0,0,0,0.3);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .course-section.active .course-lessons {
+            display: block;
+        }
+        
+        .lesson-item {
+            display: block;
+            padding: 10px 20px 10px 40px;
+            color: #ecf0f1;
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .lesson-item:hover {
+            background: rgba(255,255,255,0.1);
+            border-left-color: #3498db;
+            padding-left: 45px;
+        }
+        
+        .lesson-number {
+            display: inline-block;
+            width: 30px;
+            color: #3498db;
+            font-weight: 600;
+        }
+        
+        /* 강좌 뷰어 스타일 */
+        .course-viewer {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            overflow: hidden;
+            height: calc(100vh - 40px);
+        }
+        
+        .course-viewer iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .viewer-header {
+            background: #34495e;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .viewer-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+        
+        .viewer-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .viewer-controls button {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .viewer-controls button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        /* 강좌 섹션 구분선 */
+        .courses-divider {
+            margin: 20px 10px 10px;
+            padding: 10px 20px;
+            text-align: center;
+            color: #95a5a6;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-top: 1px solid #34495e;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 사이드바 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-robot"></i> AI 블로그 허브</h2>
+                <p class="subtitle">블로깅 & 강좌 통합 시스템</p>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <!-- 블로그 관리 섹션 -->
+                <div class="nav-section active">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-blog"></i>
+                        <span>블로그 관리</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('write')"><i class="fas fa-pen"></i> 새 글 작성</a></li>
+                        <li><a href="#" onclick="showTab('posts')"><i class="fas fa-list"></i> 글 목록</a></li>
+                        <li><a href="#" onclick="showTab('categories')"><i class="fas fa-folder"></i> 카테고리</a></li>
+                    </ul>
+                </div>
+                
+                <!-- AI 뉴스 섹션 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-newspaper"></i>
+                        <span>AI 뉴스</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('news-crawl')"><i class="fas fa-spider"></i> 크롤링 설정</a></li>
+                        <li><a href="#" onclick="showTab('news-list')"><i class="fas fa-list-alt"></i> 수집된 뉴스</a></li>
+                    </ul>
+                </div>
+                
+                <!-- 강좌 구분선 -->
+                <div class="courses-divider">
+                    <i class="fas fa-graduation-cap"></i> 온라인 강좌
+                </div>
+                
+                <!-- 노션 마스터 클래스 -->
+                <div class="course-section">
+                    <div class="course-header" onclick="toggleCourse(this)">
+                        <i class="fas fa-sticky-note" style="color: #000;"></i>
+                        <div class="course-info">
+                            <div class="course-title">노션 마스터 클래스</div>
+                            <div class="course-subtitle">30개 강좌 • 5개 모듈</div>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="course-lessons">
+                        <a href="#" class="lesson-item" onclick="openCourse('notion', 1)">
+                            <span class="lesson-number">01</span> 나의 첫 페이지
+                        </a>
+                        <a href="#" class="lesson-item" onclick="openCourse('notion', 2)">
+                            <span class="lesson-number">02</span> 기본 블록 마스터하기
+                        </a>
+                        <a href="#" class="lesson-item" onclick="openCourse('notion', 3)">
+                            <span class="lesson-number">03</span> 페이지 운영
+                        </a>
+                        <a href="#" class="lesson-item" onclick="openCourse('notion', 4)">
+                            <span class="lesson-number">04</span> 강조의 기술
+                        </a>
+                        <a href="#" class="lesson-item" onclick="openCourse('notion', 5)">
+                            <span class="lesson-number">05</span> 단축키와 마크다운
+                        </a>
+                        <a href="#" class="lesson-item" onclick="showAllLessons('notion')">
+                            <i class="fas fa-plus-circle"></i> 모든 강좌 보기
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 옵시디언 마스터 클래스 -->
+                <div class="course-section">
+                    <div class="course-header" onclick="toggleCourse(this)">
+                        <i class="fas fa-gem" style="color: #7c3aed;"></i>
+                        <div class="course-info">
+                            <div class="course-title">옵시디언 마스터 클래스</div>
+                            <div class="course-subtitle">35개 강좌 • 체계적 커리큘럼</div>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="course-lessons">
+                        <a href="#" class="lesson-item" onclick="openCourse('obsidian', 1)">
+                            <span class="lesson-number">01</span> 옵시디언 첫걸음
+                        </a>
+                        <a href="#" class="lesson-item" onclick="openCourse('obsidian', 2)">
+                            <span class="lesson-number">02</span> 볼트(Vault)의 이해
+                        </a>
+                        <a href="#" class="lesson-item" onclick="openCourse('obsidian', 3)">
+                            <span class="lesson-number">03</span> 기본 노트 작성
+                        </a>
+                        <a href="#" class="lesson-item" onclick="openCourse('obsidian', 4)">
+                            <span class="lesson-number">04</span> 내부 링크의 마법
+                        </a>
+                        <a href="#" class="lesson-item" onclick="openCourse('obsidian', 5)">
+                            <span class="lesson-number">05</span> 태그와 속성
+                        </a>
+                        <a href="#" class="lesson-item" onclick="showAllLessons('obsidian')">
+                            <i class="fas fa-plus-circle"></i> 모든 강좌 보기
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Evoto 마스터 클래스 -->
+                <div class="course-section">
+                    <div class="course-header" onclick="toggleCourse(this)">
+                        <i class="fas fa-camera" style="color: #ff6b6b;"></i>
+                        <div class="course-info">
+                            <div class="course-title">Evoto 마스터 클래스</div>
+                            <div class="course-subtitle">40개 강좌 • AI 사진 편집</div>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="course-lessons">
+                        <a href="#" class="lesson-item" onclick="openCourse('evoto', 1)">
+                            <span class="lesson-number">01</span> Evoto 시작하기
+                        </a>
+                        <a href="#" class="lesson-item" onclick="openCourse('evoto', 2)">
+                            <span class="lesson-number">02</span> 인터페이스 둘러보기
+                        </a>
+                        <a href="#" class="lesson-item" onclick="openCourse('evoto', 3)">
+                            <span class="lesson-number">03</span> 첫 번째 편집
+                        </a>
+                        <a href="#" class="lesson-item" onclick="openCourse('evoto', 4)">
+                            <span class="lesson-number">04</span> AI 도구 이해하기
+                        </a>
+                        <a href="#" class="lesson-item" onclick="openCourse('evoto', 5)">
+                            <span class="lesson-number">05</span> 워크플로우 설정
+                        </a>
+                        <a href="#" class="lesson-item" onclick="showAllLessons('evoto')">
+                            <i class="fas fa-plus-circle"></i> 모든 강좌 보기
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Claude 마스터 클래스 -->
+                <div class="course-section">
+                    <div class="course-header" onclick="toggleCourse(this)">
+                        <i class="fas fa-brain" style="color: #FF9933;"></i>
+                        <div class="course-info">
+                            <div class="course-title">Claude AI 마스터 클래스</div>
+                            <div class="course-subtitle">준비 중</div>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="course-lessons">
+                        <a href="#" class="lesson-item">
+                            <i class="fas fa-hourglass-half"></i> 곧 공개됩니다
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- 메인 컨텐츠 영역 -->
+        <main class="content-area">
+            <!-- 글 작성 패널 -->
+            <div id="write-panel" class="content-panel active">
+                <div class="panel-header">
+                    <h2>새 글 작성</h2>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" onclick="saveDraft()">
+                            <i class="fas fa-save"></i> 임시저장
+                        </button>
+                        <button class="btn btn-primary" onclick="showPublishModal()">
+                            <i class="fas fa-paper-plane"></i> 발행하기
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="panel-content">
+                    <div class="form-group">
+                        <label for="postTitle">제목</label>
+                        <input type="text" id="postTitle" class="form-control" placeholder="포스트 제목을 입력하세요">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="postCategory">카테고리</label>
+                            <select id="postCategory" class="form-control">
+                                <option value="">카테고리 선택</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="postTags">태그</label>
+                            <input type="text" id="postTags" class="form-control" placeholder="쉼표로 구분">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="postContent">내용</label>
+                        <textarea id="postContent" class="form-control content-editor"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 강좌 뷰어 패널 -->
+            <div id="course-viewer-panel" class="content-panel">
+                <div class="course-viewer">
+                    <div class="viewer-header">
+                        <h3 id="courseTitle">강좌 제목</h3>
+                        <div class="viewer-controls">
+                            <button onclick="previousLesson()">
+                                <i class="fas fa-chevron-left"></i> 이전
+                            </button>
+                            <button onclick="nextLesson()">
+                                다음 <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <button onclick="closeCourse()">
+                                <i class="fas fa-times"></i> 닫기
+                            </button>
+                        </div>
+                    </div>
+                    <iframe id="courseFrame" src=""></iframe>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/category-manager.js"></script>
+    <script src="js/post-manager.js"></script>
+    <script src="js/news-api.js"></script>
+    
+    <script>
+        // 강좌 관련 함수들
+        let currentCourse = null;
+        let currentLesson = null;
+        
+        function toggleCourse(element) {
+            const courseSection = element.parentElement;
+            courseSection.classList.toggle('active');
+            
+            const icon = element.querySelector('i:last-child');
+            icon.style.transform = courseSection.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
+        }
+        
+        function openCourse(courseName, lessonNumber) {
+            currentCourse = courseName;
+            currentLesson = lessonNumber;
+            
+            const courseFrame = document.getElementById('courseFrame');
+            const courseTitle = document.getElementById('courseTitle');
+            
+            // 강좌별 경로 설정
+            const coursePaths = {
+                'notion': '../notion-course/lesson',
+                'obsidian': '../obsidian_course/lesson',
+                'evoto': '../evoto-master-class/lesson'
+            };
+            
+            const courseTitles = {
+                'notion': '노션 마스터 클래스',
+                'obsidian': '옵시디언 마스터 클래스',
+                'evoto': 'Evoto 마스터 클래스'
+            };
+            
+            // 레슨 번호 포맷팅
+            const lessonStr = lessonNumber.toString().padStart(2, '0');
+            const lessonPath = `${coursePaths[courseName]}${lessonStr}.html`;
+            
+            // 강좌 로드
+            courseFrame.src = lessonPath;
+            courseTitle.textContent = `${courseTitles[courseName]} - 제${lessonNumber}강`;
+            
+            // 패널 전환
+            showTab('course-viewer');
+        }
+        
+        function closeCourse() {
+            document.getElementById('courseFrame').src = '';
+            showTab('write');
+        }
+        
+        function previousLesson() {
+            if (currentLesson > 1) {
+                openCourse(currentCourse, currentLesson - 1);
+            }
+        }
+        
+        function nextLesson() {
+            const maxLessons = {
+                'notion': 30,
+                'obsidian': 35,
+                'evoto': 40
+            };
+            
+            if (currentLesson < maxLessons[currentCourse]) {
+                openCourse(currentCourse, currentLesson + 1);
+            }
+        }
+        
+        function showAllLessons(courseName) {
+            alert(`${courseName} 전체 강좌 목록을 보여주는 기능은 준비 중입니다.`);
+        }
+        
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            // 기본 카테고리 추가
+            const categories = [
+                { id: 'tech', name: '기술', count: 0 },
+                { id: 'ai', name: 'AI & 머신러닝', count: 0 },
+                { id: 'productivity', name: '생산성', count: 0 },
+                { id: 'course-review', name: '강좌 리뷰', count: 0 }
+            ];
+            
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                document.getElementById('postCategory').appendChild(option);
+            });
+        });
+    </script>
+</body>
+</html>

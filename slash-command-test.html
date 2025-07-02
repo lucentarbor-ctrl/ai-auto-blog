@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>슬래시 명령어 시스템 테스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .editor {
+            min-height: 400px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+            position: relative;
+            overflow-y: auto;
+        }
+        
+        .editor:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        /* 슬래시 명령어 팝업 */
+        .slash-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 8px;
+            display: none;
+            z-index: 1000;
+            min-width: 250px;
+        }
+        
+        .slash-menu.show {
+            display: block;
+        }
+        
+        .slash-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.2s;
+        }
+        
+        .slash-item:hover,
+        .slash-item.selected {
+            background: #f0f0f0;
+        }
+        
+        .slash-item-icon {
+            width: 32px;
+            height: 32px;
+            background: #3498db;
+            color: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .slash-item-content h4 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .slash-item-content p {
+            margin: 0;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* AI 제안 패널 */
+        .ai-suggestion-panel {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 300px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 20px;
+            display: none;
+        }
+        
+        .ai-suggestion-panel.show {
+            display: block;
+        }
+        
+        .ai-suggestion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .ai-suggestion-header h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .suggestion-item {
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .suggestion-item:hover {
+            background: #e9ecef;
+            transform: translateX(-2px);
+        }
+        
+        .suggestion-item h4 {
+            margin: 0 0 4px 0;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .suggestion-item p {
+            margin: 0;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 로딩 애니메이션 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 플로팅 툴바 */
+        .floating-toolbar {
+            position: absolute;
+            background: #333;
+            color: white;
+            border-radius: 6px;
+            padding: 4px;
+            display: none;
+            gap: 4px;
+            z-index: 1001;
+        }
+        
+        .floating-toolbar.show {
+            display: flex;
+        }
+        
+        .toolbar-btn {
+            background: none;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        
+        .toolbar-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI 글쓰기 도우미 - 슬래시 명령어 테스트</h1>
+        
+        <div class="editor" contenteditable="true" id="editor">
+            <p>여기에 글을 작성하세요. '/'를 입력하면 AI 명령어 메뉴가 나타납니다.</p>
+            <p>텍스트를 드래그하면 AI 옵션이 표시됩니다.</p>
+        </div>
+        
+        <!-- 슬래시 명령어 메뉴 -->
+        <div class="slash-menu" id="slashMenu">
+            <div class="slash-item" data-command="title">
+                <div class="slash-item-icon">📝</div>
+                <div class="slash-item-content">
+                    <h4>제목 생성</h4>
+                    <p>SEO 최적화된 제목 5개 추천</p>
+                </div>
+            </div>
+            <div class="slash-item" data-command="expand">
+                <div class="slash-item-icon">➕</div>
+                <div class="slash-item-content">
+                    <h4>문단 확장</h4>
+                    <p>선택한 문단을 더 자세히 설명</p>
+                </div>
+            </div>
+            <div class="slash-item" data-command="summarize">
+                <div class="slash-item-icon">📄</div>
+                <div class="slash-item-content">
+                    <h4>요약하기</h4>
+                    <p>긴 내용을 간단히 정리</p>
+                </div>
+            </div>
+            <div class="slash-item" data-command="tone">
+                <div class="slash-item-icon">🎭</div>
+                <div class="slash-item-content">
+                    <h4>톤 변경</h4>
+                    <p>문체를 다른 스타일로 변환</p>
+                </div>
+            </div>
+            <div class="slash-item" data-command="image">
+                <div class="slash-item-icon">🖼️</div>
+                <div class="slash-item-content">
+                    <h4>이미지 생성</h4>
+                    <p>AI로 관련 이미지 만들기</p>
+                </div>
+            </div>
+            <div class="slash-item" data-command="seo">
+                <div class="slash-item-icon">🔍</div>
+                <div class="slash-item-content">
+                    <h4>SEO 분석</h4>
+                    <p>검색 최적화 점수 확인</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 플로팅 툴바 -->
+        <div class="floating-toolbar" id="floatingToolbar">
+            <button class="toolbar-btn" onclick="handleFloatingCommand('expand')">확장</button>
+            <button class="toolbar-btn" onclick="handleFloatingCommand('summarize')">요약</button>
+            <button class="toolbar-btn" onclick="handleFloatingCommand('tone')">톤 변경</button>
+            <button class="toolbar-btn" onclick="handleFloatingCommand('translate')">번역</button>
+        </div>
+        
+        <!-- AI 제안 패널 -->
+        <div class="ai-suggestion-panel" id="aiPanel">
+            <div class="ai-suggestion-header">
+                <h3>AI 제안</h3>
+                <button class="close-btn" onclick="closeAIPanel()">×</button>
+            </div>
+            <div id="aiPanelContent">
+                <!-- AI 제안 내용이 여기에 표시됩니다 -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const editor = document.getElementById('editor');
+        const slashMenu = document.getElementById('slashMenu');
+        const floatingToolbar = document.getElementById('floatingToolbar');
+        const aiPanel = document.getElementById('aiPanel');
+        const aiPanelContent = document.getElementById('aiPanelContent');
+        
+        let selectedIndex = 0;
+        let slashPosition = null;
+        let currentSelection = null;
+        
+        // 에디터 이벤트 리스너
+        editor.addEventListener('input', handleInput);
+        editor.addEventListener('keydown', handleKeyDown);
+        editor.addEventListener('mouseup', handleSelection);
+        document.addEventListener('click', handleDocumentClick);
+        
+        // 슬래시 명령어 처리
+        function handleInput(e) {
+            const selection = window.getSelection();
+            const range = selection.getRangeAt(0);
+            const textBeforeCursor = range.startContainer.textContent.substring(0, range.startOffset);
+            
+            if (textBeforeCursor.endsWith('/')) {
+                showSlashMenu(range);
+            } else {
+                hideSlashMenu();
+            }
+        }
+        
+        // 키보드 네비게이션
+        function handleKeyDown(e) {
+            if (slashMenu.classList.contains('show')) {
+                const items = slashMenu.querySelectorAll('.slash-item');
+                
+                switch(e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        selectedIndex = (selectedIndex + 1) % items.length;
+                        updateSelection(items);
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+                        updateSelection(items);
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        const selectedItem = items[selectedIndex];
+                        executeCommand(selectedItem.dataset.command);
+                        break;
+                    case 'Escape':
+                        hideSlashMenu();
+                        break;
+                }
+            }
+        }
+        
+        // 선택 업데이트
+        function updateSelection(items) {
+            items.forEach((item, index) => {
+                item.classList.toggle('selected', index === selectedIndex);
+            });
+        }
+        
+        // 슬래시 메뉴 표시
+        function showSlashMenu(range) {
+            const rect = range.getBoundingClientRect();
+            slashMenu.style.left = rect.left + 'px';
+            slashMenu.style.top = (rect.bottom + 5) + 'px';
+            slashMenu.classList.add('show');
+            
+            slashPosition = range.cloneRange();
+            selectedIndex = 0;
+            updateSelection(slashMenu.querySelectorAll('.slash-item'));
+        }
+        
+        // 슬래시 메뉴 숨기기
+        function hideSlashMenu() {
+            slashMenu.classList.remove('show');
+            slashPosition = null;
+        }
+        
+        // 명령어 실행
+        function executeCommand(command) {
+            // 슬래시 문자 제거
+            if (slashPosition) {
+                const range = slashPosition;
+                range.setStart(range.startContainer, range.startOffset - 1);
+                range.deleteContents();
+            }
+            
+            hideSlashMenu();
+            
+            // AI 패널에 결과 표시
+            showAIPanel();
+            aiPanelContent.innerHTML = '<div class="loading"></div> AI가 작업 중입니다...';
+            
+            // 실제 API 호출 시뮬레이션
+            setTimeout(() => {
+                displayAIResult(command);
+            }, 1000);
+        }
+        
+        // 텍스트 선택 처리
+        function handleSelection() {
+            const selection = window.getSelection();
+            const selectedText = selection.toString().trim();
+            
+            if (selectedText.length > 0) {
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                
+                floatingToolbar.style.left = rect.left + 'px';
+                floatingToolbar.style.top = (rect.top - 40) + 'px';
+                floatingToolbar.classList.add('show');
+                
+                currentSelection = selectedText;
+            } else {
+                floatingToolbar.classList.remove('show');
+            }
+        }
+        
+        // 플로팅 명령어 처리
+        function handleFloatingCommand(command) {
+            floatingToolbar.classList.remove('show');
+            showAIPanel();
+            aiPanelContent.innerHTML = '<div class="loading"></div> AI가 작업 중입니다...';
+            
+            setTimeout(() => {
+                displayAIResult(command, currentSelection);
+            }, 1000);
+        }
+        
+        // AI 패널 표시
+        function showAIPanel() {
+            aiPanel.classList.add('show');
+        }
+        
+        // AI 패널 닫기
+        function closeAIPanel() {
+            aiPanel.classList.remove('show');
+        }
+        
+        // AI 결과 표시 (시뮬레이션)
+        function displayAIResult(command, selectedText = '') {
+            let content = '';
+            
+            switch(command) {
+                case 'title':
+                    content = `
+                        <h4>추천 제목</h4>
+                        <div class="suggestion-item">
+                            <h4>AI 시대의 블로깅: 창의성을 높이는 5가지 방법</h4>
+                            <p>SEO 점수: 92/100</p>
+                        </div>
+                        <div class="suggestion-item">
+                            <h4>블로거를 위한 AI 도구 완벽 가이드</h4>
+                            <p>SEO 점수: 89/100</p>
+                        </div>
+                        <div class="suggestion-item">
+                            <h4>2025년 AI 블로깅 트렌드와 전망</h4>
+                            <p>SEO 점수: 87/100</p>
+                        </div>
+                        <div class="suggestion-item">
+                            <h4>AI와 함께하는 효율적인 콘텐츠 제작법</h4>
+                            <p>SEO 점수: 85/100</p>
+                        </div>
+                        <div class="suggestion-item">
+                            <h4>개인 블로거가 알아야 할 AI 활용 팁</h4>
+                            <p>SEO 점수: 83/100</p>
+                        </div>
+                    `;
+                    break;
+                case 'expand':
+                    content = `
+                        <h4>문단 확장</h4>
+                        <div class="suggestion-item">
+                            <p>선택한 텍스트: "${selectedText || '...'}"</p>
+                            <p>이 내용을 더 자세히 설명하면...</p>
+                        </div>
+                    `;
+                    break;
+                case 'tone':
+                    content = `
+                        <h4>톤 변경 옵션</h4>
+                        <div class="suggestion-item">
+                            <h4>👔 전문적인 톤</h4>
+                            <p>비즈니스에 적합한 격식 있는 문체</p>
+                        </div>
+                        <div class="suggestion-item">
+                            <h4>😊 친근한 톤</h4>
+                            <p>독자와 가까워지는 편안한 문체</p>
+                        </div>
+                        <div class="suggestion-item">
+                            <h4>🎨 창의적인 톤</h4>
+                            <p>독특하고 재미있는 표현</p>
+                        </div>
+                    `;
+                    break;
+                case 'seo':
+                    content = `
+                        <h4>SEO 분석 결과</h4>
+                        <div class="suggestion-item">
+                            <h4>전체 점수: 78/100</h4>
+                            <p>✅ 키워드 밀도: 적절함</p>
+                            <p>⚠️ 제목 최적화 필요</p>
+                            <p>❌ 메타 설명 없음</p>
+                        </div>
+                    `;
+                    break;
+                default:
+                    content = '<p>기능을 준비 중입니다...</p>';
+            }
+            
+            aiPanelContent.innerHTML = content;
+        }
+        
+        // 문서 클릭 처리
+        function handleDocumentClick(e) {
+            if (!slashMenu.contains(e.target) && !editor.contains(e.target)) {
+                hideSlashMenu();
+            }
+            if (!floatingToolbar.contains(e.target)) {
+                floatingToolbar.classList.remove('show');
+            }
+        }
+        
+        // 슬래시 아이템 클릭 처리
+        document.querySelectorAll('.slash-item').forEach(item => {
+            item.addEventListener('click', () => {
+                executeCommand(item.dataset.command);
+            });
+        });
+    </script>
+</body>
+</html>

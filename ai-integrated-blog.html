@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 블로그 - 스마트 글쓰기 도우미</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <style>
+        /* AI 글쓰기 특별 스타일 */
+        .editor-with-ai {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        .ai-toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .ai-btn {
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+        
+        .ai-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .ai-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 6px 12px;
+            background: #2ecc71;
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .ai-indicator.active {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+        
+        #postContent {
+            min-height: 400px;
+            padding: 15px;
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            line-height: 1.8;
+            outline: none;
+        }
+        
+        #postContent:focus {
+            border-color: #3498db;
+        }
+        
+        #postContent[contenteditable="true"]:empty:before {
+            content: "내용을 입력하세요. '/'를 입력하면 AI 도우미가 나타납니다.";
+            color: #999;
+        }
+        
+        /* 톤 일관성 표시 */
+        .tone-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tone-score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2ecc71;
+        }
+        
+        .tone-label {
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 사이드바 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-robot"></i> AI 스마트 블로그</h2>
+                <p class="subtitle">AI가 도와주는 글쓰기</p>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <!-- 대시보드 -->
+                <div class="nav-section active">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-home"></i>
+                        <span>대시보드</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('dashboard')"><i class="fas fa-chart-line"></i> 통계</a></li>
+                        <li><a href="#" onclick="showTab('ai-insights')"><i class="fas fa-brain"></i> AI 인사이트</a></li>
+                    </ul>
+                </div>
+                
+                <!-- AI 글쓰기 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-magic"></i>
+                        <span>AI 글쓰기</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('write')"><i class="fas fa-pen"></i> 새 글 작성</a></li>
+                        <li><a href="#" onclick="showTab('ideas')"><i class="fas fa-lightbulb"></i> 아이디어 뱅크</a></li>
+                        <li><a href="#" onclick="showTab('templates')"><i class="fas fa-file-alt"></i> 템플릿</a></li>
+                        <li><a href="#" onclick="showTab('tone-settings')"><i class="fas fa-sliders-h"></i> 톤 설정</a></li>
+                    </ul>
+                </div>
+                
+                <!-- 콘텐츠 관리 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-folder"></i>
+                        <span>콘텐츠 관리</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('posts')"><i class="fas fa-list"></i> 글 목록</a></li>
+                        <li><a href="#" onclick="showTab('drafts')"><i class="fas fa-file"></i> 임시저장</a></li>
+                        <li><a href="#" onclick="showTab('schedule')"><i class="fas fa-calendar"></i> 예약 발행</a></li>
+                        <li><a href="#" onclick="showTab('categories')"><i class="fas fa-tags"></i> 카테고리</a></li>
+                    </ul>
+                </div>
+                
+                <!-- AI 뉴스 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-newspaper"></i>
+                        <span>AI 뉴스</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('news-crawl')"><i class="fas fa-spider"></i> 크롤링 설정</a></li>
+                        <li><a href="#" onclick="showTab('news-list')"><i class="fas fa-list-alt"></i> 수집된 뉴스</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- 메인 컨텐츠 영역 -->
+        <main class="content-area">
+            <!-- AI 글쓰기 패널 -->
+            <div id="write-panel" class="content-panel active">
+                <div class="editor-with-ai">
+                    <div class="ai-indicator">
+                        <i class="fas fa-circle"></i> AI 도우미 활성화
+                    </div>
+                    
+                    <div class="panel-header">
+                        <h2>AI와 함께 글쓰기</h2>
+                    </div>
+                    
+                    <!-- AI 빠른 도구 -->
+                    <div class="ai-toolbar">
+                        <button class="ai-btn" onclick="aiQuickAction('title')">
+                            <i class="fas fa-heading"></i> 제목 추천
+                        </button>
+                        <button class="ai-btn" onclick="aiQuickAction('outline')">
+                            <i class="fas fa-list-ol"></i> 개요 생성
+                        </button>
+                        <button class="ai-btn" onclick="aiQuickAction('intro')">
+                            <i class="fas fa-play"></i> 서론 작성
+                        </button>
+                        <button class="ai-btn" onclick="aiQuickAction('seo')">
+                            <i class="fas fa-search"></i> SEO 체크
+                        </button>
+                        <button class="ai-btn" onclick="aiQuickAction('image')">
+                            <i class="fas fa-image"></i> 이미지 생성
+                        </button>
+                    </div>
+                    
+                    <div class="panel-content">
+                        <div class="form-group">
+                            <label for="postTitle">제목</label>
+                            <input type="text" id="postTitle" class="form-control" placeholder="포스트 제목을 입력하세요">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="postCategory">카테고리</label>
+                                <select id="postCategory" class="form-control">
+                                    <option value="">카테고리 선택</option>
+                                    <option value="tech">기술</option>
+                                    <option value="life">라이프</option>
+                                    <option value="ai">AI & 머신러닝</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="postTags">태그</label>
+                                <input type="text" id="postTags" class="form-control" placeholder="AI가 추천해드립니다">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="postContent">내용</label>
+                            <div id="postContent" contenteditable="true"></div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button class="btn btn-secondary" onclick="saveDraft()">
+                                <i class="fas fa-save"></i> 임시저장
+                            </button>
+                            <button class="btn btn-primary" onclick="publishPost()">
+                                <i class="fas fa-paper-plane"></i> 발행하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 아이디어 뱅크 패널 -->
+            <div id="ideas-panel" class="content-panel">
+                <div class="panel-header">
+                    <h2>아이디어 뱅크</h2>
+                    <button class="btn btn-primary" onclick="addNewIdea()">
+                        <i class="fas fa-plus"></i> 새 아이디어
+                    </button>
+                </div>
+                
+                <div class="panel-content">
+                    <div class="ideas-grid">
+                        <div class="idea-card">
+                            <h4>AI 시대의 창의성</h4>
+                            <p>AI가 창의성을 대체할까, 증폭시킬까?</p>
+                            <div class="idea-meta">
+                                <span><i class="fas fa-star"></i> 높음</span>
+                                <span><i class="fas fa-calendar"></i> 2일 전</span>
+                            </div>
+                            <button class="btn btn-sm" onclick="developIdea(this)">
+                                <i class="fas fa-magic"></i> AI로 발전시키기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- 톤 일관성 표시 -->
+    <div class="tone-indicator">
+        <i class="fas fa-chart-line"></i>
+        <div>
+            <div class="tone-score">92%</div>
+            <div class="tone-label">톤 일관성</div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/category-manager.js"></script>
+    <script src="js/post-manager.js"></script>
+    <script src="js/news-api.js"></script>
+    <script src="js/ai-writer.js"></script>
+    
+    <script>
+        // AI 글쓰기 도우미 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            const contentEditor = document.getElementById('postContent');
+            if (contentEditor) {
+                // AI Writer 통합
+                aiWriter.integrateWithEditor(contentEditor);
+            }
+        });
+        
+        // AI 빠른 작업
+        function aiQuickAction(action) {
+            const aiIndicator = document.querySelector('.ai-indicator');
+            aiIndicator.classList.add('active');
+            
+            switch(action) {
+                case 'title':
+                    generateSmartTitles();
+                    break;
+                case 'outline':
+                    generateOutline();
+                    break;
+                case 'intro':
+                    generateIntroduction();
+                    break;
+                case 'seo':
+                    checkSEO();
+                    break;
+                case 'image':
+                    generateAIImage();
+                    break;
+            }
+            
+            setTimeout(() => {
+                aiIndicator.classList.remove('active');
+            }, 2000);
+        }
+        
+        // 스마트 제목 생성
+        function generateSmartTitles() {
+            const topic = prompt('어떤 주제로 글을 쓰시나요?');
+            if (!topic) return;
+            
+            // 임시 제목들 (나중에 실제 AI API로 대체)
+            const titles = [
+                `${topic}의 미래: 2025년 전망과 준비`,
+                `초보자를 위한 ${topic} 완벽 가이드`,
+                `${topic}가 바꾸는 우리의 일상`,
+                `전문가가 알려주는 ${topic} 활용법`,
+                `${topic}, 이것만 알면 끝!`
+            ];
+            
+            const titleInput = document.getElementById('postTitle');
+            const randomTitle = titles[Math.floor(Math.random() * titles.length)];
+            titleInput.value = randomTitle;
+            
+            // 애니메이션 효과
+            titleInput.style.backgroundColor = '#e8f4fd';
+            setTimeout(() => {
+                titleInput.style.backgroundColor = '';
+            }, 1000);
+        }
+        
+        // 개요 생성
+        function generateOutline() {
+            const title = document.getElementById('postTitle').value;
+            if (!title) {
+                alert('먼저 제목을 입력해주세요.');
+                return;
+            }
+            
+            const outline = `
+<h2>1. 서론</h2>
+<p>독자의 관심을 끄는 도입부...</p>
+
+<h2>2. 핵심 개념 설명</h2>
+<p>주요 내용 설명...</p>
+
+<h2>3. 실제 사례와 적용</h2>
+<p>구체적인 예시...</p>
+
+<h2>4. 장단점 분석</h2>
+<p>객관적인 평가...</p>
+
+<h2>5. 결론 및 전망</h2>
+<p>핵심 요약과 미래 전망...</p>
+            `;
+            
+            document.getElementById('postContent').innerHTML = outline;
+        }
+        
+        // SEO 체크
+        function checkSEO() {
+            const title = document.getElementById('postTitle').value;
+            const content = document.getElementById('postContent').innerText;
+            
+            let score = 70;
+            const suggestions = [];
+            
+            if (title.length >= 50 && title.length <= 60) {
+                score += 10;
+            } else {
+                suggestions.push('제목을 50-60자로 조정하세요');
+            }
+            
+            if (content.length >= 1000) {
+                score += 10;
+            } else {
+                suggestions.push('콘텐츠를 1000자 이상으로 늘리세요');
+            }
+            
+            if (title.includes('?') || title.includes('!')) {
+                score += 5;
+            }
+            
+            alert(`SEO 점수: ${score}/100\n\n개선사항:\n${suggestions.join('\n')}`);
+        }
+        
+        // 아이디어 발전시키기
+        function developIdea(button) {
+            const card = button.closest('.idea-card');
+            const title = card.querySelector('h4').innerText;
+            
+            alert(`"${title}" 아이디어를 AI가 발전시키고 있습니다...`);
+            
+            // 글쓰기 탭으로 이동하고 제목 설정
+            showTab('write');
+            document.getElementById('postTitle').value = title;
+        }
+    </script>
+</body>
+</html>

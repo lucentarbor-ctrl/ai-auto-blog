@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 블로그 마스터 - 올인원 시스템</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <style>
+        /* 추가 스타일 */
+        .sidebar {
+            width: 300px;
+            overflow-y: auto;
+        }
+        
+        .nav-section {
+            margin-bottom: 1px;
+        }
+        
+        .nav-header {
+            font-size: 14px;
+            padding: 10px 15px;
+        }
+        
+        .nav-items a {
+            font-size: 13px;
+            padding: 8px 15px 8px 35px;
+        }
+        
+        /* 메인 섹션 구분 */
+        .section-divider {
+            margin: 15px 10px 5px;
+            padding: 8px 15px;
+            text-align: center;
+            color: #95a5a6;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-top: 1px solid #34495e;
+            font-weight: 600;
+        }
+        
+        /* 뱃지 */
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 10px;
+            font-size: 10px;
+            margin-left: 5px;
+        }
+        
+        .badge.new {
+            background: #2ecc71;
+        }
+        
+        .badge.beta {
+            background: #f39c12;
+        }
+        
+        /* 퀵 액션 바 */
+        .quick-actions {
+            position: fixed;
+            bottom: 20px;
+            left: 320px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .quick-action-btn {
+            flex: 1;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .quick-action-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .quick-action-btn i {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 5px;
+            color: #3498db;
+        }
+        
+        .quick-action-btn span {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 대시보드 카드 */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .stat-card h4 {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .stat-change {
+            font-size: 13px;
+            color: #2ecc71;
+        }
+        
+        .stat-change.down {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 사이드바 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-rocket"></i> AI 블로그 마스터</h2>
+                <p class="subtitle">완벽한 블로깅 솔루션</p>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <!-- ===== 핵심 기능 ===== -->
+                <div class="section-divider">
+                    <i class="fas fa-star"></i> 핵심 기능
+                </div>
+                
+                <!-- 대시보드 -->
+                <div class="nav-section active">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-home"></i>
+                        <span>대시보드</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('overview')"><i class="fas fa-chart-line"></i> 종합 현황</a></li>
+                        <li><a href="#" onclick="showTab('insights')"><i class="fas fa-lightbulb"></i> AI 인사이트 <span class="badge new">NEW</span></a></li>
+                        <li><a href="#" onclick="showTab('analytics')"><i class="fas fa-chart-bar"></i> 독자 분석</a></li>
+                        <li><a href="#" onclick="showTab('trends')"><i class="fas fa-fire"></i> 트렌드 분석</a></li>
+                    </ul>
+                </div>
+                
+                <!-- AI 글쓰기 도우미 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-magic"></i>
+                        <span>AI 글쓰기</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('smart-write')"><i class="fas fa-pen-fancy"></i> 스마트 에디터</a></li>
+                        <li><a href="#" onclick="showTab('templates')"><i class="fas fa-file-alt"></i> AI 템플릿</a></li>
+                        <li><a href="#" onclick="showTab('tone-manager')"><i class="fas fa-sliders-h"></i> 톤 매니저</a></li>
+                        <li><a href="#" onclick="showTab('research')"><i class="fas fa-search"></i> 스마트 리서치 <span class="badge beta">BETA</span></a></li>
+                        <li><a href="#" onclick="showTab('fact-check')"><i class="fas fa-check-circle"></i> 팩트체크</a></li>
+                    </ul>
+                </div>
+                
+                <!-- 콘텐츠 최적화 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-rocket"></i>
+                        <span>콘텐츠 최적화</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('seo-optimizer')"><i class="fas fa-search-plus"></i> SEO 최적화</a></li>
+                        <li><a href="#" onclick="showTab('title-ab')"><i class="fas fa-vial"></i> 제목 A/B 테스트</a></li>
+                        <li><a href="#" onclick="showTab('thumbnail-gen')"><i class="fas fa-image"></i> 썸네일 생성기</a></li>
+                        <li><a href="#" onclick="showTab('hashtag-ai')"><i class="fas fa-hashtag"></i> 해시태그 AI</a></li>
+                        <li><a href="#" onclick="showTab('readability')"><i class="fas fa-glasses"></i> 가독성 분석</a></li>
+                    </ul>
+                </div>
+                
+                <!-- ===== 콘텐츠 관리 ===== -->
+                <div class="section-divider">
+                    <i class="fas fa-folder"></i> 콘텐츠 관리
+                </div>
+                
+                <!-- 아이디어 뱅크 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-brain"></i>
+                        <span>아이디어 뱅크</span>
+                        <span class="badge">23</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('ideas-board')"><i class="fas fa-sticky-note"></i> 아이디어 보드</a></li>
+                        <li><a href="#" onclick="showTab('voice-memo')"><i class="fas fa-microphone"></i> 음성 메모</a></li>
+                        <li><a href="#" onclick="showTab('ai-brainstorm')"><i class="fas fa-cloud"></i> AI 브레인스토밍</a></li>
+                        <li><a href="#" onclick="showTab('inspiration')"><i class="fas fa-sparkles"></i> 영감 수집</a></li>
+                    </ul>
+                </div>
+                
+                <!-- 글 관리 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-file-text"></i>
+                        <span>글 관리</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('posts')"><i class="fas fa-list"></i> 전체 글</a></li>
+                        <li><a href="#" onclick="showTab('drafts')"><i class="fas fa-file"></i> 임시저장 <span class="badge">5</span></a></li>
+                        <li><a href="#" onclick="showTab('scheduled')"><i class="fas fa-calendar-check"></i> 예약 발행</a></li>
+                        <li><a href="#" onclick="showTab('series')"><i class="fas fa-layer-group"></i> 시리즈 관리</a></li>
+                        <li><a href="#" onclick="showTab('versions')"><i class="fas fa-history"></i> 버전 관리</a></li>
+                    </ul>
+                </div>
+                
+                <!-- 콘텐츠 재활용 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-recycle"></i>
+                        <span>콘텐츠 재활용</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('repurpose')"><i class="fas fa-sync"></i> 포맷 변환</a></li>
+                        <li><a href="#" onclick="showTab('social-cards')"><i class="fas fa-share-square"></i> SNS 카드</a></li>
+                        <li><a href="#" onclick="showTab('newsletter')"><i class="fas fa-envelope"></i> 뉴스레터</a></li>
+                        <li><a href="#" onclick="showTab('ebook')"><i class="fas fa-book"></i> 전자책 제작</a></li>
+                        <li><a href="#" onclick="showTab('podcast')"><i class="fas fa-podcast"></i> 팟캐스트 변환</a></li>
+                    </ul>
+                </div>
+                
+                <!-- ===== 자동화 & 수집 ===== -->
+                <div class="section-divider">
+                    <i class="fas fa-robot"></i> 자동화 & 수집
+                </div>
+                
+                <!-- AI 뉴스 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-newspaper"></i>
+                        <span>AI 뉴스</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('news-setup')"><i class="fas fa-cog"></i> 크롤링 설정</a></li>
+                        <li><a href="#" onclick="showTab('news-collected')"><i class="fas fa-inbox"></i> 수집된 뉴스</a></li>
+                        <li><a href="#" onclick="showTab('news-digest')"><i class="fas fa-newspaper"></i> 일일 다이제스트</a></li>
+                        <li><a href="#" onclick="showTab('trend-topics')"><i class="fas fa-trending-up"></i> 트렌드 토픽</a></li>
+                    </ul>
+                </div>
+                
+                <!-- 유튜브 & 미디어 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fab fa-youtube"></i>
+                        <span>미디어 변환</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('youtube-summary')"><i class="fas fa-video"></i> 유튜브 요약</a></li>
+                        <li><a href="#" onclick="showTab('podcast-notes')"><i class="fas fa-headphones"></i> 팟캐스트 정리</a></li>
+                        <li><a href="#" onclick="showTab('image-to-text')"><i class="fas fa-file-image"></i> 이미지→텍스트</a></li>
+                        <li><a href="#" onclick="showTab('voice-to-post')"><i class="fas fa-microphone-alt"></i> 음성→포스트</a></li>
+                    </ul>
+                </div>
+                
+                <!-- ===== 발행 & 배포 ===== -->
+                <div class="section-divider">
+                    <i class="fas fa-share-alt"></i> 발행 & 배포
+                </div>
+                
+                <!-- 멀티 플랫폼 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-globe"></i>
+                        <span>멀티 플랫폼</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('platforms')"><i class="fas fa-plug"></i> 플랫폼 연결</a></li>
+                        <li><a href="#" onclick="showTab('publish-queue')"><i class="fas fa-clock"></i> 발행 큐</a></li>
+                        <li><a href="#" onclick="showTab('cross-post')"><i class="fas fa-share-nodes"></i> 동시 발행</a></li>
+                        <li><a href="#" onclick="showTab('platform-optimize')"><i class="fas fa-sliders-h"></i> 플랫폼별 최적화</a></li>
+                    </ul>
+                </div>
+                
+                <!-- 캘린더 & 계획 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>캘린더 & 계획</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('content-calendar')"><i class="fas fa-calendar"></i> 콘텐츠 캘린더</a></li>
+                        <li><a href="#" onclick="showTab('posting-schedule')"><i class="fas fa-clock"></i> 최적 시간 분석</a></li>
+                        <li><a href="#" onclick="showTab('milestone')"><i class="fas fa-flag"></i> 마일스톤</a></li>
+                        <li><a href="#" onclick="showTab('reminders')"><i class="fas fa-bell"></i> 리마인더</a></li>
+                    </ul>
+                </div>
+                
+                <!-- ===== 분석 & 성장 ===== -->
+                <div class="section-divider">
+                    <i class="fas fa-chart-line"></i> 분석 & 성장
+                </div>
+                
+                <!-- 독자 인사이트 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-users"></i>
+                        <span>독자 인사이트</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('audience')"><i class="fas fa-user-friends"></i> 독자 분석</a></li>
+                        <li><a href="#" onclick="showTab('engagement')"><i class="fas fa-heart"></i> 참여도 분석</a></li>
+                        <li><a href="#" onclick="showTab('feedback')"><i class="fas fa-comments"></i> 피드백 센터</a></li>
+                        <li><a href="#" onclick="showTab('sentiment')"><i class="fas fa-smile"></i> 감정 분석</a></li>
+                    </ul>
+                </div>
+                
+                <!-- 성과 분석 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-trophy"></i>
+                        <span>성과 분석</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('performance')"><i class="fas fa-tachometer-alt"></i> 성과 대시보드</a></li>
+                        <li><a href="#" onclick="showTab('viral-analysis')"><i class="fas fa-virus"></i> 바이럴 분석</a></li>
+                        <li><a href="#" onclick="showTab('competitor')"><i class="fas fa-chess"></i> 경쟁사 분석</a></li>
+                        <li><a href="#" onclick="showTab('reports')"><i class="fas fa-file-pdf"></i> 보고서 생성</a></li>
+                    </ul>
+                </div>
+                
+                <!-- ===== 도구 & 설정 ===== -->
+                <div class="section-divider">
+                    <i class="fas fa-tools"></i> 도구 & 설정
+                </div>
+                
+                <!-- 백업 & 보안 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>백업 & 보안</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('backup')"><i class="fas fa-download"></i> 백업 관리</a></li>
+                        <li><a href="#" onclick="showTab('export')"><i class="fas fa-file-export"></i> 내보내기</a></li>
+                        <li><a href="#" onclick="showTab('import')"><i class="fas fa-file-import"></i> 가져오기</a></li>
+                        <li><a href="#" onclick="showTab('security')"><i class="fas fa-lock"></i> 보안 설정</a></li>
+                    </ul>
+                </div>
+                
+                <!-- 설정 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-cog"></i>
+                        <span>설정</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('preferences')"><i class="fas fa-user-cog"></i> 환경설정</a></li>
+                        <li><a href="#" onclick="showTab('api-keys')"><i class="fas fa-key"></i> API 키 관리</a></li>
+                        <li><a href="#" onclick="showTab('integrations')"><i class="fas fa-plug"></i> 통합 관리</a></li>
+                        <li><a href="#" onclick="showTab('billing')"><i class="fas fa-credit-card"></i> 요금제</a></li>
+                    </ul>
+                </div>
+                
+                <!-- ===== 온라인 강좌 ===== -->
+                <div class="section-divider">
+                    <i class="fas fa-graduation-cap"></i> 온라인 강좌
+                </div>
+                
+                <!-- 노션 마스터 클래스 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-sticky-note" style="color: #000;"></i>
+                        <span>노션 마스터 클래스</span>
+                        <span class="badge">30강</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="../notion-course/notion_course_index.html" target="_blank"><i class="fas fa-home"></i> 강좌 홈</a></li>
+                        <li><a href="../notion-course/notion_course_01.html" target="_blank"><i class="fas fa-play"></i> 제1강: 나의 첫 페이지</a></li>
+                        <li><a href="../notion-course/notion_course_02.html" target="_blank"><i class="fas fa-play"></i> 제2강: 기본 블록</a></li>
+                        <li><a href="../notion-course/notion_course_03.html" target="_blank"><i class="fas fa-play"></i> 제3강: 페이지 운영</a></li>
+                        <li><a href="../notion-course/notion_course_04.html" target="_blank"><i class="fas fa-play"></i> 제4강: 강조의 기술</a></li>
+                        <li><a href="../notion-course/notion_course_05.html" target="_blank"><i class="fas fa-play"></i> 제5강: 단축키 마스터</a></li>
+                    </ul>
+                </div>
+                
+                <!-- 옵시디언 마스터 클래스 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-gem" style="color: #7c3aed;"></i>
+                        <span>옵시디언 마스터 클래스</span>
+                        <span class="badge">35강</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="../obsidian_course/index.html" target="_blank"><i class="fas fa-home"></i> 강좌 홈</a></li>
+                        <li><a href="../obsidian_course/lesson01.html" target="_blank"><i class="fas fa-play"></i> 제1강: 옵시디언 첫걸음</a></li>
+                        <li><a href="../obsidian_course/lesson02.html" target="_blank"><i class="fas fa-play"></i> 제2강: 볼트의 이해</a></li>
+                        <li><a href="../obsidian_course/lesson03.html" target="_blank"><i class="fas fa-play"></i> 제3강: 기본 노트 작성</a></li>
+                        <li><a href="../obsidian_course/lesson04.html" target="_blank"><i class="fas fa-play"></i> 제4강: 내부 링크</a></li>
+                        <li><a href="../obsidian_course/lesson05.html" target="_blank"><i class="fas fa-play"></i> 제5강: 태그와 속성</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Evoto 마스터 클래스 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-camera" style="color: #ff6b6b;"></i>
+                        <span>Evoto 마스터 클래스</span>
+                        <span class="badge">40강</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="../evoto-master-class/sidebar.html" target="_blank"><i class="fas fa-home"></i> 강좌 홈</a></li>
+                        <li><a href="../evoto-master-class/lesson01.html" target="_blank"><i class="fas fa-play"></i> 제1강: Evoto 시작하기</a></li>
+                        <li><a href="../evoto-master-class/lesson02.html" target="_blank"><i class="fas fa-play"></i> 제2강: 인터페이스</a></li>
+                        <li><a href="../evoto-master-class/lesson03.html" target="_blank"><i class="fas fa-play"></i> 제3강: 첫 편집</a></li>
+                        <li><a href="../evoto-master-class/lesson04.html" target="_blank"><i class="fas fa-play"></i> 제4강: AI 도구</a></li>
+                        <li><a href="../evoto-master-class/lesson05.html" target="_blank"><i class="fas fa-play"></i> 제5강: 워크플로우</a></li>
+                    </ul>
+                </div>
+                
+                <!-- GitHub 프로젝트 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fab fa-github"></i>
+                        <span>GitHub 프로젝트</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="https://github.com/ray1derer" target="_blank"><i class="fas fa-user"></i> 내 프로필</a></li>
+                        <li><a href="https://github.com/ray1derer?tab=repositories" target="_blank"><i class="fas fa-folder-open"></i> 전체 저장소</a></li>
+                        <li><a href="https://github.com/ray1derer/ai-auto-blog" target="_blank"><i class="fas fa-robot"></i> AI 블로그 프로젝트</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- 메인 컨텐츠 영역 -->
+        <main class="content-area">
+            <!-- 종합 대시보드 -->
+            <div id="overview-panel" class="content-panel active">
+                <div class="panel-header">
+                    <h2>종합 현황</h2>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-sync"></i> 새로고침
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-download"></i> 보고서
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="panel-content">
+                    <div class="dashboard-grid">
+                        <div class="stat-card">
+                            <h4><i class="fas fa-eye"></i> 총 조회수</h4>
+                            <div class="stat-value">128,492</div>
+                            <div class="stat-change">
+                                <i class="fas fa-arrow-up"></i> 12.5% 증가
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <h4><i class="fas fa-file-text"></i> 발행 글</h4>
+                            <div class="stat-value">47</div>
+                            <div class="stat-change">
+                                이번 달 +5
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <h4><i class="fas fa-users"></i> 구독자</h4>
+                            <div class="stat-value">3,842</div>
+                            <div class="stat-change">
+                                <i class="fas fa-arrow-up"></i> 8.2% 증가
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <h4><i class="fas fa-heart"></i> 참여율</h4>
+                            <div class="stat-value">6.8%</div>
+                            <div class="stat-change down">
+                                <i class="fas fa-arrow-down"></i> 0.3% 감소
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin-top: 30px;">최근 활동</h3>
+                    <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin-top: 15px;">
+                        <p>최근 활동 내역이 여기에 표시됩니다...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 스마트 에디터 패널 -->
+            <div id="smart-write-panel" class="content-panel">
+                <div class="panel-header">
+                    <h2>AI 스마트 에디터</h2>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" onclick="checkTone()">
+                            <i class="fas fa-sliders-h"></i> 톤 체크
+                        </button>
+                        <button class="btn btn-primary" onclick="showPublishModal()">
+                            <i class="fas fa-paper-plane"></i> 발행하기
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="panel-content">
+                    <!-- 에디터 내용 -->
+                    <p>AI 기능이 통합된 스마트 에디터가 여기에 표시됩니다...</p>
+                </div>
+            </div>
+        </main>
+        
+        <!-- 퀵 액션 바 -->
+        <div class="quick-actions">
+            <div class="quick-action-btn" onclick="quickAction('write')">
+                <i class="fas fa-pen"></i>
+                <span>빠른 작성</span>
+            </div>
+            <div class="quick-action-btn" onclick="quickAction('idea')">
+                <i class="fas fa-lightbulb"></i>
+                <span>아이디어 메모</span>
+            </div>
+            <div class="quick-action-btn" onclick="quickAction('voice')">
+                <i class="fas fa-microphone"></i>
+                <span>음성 녹음</span>
+            </div>
+            <div class="quick-action-btn" onclick="quickAction('screenshot')">
+                <i class="fas fa-camera"></i>
+                <span>스크린샷</span>
+            </div>
+            <div class="quick-action-btn" onclick="quickAction('ai')">
+                <i class="fas fa-magic"></i>
+                <span>AI 도우미</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+    <script>
+        // 퀵 액션 처리
+        function quickAction(action) {
+            switch(action) {
+                case 'write':
+                    showTab('smart-write');
+                    break;
+                case 'idea':
+                    const idea = prompt('아이디어를 입력하세요:');
+                    if (idea) {
+                        saveIdea(idea);
+                    }
+                    break;
+                case 'voice':
+                    alert('음성 녹음 기능은 준비 중입니다.');
+                    break;
+                case 'screenshot':
+                    alert('스크린샷 기능은 준비 중입니다.');
+                    break;
+                case 'ai':
+                    showTab('ai-assistant');
+                    break;
+            }
+        }
+        
+        function saveIdea(idea) {
+            // 로컬스토리지에 아이디어 저장
+            const ideas = JSON.parse(localStorage.getItem('blog_ideas') || '[]');
+            ideas.push({
+                id: Date.now(),
+                content: idea,
+                created: new Date().toISOString()
+            });
+            localStorage.setItem('blog_ideas', JSON.stringify(ideas));
+            
+            // 뱃지 업데이트
+            updateIdeaBadge();
+            
+            showToast('아이디어가 저장되었습니다!');
+        }
+        
+        function updateIdeaBadge() {
+            const ideas = JSON.parse(localStorage.getItem('blog_ideas') || '[]');
+            const badge = document.querySelector('.nav-header:has(i.fa-brain) .badge');
+            if (badge) {
+                badge.textContent = ideas.length;
+            }
+        }
+        
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            updateIdeaBadge();
+        });
+    </script>
+</body>
+</html>
