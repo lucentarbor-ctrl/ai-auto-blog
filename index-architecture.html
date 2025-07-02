@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Auto Blog - AI 기술의 모든 것</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/sidebar-new.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #ffffff;
+            color: #212529;
+        }
+        
+        /* 메인 콘텐츠 영역 */
+        .main-content {
+            margin-left: 280px;
+            padding: 40px;
+            min-height: 100vh;
+        }
+        
+        /* 페이지 헤더 */
+        .page-header {
+            margin-bottom: 40px;
+        }
+        
+        .page-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 10px;
+        }
+        
+        .page-subtitle {
+            font-size: 18px;
+            color: #6c757d;
+        }
+        
+        /* 대시보드 그리드 */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        /* 대시보드 카드 */
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #212529;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title i {
+            color: #6366f1;
+        }
+        
+        .card-badge {
+            font-size: 12px;
+            padding: 4px 12px;
+            background: #e9ecef;
+            border-radius: 20px;
+            color: #495057;
+        }
+        
+        /* 트렌딩 리스트 */
+        .trending-list {
+            list-style: none;
+        }
+        
+        .trending-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .trending-item:last-child {
+            border-bottom: none;
+        }
+        
+        .trending-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: #6366f1;
+            width: 30px;
+            text-align: center;
+        }
+        
+        .trending-content {
+            flex: 1;
+        }
+        
+        .trending-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #212529;
+            margin-bottom: 4px;
+        }
+        
+        .trending-meta {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        /* 통계 위젯 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .stat-icon {
+            font-size: 28px;
+            color: #6366f1;
+            margin-bottom: 10px;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #212529;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        /* 강좌 그리드 */
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .course-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .course-image {
+            height: 150px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+        }
+        
+        .course-info {
+            padding: 15px;
+        }
+        
+        .course-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 5px;
+        }
+        
+        .course-lessons {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        /* 모바일 메뉴 토글 */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 200;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        /* 반응형 */
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+            
+            .page-title {
+                font-size: 28px;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- 모바일 메뉴 토글 -->
+    <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- 사이드바 -->
+    <div id="sidebar-container"></div>
+    
+    <!-- 메인 콘텐츠 -->
+    <main class="main-content">
+        
+        <!-- 페이지 헤더 -->
+        <div class="page-header">
+            <h1 class="page-title">AI Auto Blog 대시보드</h1>
+            <p class="page-subtitle">AI 기술의 최신 트렌드와 실용적인 활용법을 한눈에</p>
+        </div>
+        
+        <!-- 대시보드 그리드 -->
+        <div class="dashboard-grid">
+            
+            <!-- 오늘의 트렌드 -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-fire"></i>
+                        오늘의 트렌드
+                    </h2>
+                    <span class="card-badge">실시간</span>
+                </div>
+                <ol class="trending-list">
+                    <li class="trending-item">
+                        <span class="trending-number">1</span>
+                        <div class="trending-content">
+                            <div class="trending-title">GPT-5 출시 임박, 새로운 기능들</div>
+                            <div class="trending-meta">AI 뉴스 · 2시간 전</div>
+                        </div>
+                    </li>
+                    <li class="trending-item">
+                        <span class="trending-number">2</span>
+                        <div class="trending-content">
+                            <div class="trending-title">Midjourney V7 알파 테스트 시작</div>
+                            <div class="trending-meta">이미지 생성 · 4시간 전</div>
+                        </div>
+                    </li>
+                    <li class="trending-item">
+                        <span class="trending-number">3</span>
+                        <div class="trending-content">
+                            <div class="trending-title">Claude 3.5 코딩 능력 대폭 향상</div>
+                            <div class="trending-meta">개발 도구 · 6시간 전</div>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+            
+            <!-- 실시간 통계 -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-chart-line"></i>
+                        실시간 통계
+                    </h2>
+                    <span class="card-badge">오늘</span>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <i class="fas fa-eye stat-icon"></i>
+                        <span class="stat-number">2.5K</span>
+                        <span class="stat-label">방문자</span>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fas fa-file-alt stat-icon"></i>
+                        <span class="stat-number">156</span>
+                        <span class="stat-label">포스트</span>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fas fa-comments stat-icon"></i>
+                        <span class="stat-number">892</span>
+                        <span class="stat-label">댓글</span>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fas fa-heart stat-icon"></i>
+                        <span class="stat-number">3.2K</span>
+                        <span class="stat-label">좋아요</span>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- 인기 강좌 -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-graduation-cap"></i>
+                    인기 강좌
+                </h2>
+                <span class="card-badge">TOP 6</span>
+            </div>
+            <div class="course-grid">
+                <div class="course-card">
+                    <div class="course-image">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="course-info">
+                        <h3 class="course-title">ChatGPT 마스터 클래스</h3>
+                        <p class="course-lessons">25개 강의 · 입문자용</p>
+                    </div>
+                </div>
+                <div class="course-card">
+                    <div class="course-image">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="course-info">
+                        <h3 class="course-title">Python 자동화 완전정복</h3>
+                        <p class="course-lessons">40개 강의 · 중급자용</p>
+                    </div>
+                </div>
+                <div class="course-card">
+                    <div class="course-image">
+                        <i class="fas fa-paint-brush"></i>
+                    </div>
+                    <div class="course-info">
+                        <h3 class="course-title">Midjourney 아트워크</h3>
+                        <p class="course-lessons">20개 강의 · 모든 레벨</p>
+                    </div>
+                </div>
+                <div class="course-card">
+                    <div class="course-image">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="course-info">
+                        <h3 class="course-title">노션 마스터 클래스</h3>
+                        <p class="course-lessons">30개 강의 · 입문자용</p>
+                    </div>
+                </div>
+                <div class="course-card">
+                    <div class="course-image">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <div class="course-info">
+                        <h3 class="course-title">Make.com 노코드 자동화</h3>
+                        <p class="course-lessons">30개 강의 · 중급자용</p>
+                    </div>
+                </div>
+                <div class="course-card">
+                    <div class="course-image">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="course-info">
+                        <h3 class="course-title">옵시디언 지식 관리</h3>
+                        <p class="course-lessons">35개 강의 · 모든 레벨</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+    
+    <script>
+        // 사이드바 로드
+        fetch('assets/sidebar-new.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('sidebar-container').innerHTML = html;
+            });
+        
+        // 사이드바 토글
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                sidebar.classList.toggle('show');
+            }
+        }
+        
+        // 네비게이션 섹션 클릭 이벤트
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.nav-header')) {
+                const section = e.target.closest('.nav-section');
+                section.classList.toggle('active');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,481 @@
+/* AI Auto Blog 새로운 사이드바 스타일 */
+
+/* 사이드바 기본 스타일 */
+.sidebar {
+    width: 280px;
+    background: #f8f9fa;
+    height: 100vh;
+    overflow-y: auto;
+    position: fixed;
+    left: 0;
+    top: 0;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+    z-index: 100;
+}
+
+/* 스크롤바 스타일링 */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: #e9ecef;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #adb5bd;
+    border-radius: 3px;
+}
+
+/* 사이드바 헤더 */
+.sidebar-header {
+    padding: 20px;
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.sidebar-header h2 {
+    font-size: 24px;
+    margin: 0 0 5px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.sidebar-header .tagline {
+    font-size: 12px;
+    opacity: 0.9;
+    margin: 0;
+}
+
+/* 검색 위젯 */
+.widget-search {
+    padding: 15px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.search-form {
+    position: relative;
+}
+
+.search-input-wrapper {
+    display: flex;
+    background: white;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.search-form input {
+    flex: 1;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    outline: none;
+}
+
+.search-form button {
+    background: transparent;
+    border: none;
+    padding: 0 15px;
+    color: #6366f1;
+    cursor: pointer;
+}
+
+/* 메인 네비게이션 */
+.main-navigation {
+    padding: 10px 0;
+}
+
+.nav-section {
+    margin-bottom: 10px;
+}
+
+.nav-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    font-weight: 600;
+    color: #495057;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-header:hover {
+    background: #e9ecef;
+    color: #6366f1;
+}
+
+.nav-header i {
+    width: 20px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.nav-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.nav-section:hover .nav-items,
+.nav-section.active .nav-items {
+    max-height: 500px;
+}
+
+.nav-items li {
+    margin: 0;
+}
+
+.nav-items a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px 8px 40px;
+    color: #6c757d;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.nav-items a:hover {
+    background: #e9ecef;
+    color: #6366f1;
+    transform: translateX(5px);
+}
+
+.nav-items i {
+    width: 16px;
+    text-align: center;
+    font-size: 12px;
+}
+
+/* 위젯 공통 스타일 */
+.sidebar-widget {
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.widget-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #495057;
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.widget-title i {
+    color: #6366f1;
+    font-size: 14px;
+}
+
+/* 개인화 섹션 */
+.personalized-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.personalized-list li {
+    margin-bottom: 5px;
+}
+
+.personalized-list a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: #6c757d;
+    background: white;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.personalized-list a:hover {
+    background: #6366f1;
+    color: white;
+    transform: translateX(3px);
+}
+
+.personalized-list i {
+    width: 16px;
+    text-align: center;
+    font-size: 12px;
+}
+
+/* 실시간 업데이트 */
+.live-updates {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.live-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.live-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.live-badge:contains("HOT") {
+    background: #ff6b6b;
+    color: white;
+}
+
+.live-badge:contains("NEW") {
+    background: #51cf66;
+    color: white;
+}
+
+.live-badge:contains("LIVE") {
+    background: #339af0;
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.live-item a {
+    color: #495057;
+    font-size: 12px;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.live-item a:hover {
+    color: #6366f1;
+}
+
+/* 빠른 실행 도구 */
+.quick-tools-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.quick-tool {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 8px;
+    color: #6c757d;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.quick-tool:hover {
+    background: #6366f1;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.quick-tool i {
+    font-size: 20px;
+}
+
+/* 진행률/통계 */
+.progress-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 10px 5px;
+    background: white;
+    border-radius: 6px;
+}
+
+.stat-label {
+    display: block;
+    font-size: 11px;
+    color: #6c757d;
+    margin-bottom: 3px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.progress-bar-container {
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.3s ease;
+}
+
+/* 소셜 미디어 */
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.social-link {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 50%;
+    color: #6c757d;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.social-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.social-link.twitter:hover {
+    background: #1DA1F2;
+    color: white;
+}
+
+.social-link.youtube:hover {
+    background: #FF0000;
+    color: white;
+}
+
+.social-link.discord:hover {
+    background: #5865F2;
+    color: white;
+}
+
+.social-link.github:hover {
+    background: #333;
+    color: white;
+}
+
+.social-link.rss:hover {
+    background: #FF6600;
+    color: white;
+}
+
+/* 반응형 (태블릿) */
+@media (max-width: 1024px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .sidebar.show {
+        transform: translateX(0);
+    }
+}
+
+/* 반응형 (모바일) */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+/* 다크 모드 */
+@media (prefers-color-scheme: dark) {
+    .sidebar {
+        background: #1a1b1e;
+        color: #e9ecef;
+    }
+    
+    .sidebar-header {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    }
+    
+    .search-input-wrapper {
+        background: #2c2d30;
+        box-shadow: none;
+        border: 1px solid #3a3b3e;
+    }
+    
+    .search-form input {
+        background: transparent;
+        color: #e9ecef;
+    }
+    
+    .nav-header {
+        color: #e9ecef;
+    }
+    
+    .nav-header:hover {
+        background: #2c2d30;
+    }
+    
+    .nav-items a {
+        color: #adb5bd;
+    }
+    
+    .nav-items a:hover {
+        background: #2c2d30;
+        color: #818cf8;
+    }
+    
+    .widget-title {
+        color: #e9ecef;
+    }
+    
+    .personalized-list a,
+    .quick-tool,
+    .stat-item {
+        background: #2c2d30;
+        color: #adb5bd;
+    }
+    
+    .personalized-list a:hover {
+        background: #4f46e5;
+        color: white;
+    }
+    
+    .quick-tool:hover {
+        background: #4f46e5;
+        color: white;
+    }
+    
+    .social-link {
+        background: #2c2d30;
+        color: #adb5bd;
+    }
+    
+    .sidebar-widget {
+        border-color: #3a3b3e;
+    }
+}
