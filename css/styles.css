@@ -507,6 +507,113 @@ body {
     gap: 5px;
 }
 
+/* 대시보드 추가 스타일 */
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-item i {
+    font-size: 20px;
+    width: 30px;
+    text-align: center;
+}
+
+.activity-content p {
+    margin: 0;
+    font-weight: 500;
+}
+
+.activity-content small {
+    color: #7f8c8d;
+}
+
+.popular-post {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.popular-post:last-child {
+    border-bottom: none;
+}
+
+.popular-post .rank {
+    font-size: 20px;
+    font-weight: bold;
+    color: #3498db;
+    width: 30px;
+    text-align: center;
+}
+
+.post-info h5 {
+    margin: 0 0 5px 0;
+    font-size: 15px;
+}
+
+.post-info small {
+    color: #7f8c8d;
+}
+
+.category-stat {
+    margin-bottom: 20px;
+}
+
+.category-stat:last-child {
+    margin-bottom: 0;
+}
+
+.category-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.category-bar {
+    height: 20px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(to right, #3498db, #2ecc71);
+    transition: width 0.5s ease;
+}
+
+.category-count {
+    font-size: 13px;
+    color: #7f8c8d;
+}
+
+/* 실제 작동하는 탭 전환 */
+.content-panel {
+    display: none;
+}
+
+.content-panel.active {
+    display: block;
+    animation: fadeIn 0.3s ease-in;
+}
+
+/* 폼 액션 버튼 */
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: flex-end;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .app-container {
@@ -524,5 +631,9 @@ body {
     
     .ideas-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .quick-actions {
+        left: 20px;
     }
 }

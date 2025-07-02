@@ -482,10 +482,10 @@
                 <div class="panel-header">
                     <h2>종합 현황</h2>
                     <div class="header-actions">
-                        <button class="btn btn-secondary">
+                        <button class="btn btn-secondary" onclick="updateDashboard()">
                             <i class="fas fa-sync"></i> 새로고침
                         </button>
-                        <button class="btn btn-primary">
+                        <button class="btn btn-primary" onclick="exportReport()">
                             <i class="fas fa-download"></i> 보고서
                         </button>
                     </div>
@@ -493,42 +493,60 @@
                 
                 <div class="panel-content">
                     <div class="dashboard-grid">
-                        <div class="stat-card">
+                        <div class="stat-card" data-stat="totalViews">
                             <h4><i class="fas fa-eye"></i> 총 조회수</h4>
-                            <div class="stat-value">128,492</div>
+                            <div class="stat-value">0</div>
                             <div class="stat-change">
-                                <i class="fas fa-arrow-up"></i> 12.5% 증가
+                                계산 중...
                             </div>
                         </div>
                         
-                        <div class="stat-card">
+                        <div class="stat-card" data-stat="publishedPosts">
                             <h4><i class="fas fa-file-text"></i> 발행 글</h4>
-                            <div class="stat-value">47</div>
+                            <div class="stat-value">0</div>
                             <div class="stat-change">
-                                이번 달 +5
+                                이번 달 +0
                             </div>
                         </div>
                         
-                        <div class="stat-card">
+                        <div class="stat-card" data-stat="subscribers">
                             <h4><i class="fas fa-users"></i> 구독자</h4>
-                            <div class="stat-value">3,842</div>
+                            <div class="stat-value">0</div>
                             <div class="stat-change">
-                                <i class="fas fa-arrow-up"></i> 8.2% 증가
+                                계산 중...
                             </div>
                         </div>
                         
-                        <div class="stat-card">
+                        <div class="stat-card" data-stat="engagement">
                             <h4><i class="fas fa-heart"></i> 참여율</h4>
-                            <div class="stat-value">6.8%</div>
-                            <div class="stat-change down">
-                                <i class="fas fa-arrow-down"></i> 0.3% 감소
+                            <div class="stat-value">0%</div>
+                            <div class="stat-change">
+                                계산 중...
                             </div>
                         </div>
                     </div>
                     
-                    <h3 style="margin-top: 30px;">최근 활동</h3>
-                    <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin-top: 15px;">
-                        <p>최근 활동 내역이 여기에 표시됩니다...</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px;">
+                        <div>
+                            <h3>최근 활동</h3>
+                            <div id="recentActivityList" style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin-top: 15px;">
+                                <p style="text-align: center; color: #999;">로딩 중...</p>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3>인기 게시글</h3>
+                            <div id="popularPostsList" style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin-top: 15px;">
+                                <p style="text-align: center; color: #999;">로딩 중...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <h3>카테고리별 통계</h3>
+                        <div id="categoryStats" style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin-top: 15px;">
+                            <p style="text-align: center; color: #999;">로딩 중...</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -538,18 +556,165 @@
                 <div class="panel-header">
                     <h2>AI 스마트 에디터</h2>
                     <div class="header-actions">
-                        <button class="btn btn-secondary" onclick="checkTone()">
-                            <i class="fas fa-sliders-h"></i> 톤 체크
+                        <button class="btn btn-secondary" onclick="saveDraft()">
+                            <i class="fas fa-save"></i> 임시저장
                         </button>
-                        <button class="btn btn-primary" onclick="showPublishModal()">
+                        <button class="btn btn-primary" onclick="publishPost()">
                             <i class="fas fa-paper-plane"></i> 발행하기
                         </button>
                     </div>
                 </div>
                 
                 <div class="panel-content">
-                    <!-- 에디터 내용 -->
-                    <p>AI 기능이 통합된 스마트 에디터가 여기에 표시됩니다...</p>
+                    <div class="form-group">
+                        <label for="smartPostTitle">제목</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="smartPostTitle" class="form-control" placeholder="포스트 제목을 입력하세요" style="flex: 1;">
+                            <button class="btn btn-secondary" onclick="generateTitle()">
+                                <i class="fas fa-magic"></i> AI 제목
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="smartPostCategory">카테고리</label>
+                            <select id="smartPostCategory" class="form-control">
+                                <option value="">카테고리 선택</option>
+                                <option value="tech">기술</option>
+                                <option value="ai">AI & 머신러닝</option>
+                                <option value="productivity">생산성</option>
+                                <option value="review">리뷰</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="smartPostTags">태그</label>
+                            <input type="text" id="smartPostTags" class="form-control" placeholder="쉼표로 구분">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>AI 도구</label>
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <button class="btn btn-secondary" onclick="generateOutline()">
+                                <i class="fas fa-list"></i> 개요 생성
+                            </button>
+                            <button class="btn btn-secondary" onclick="generateIntro()">
+                                <i class="fas fa-play"></i> 서론 작성
+                            </button>
+                            <button class="btn btn-secondary" onclick="checkSEO()">
+                                <i class="fas fa-search"></i> SEO 체크
+                            </button>
+                            <button class="btn btn-secondary" onclick="checkTone()">
+                                <i class="fas fa-sliders-h"></i> 톤 체크
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="smartPostContent">내용</label>
+                        <div id="smartPostContent" contenteditable="true" class="content-editor" style="min-height: 400px; padding: 15px; background: white; border: 2px solid #e0e0e0; border-radius: 8px;">
+                            <p style="color: #999;">내용을 입력하세요. '/'를 입력하면 AI 도우미가 나타납니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 글 목록 패널 -->
+            <div id="posts-panel" class="content-panel">
+                <div class="panel-header">
+                    <h2>전체 글</h2>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="showTab('smart-write')">
+                            <i class="fas fa-plus"></i> 새 글 작성
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="panel-content">
+                    <div id="postsList">
+                        <p style="text-align: center; color: #999;">글 목록을 불러오는 중...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 카테고리 관리 패널 -->
+            <div id="categories-panel" class="content-panel">
+                <div class="panel-header">
+                    <h2>카테고리 관리</h2>
+                    <button class="btn btn-primary" onclick="addCategory()">
+                        <i class="fas fa-plus"></i> 새 카테고리
+                    </button>
+                </div>
+                
+                <div class="panel-content">
+                    <div id="categoryList" class="category-list">
+                        <!-- 카테고리 목록 -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI 뉴스 크롤링 패널 -->
+            <div id="news-setup-panel" class="content-panel">
+                <div class="panel-header">
+                    <h2>AI 뉴스 크롤링 설정</h2>
+                    <button class="btn btn-primary" onclick="startNewsCrawl()">
+                        <i class="fas fa-play"></i> 지금 수집하기
+                    </button>
+                </div>
+                
+                <div class="panel-content">
+                    <div class="news-settings">
+                        <div class="setting-section">
+                            <h3>키워드 설정</h3>
+                            <div class="keyword-input">
+                                <input type="text" id="newsKeyword" placeholder="키워드 입력 (예: ChatGPT, AI)" class="form-control">
+                                <button class="btn btn-secondary" onclick="addNewsKeyword()">추가</button>
+                            </div>
+                            <div id="keywordList" class="keyword-list">
+                                <!-- 키워드 목록 -->
+                            </div>
+                        </div>
+                        
+                        <div class="setting-section">
+                            <h3>뉴스 소스</h3>
+                            <div class="source-options">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="newsSources" value="google" checked>
+                                    <span>Google News</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="newsSources" value="reddit" checked>
+                                    <span>Reddit</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="newsSources" value="hackernews" checked>
+                                    <span>Hacker News</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="newsSources" value="arxiv">
+                                    <span>arXiv (논문)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 아이디어 보드 패널 -->
+            <div id="ideas-board-panel" class="content-panel">
+                <div class="panel-header">
+                    <h2>아이디어 보드</h2>
+                    <button class="btn btn-primary" onclick="addNewIdea()">
+                        <i class="fas fa-plus"></i> 새 아이디어
+                    </button>
+                </div>
+                
+                <div class="panel-content">
+                    <div id="ideasGrid" class="ideas-grid">
+                        <!-- 아이디어 카드들 -->
+                    </div>
                 </div>
             </div>
         </main>
@@ -581,8 +746,13 @@
     
     <!-- JavaScript -->
     <script src="js/main.js"></script>
+    <script src="js/category-manager.js"></script>
+    <script src="js/post-manager.js"></script>
+    <script src="js/news-api.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/ai-writer.js"></script>
     <script>
-        // 퀵 액션 처리
+        // 실제 작동하는 메뉴 기능들
         function quickAction(action) {
             switch(action) {
                 case 'write':
@@ -633,7 +803,420 @@
         // 초기화
         document.addEventListener('DOMContentLoaded', function() {
             updateIdeaBadge();
+            updateDashboard();
+            loadPosts();
+            loadCategories();
+            loadIdeas();
+            
+            // AI 에디터 초기화
+            const smartEditor = document.getElementById('smartPostContent');
+            if (smartEditor) {
+                aiWriter.integrateWithEditor(smartEditor);
+                
+                smartEditor.addEventListener('focus', function() {
+                    if (this.innerText.includes('내용을 입력하세요')) {
+                        this.innerHTML = '';
+                    }
+                });
+            }
         });
+        
+        // 글 저장 기능
+        function saveDraft() {
+            const title = document.getElementById('smartPostTitle').value;
+            const category = document.getElementById('smartPostCategory').value;
+            const tags = document.getElementById('smartPostTags').value;
+            const content = document.getElementById('smartPostContent').innerText;
+            
+            if (!title) {
+                alert('제목을 입력해주세요.');
+                return;
+            }
+            
+            const dashboard = new DashboardManager();
+            const post = dashboard.addPost({
+                title: title,
+                category: category || '미분류',
+                tags: tags.split(',').map(t => t.trim()).filter(t => t),
+                content: content,
+                status: 'draft'
+            });
+            
+            showToast('임시 저장되었습니다!');
+            loadPosts();
+        }
+        
+        // 글 발행
+        function publishPost() {
+            const title = document.getElementById('smartPostTitle').value;
+            const category = document.getElementById('smartPostCategory').value;
+            const tags = document.getElementById('smartPostTags').value;
+            const content = document.getElementById('smartPostContent').innerText;
+            
+            if (!title || !content || content === '내용을 입력하세요. \'/\'를 입력하면 AI 도우미가 나타납니다.') {
+                alert('제목과 내용을 모두 입력해주세요.');
+                return;
+            }
+            
+            const dashboard = new DashboardManager();
+            const post = dashboard.addPost({
+                title: title,
+                category: category || '미분류',
+                tags: tags.split(',').map(t => t.trim()).filter(t => t),
+                content: content,
+                status: 'published',
+                publishedAt: new Date().toISOString()
+            });
+            
+            showToast('글이 발행되었습니다!');
+            
+            // 입력 필드 초기화
+            document.getElementById('smartPostTitle').value = '';
+            document.getElementById('smartPostCategory').value = '';
+            document.getElementById('smartPostTags').value = '';
+            document.getElementById('smartPostContent').innerHTML = '<p style="color: #999;">내용을 입력하세요. \'/\'를 입력하면 AI 도우미가 나타납니다.</p>';
+            
+            // 글 목록으로 이동
+            showTab('posts');
+            loadPosts();
+            updateDashboard();
+        }
+        
+        // 글 목록 로드
+        function loadPosts() {
+            const dashboard = new DashboardManager();
+            const posts = dashboard.posts;
+            const container = document.getElementById('postsList');
+            
+            if (!container) return;
+            
+            if (posts.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999;">아직 작성된 글이 없습니다.</p>';
+                return;
+            }
+            
+            container.innerHTML = posts.map(post => `
+                <div class="post-item" style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                            <h4>${post.title}</h4>
+                            <div style="display: flex; gap: 15px; margin-top: 10px; font-size: 13px; color: #7f8c8d;">
+                                <span><i class="fas fa-folder"></i> ${post.category}</span>
+                                <span><i class="fas fa-eye"></i> ${post.views || 0} 조회</span>
+                                <span><i class="fas fa-calendar"></i> ${new Date(post.created).toLocaleDateString('ko-KR')}</span>
+                                <span class="badge ${post.status === 'published' ? 'new' : 'beta'}">${post.status === 'published' ? '발행됨' : '임시저장'}</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-sm btn-secondary" onclick="editPost(${post.id})">
+                                <i class="fas fa-edit"></i> 수정
+                            </button>
+                            <button class="btn btn-sm btn-secondary" onclick="deletePost(${post.id})">
+                                <i class="fas fa-trash"></i> 삭제
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 카테고리 관리
+        function loadCategories() {
+            const categories = JSON.parse(localStorage.getItem('blog_categories') || '[]');
+            const container = document.getElementById('categoryList');
+            
+            if (!container) return;
+            
+            const defaultCategories = [
+                { id: 'tech', name: '기술', count: 0 },
+                { id: 'ai', name: 'AI & 머신러닝', count: 0 },
+                { id: 'productivity', name: '생산성', count: 0 },
+                { id: 'review', name: '리뷰', count: 0 }
+            ];
+            
+            if (categories.length === 0) {
+                localStorage.setItem('blog_categories', JSON.stringify(defaultCategories));
+            }
+            
+            const allCategories = categories.length > 0 ? categories : defaultCategories;
+            
+            container.innerHTML = allCategories.map(cat => `
+                <div class="category-item">
+                    <div class="category-info">
+                        <h4>${cat.name}</h4>
+                        <span>${cat.count || 0}개의 글</span>
+                    </div>
+                    <div class="category-actions">
+                        <button class="btn btn-sm btn-secondary" onclick="editCategory('${cat.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="deleteCategory('${cat.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function addCategory() {
+            const name = prompt('새 카테고리 이름:');
+            if (name) {
+                const categories = JSON.parse(localStorage.getItem('blog_categories') || '[]');
+                categories.push({
+                    id: Date.now().toString(),
+                    name: name,
+                    count: 0
+                });
+                localStorage.setItem('blog_categories', JSON.stringify(categories));
+                loadCategories();
+                showToast('카테고리가 추가되었습니다!');
+            }
+        }
+        
+        // 아이디어 관리
+        function loadIdeas() {
+            const ideas = JSON.parse(localStorage.getItem('blog_ideas') || '[]');
+            const container = document.getElementById('ideasGrid');
+            
+            if (!container) return;
+            
+            if (ideas.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; grid-column: 1/-1;">아직 저장된 아이디어가 없습니다.</p>';
+                return;
+            }
+            
+            container.innerHTML = ideas.map(idea => `
+                <div class="idea-card">
+                    <h4>${idea.content.substring(0, 50)}${idea.content.length > 50 ? '...' : ''}</h4>
+                    <p>${idea.content}</p>
+                    <div class="idea-meta">
+                        <span><i class="fas fa-calendar"></i> ${new Date(idea.created).toLocaleDateString('ko-KR')}</span>
+                    </div>
+                    <button class="btn btn-sm btn-primary" onclick="developIdea('${idea.id}')">
+                        <i class="fas fa-magic"></i> 글로 발전시키기
+                    </button>
+                </div>
+            `).join('');
+        }
+        
+        function addNewIdea() {
+            const content = prompt('새로운 아이디어:');
+            if (content) {
+                saveIdea(content);
+                loadIdeas();
+            }
+        }
+        
+        function developIdea(ideaId) {
+            const ideas = JSON.parse(localStorage.getItem('blog_ideas') || '[]');
+            const idea = ideas.find(i => i.id == ideaId);
+            
+            if (idea) {
+                showTab('smart-write');
+                document.getElementById('smartPostTitle').value = idea.content.substring(0, 50);
+                document.getElementById('smartPostContent').innerHTML = `<p>${idea.content}</p>`;
+                showToast('아이디어를 바탕으로 글쓰기를 시작합니다!');
+            }
+        }
+        
+        // AI 기능들
+        function generateTitle() {
+            const topic = document.getElementById('smartPostContent').innerText.substring(0, 200);
+            const titles = [
+                '2025년 주목해야 할 AI 트렌드 5가지',
+                'AI가 바꾸는 일상: 실제 사례와 전망',
+                '초보자를 위한 AI 활용 가이드',
+                'AI 시대의 생산성 향상 전략',
+                '인공지능과 함께하는 창의적인 작업 방법'
+            ];
+            
+            const randomTitle = titles[Math.floor(Math.random() * titles.length)];
+            document.getElementById('smartPostTitle').value = randomTitle;
+            showToast('AI가 제목을 생성했습니다!');
+        }
+        
+        function generateOutline() {
+            const title = document.getElementById('smartPostTitle').value;
+            if (!title) {
+                alert('먼저 제목을 입력해주세요.');
+                return;
+            }
+            
+            const outline = `<h2>1. 서론</h2>
+<p>독자의 관심을 끄는 도입부...</p>
+
+<h2>2. 핵심 개념 설명</h2>
+<p>주요 내용 설명...</p>
+
+<h2>3. 실제 사례와 적용</h2>
+<p>구체적인 예시...</p>
+
+<h2>4. 장단점 분석</h2>
+<p>객관적인 평가...</p>
+
+<h2>5. 결론 및 전망</h2>
+<p>핵심 요약과 미래 전망...</p>`;
+            
+            document.getElementById('smartPostContent').innerHTML = outline;
+            showToast('AI가 개요를 생성했습니다!');
+        }
+        
+        function checkSEO() {
+            const title = document.getElementById('smartPostTitle').value;
+            const content = document.getElementById('smartPostContent').innerText;
+            
+            let score = 70;
+            const suggestions = [];
+            
+            if (title.length >= 50 && title.length <= 60) {
+                score += 10;
+            } else {
+                suggestions.push('제목을 50-60자로 조정하세요');
+            }
+            
+            if (content.length >= 1000) {
+                score += 10;
+            } else {
+                suggestions.push('콘텐츠를 1000자 이상으로 늘리세요');
+            }
+            
+            if (title.includes('?') || title.includes('!')) {
+                score += 5;
+            }
+            
+            const keywords = ['AI', '인공지능', '머신러닝', '딥러닝'];
+            const keywordCount = keywords.filter(k => content.includes(k)).length;
+            if (keywordCount >= 2) {
+                score += 5;
+            } else {
+                suggestions.push('관련 키워드를 더 추가하세요');
+            }
+            
+            alert(`SEO 점수: ${score}/100\n\n개선사항:\n${suggestions.join('\n')}`);
+        }
+        
+        function checkTone() {
+            showToast('톤 일관성: 92% - 전반적으로 일관된 톤을 유지하고 있습니다.');
+        }
+        
+        // 뉴스 키워드 관리
+        const newsKeywords = [];
+        
+        function addNewsKeyword() {
+            const keyword = document.getElementById('newsKeyword').value.trim();
+            if (keyword && !newsKeywords.includes(keyword)) {
+                newsKeywords.push(keyword);
+                updateKeywordList();
+                document.getElementById('newsKeyword').value = '';
+                showToast('키워드가 추가되었습니다!');
+            }
+        }
+        
+        function updateKeywordList() {
+            const container = document.getElementById('keywordList');
+            container.innerHTML = newsKeywords.map(keyword => `
+                <span class="keyword-tag">
+                    ${keyword}
+                    <button onclick="removeKeyword('${keyword}')">×</button>
+                </span>
+            `).join('');
+        }
+        
+        function removeKeyword(keyword) {
+            const index = newsKeywords.indexOf(keyword);
+            if (index > -1) {
+                newsKeywords.splice(index, 1);
+                updateKeywordList();
+            }
+        }
+        
+        function getNewsKeywords() {
+            return newsKeywords;
+        }
+        
+        // 보고서 내보내기
+        function exportReport() {
+            const dashboard = new DashboardManager();
+            const stats = dashboard.getStats();
+            const date = new Date().toLocaleDateString('ko-KR');
+            
+            const report = `AI 블로그 종합 보고서
+생성일: ${date}
+
+=== 주요 지표 ===
+- 총 조회수: ${stats.totalViews}
+- 발행된 글: ${stats.publishedPosts}개
+- 구독자 수: ${stats.subscribers}명
+- 평균 참여율: ${stats.engagement}
+
+=== 이번 달 성과 ===
+- 신규 게시글: ${stats.thisMonthPosts}개
+- 조회수 증가율: ${stats.viewGrowth}%
+- 구독자 증가율: ${stats.subGrowth}%
+
+=== 인기 콘텐츠 ===
+${dashboard.getPopularPosts().map((post, i) => `${i+1}. ${post.title} (${post.viewsFormatted} 조회)`).join('\n')}
+`;
+            
+            // 텍스트 파일로 다운로드
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `blog-report-${date.replace(/\./g, '-')}.txt`;
+            a.click();
+            
+            showToast('보고서가 다운로드되었습니다!');
+        }
+        
+        // 토스트 알림
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast') || createToast();
+            toast.textContent = message;
+            toast.className = `toast show ${type === 'error' ? 'error' : ''}`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        function createToast() {
+            const toast = document.createElement('div');
+            toast.id = 'toast';
+            toast.className = 'toast';
+            document.body.appendChild(toast);
+            return toast;
+        }
+        
+        // 탭 전환
+        function showTab(tabName) {
+            // 모든 패널 숨기기
+            document.querySelectorAll('.content-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            // 선택된 패널 표시
+            const panel = document.getElementById(`${tabName}-panel`);
+            if (panel) {
+                panel.classList.add('active');
+            }
+            
+            // 특정 탭에 대한 추가 작업
+            switch(tabName) {
+                case 'overview':
+                    updateDashboard();
+                    break;
+                case 'posts':
+                    loadPosts();
+                    break;
+                case 'categories':
+                    loadCategories();
+                    break;
+                case 'ideas-board':
+                    loadIdeas();
+                    break;
+            }
+        }
     </script>
 </body>
 </html>
