@@ -1,0 +1,207 @@
+<aside id="ai-blog-sidebar" class="sidebar">
+    
+    <!-- 블로그 로고/타이틀 -->
+    <div class="sidebar-header">
+        <h2><i class="fas fa-robot"></i> AI 자동블로그</h2>
+        <p class="tagline">인공지능의 모든 것</p>
+    </div>
+
+    <!-- 검색 위젯 -->
+    <div class="sidebar-widget widget-search">
+        <h3 class="widget-title"><i class="fas fa-search"></i> 검색</h3>
+        <form action="/search" method="get" class="search-form">
+            <div class="search-input-wrapper">
+                <input type="search" name="q" placeholder="AI 기술 검색..." required>
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 카테고리별 글 목록 -->
+    <div class="sidebar-widget widget-categories">
+        <h3 class="widget-title"><i class="fas fa-folder-open"></i> 카테고리</h3>
+        <ul class="category-list">
+            <li class="category-item">
+                <a href="/category/ai-basics" class="category-link">
+                    <i class="fas fa-brain"></i>
+                    <span class="category-name">AI 기초</span>
+                    <span class="post-count">23</span>
+                </a>
+            </li>
+            <li class="category-item">
+                <a href="/category/llm" class="category-link">
+                    <i class="fas fa-comments"></i>
+                    <span class="category-name">대규모 언어모델 (LLM)</span>
+                    <span class="post-count">45</span>
+                </a>
+            </li>
+            <li class="category-item">
+                <a href="/category/computer-vision" class="category-link">
+                    <i class="fas fa-eye"></i>
+                    <span class="category-name">컴퓨터 비전</span>
+                    <span class="post-count">31</span>
+                </a>
+            </li>
+            <li class="category-item">
+                <a href="/category/ml-engineering" class="category-link">
+                    <i class="fas fa-cogs"></i>
+                    <span class="category-name">머신러닝 엔지니어링</span>
+                    <span class="post-count">28</span>
+                </a>
+            </li>
+            <li class="category-item">
+                <a href="/category/ai-tools" class="category-link">
+                    <i class="fas fa-tools"></i>
+                    <span class="category-name">AI 도구 활용</span>
+                    <span class="post-count">52</span>
+                </a>
+            </li>
+            <li class="category-item">
+                <a href="/category/ethics" class="category-link">
+                    <i class="fas fa-balance-scale"></i>
+                    <span class="category-name">AI 윤리와 사회</span>
+                    <span class="post-count">19</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 최근 글 -->
+    <div class="sidebar-widget widget-recent-posts">
+        <h3 class="widget-title"><i class="fas fa-clock"></i> 최근 글</h3>
+        <ul class="recent-posts-list">
+            <li class="recent-post-item">
+                <a href="/posts/2025/07/gpt-5-preview" class="post-link">
+                    <span class="post-date">2025.07.02</span>
+                    <span class="post-title">GPT-5 프리뷰: 차세대 AI의 놀라운 능력들</span>
+                </a>
+            </li>
+            <li class="recent-post-item">
+                <a href="/posts/2025/07/stable-diffusion-3" class="post-link">
+                    <span class="post-date">2025.07.01</span>
+                    <span class="post-title">Stable Diffusion 3로 만드는 초현실적 이미지</span>
+                </a>
+            </li>
+            <li class="recent-post-item">
+                <a href="/posts/2025/06/rag-tutorial" class="post-link">
+                    <span class="post-date">2025.06.30</span>
+                    <span class="post-title">RAG 시스템 구축 완벽 가이드</span>
+                </a>
+            </li>
+            <li class="recent-post-item">
+                <a href="/posts/2025/06/ai-coding-assistant" class="post-link">
+                    <span class="post-date">2025.06.29</span>
+                    <span class="post-title">AI 코딩 어시스턴트 비교: Copilot vs Claude Code</span>
+                </a>
+            </li>
+            <li class="recent-post-item">
+                <a href="/posts/2025/06/multimodal-ai" class="post-link">
+                    <span class="post-date">2025.06.28</span>
+                    <span class="post-title">멀티모달 AI의 현재와 미래</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 인기 글 -->
+    <div class="sidebar-widget widget-popular-posts">
+        <h3 class="widget-title"><i class="fas fa-fire"></i> 인기 글</h3>
+        <ul class="popular-posts-list">
+            <li class="popular-post-item">
+                <a href="/posts/2025/01/best-ai-tools-2025" class="post-link">
+                    <span class="view-count"><i class="fas fa-eye"></i> 12.5K</span>
+                    <span class="post-title">2025년 최고의 AI 도구 TOP 20</span>
+                </a>
+            </li>
+            <li class="popular-post-item">
+                <a href="/posts/2024/12/chatgpt-advanced-prompts" class="post-link">
+                    <span class="view-count"><i class="fas fa-eye"></i> 9.8K</span>
+                    <span class="post-title">ChatGPT 고급 프롬프트 엔지니어링 기법</span>
+                </a>
+            </li>
+            <li class="popular-post-item">
+                <a href="/posts/2025/03/local-llm-setup" class="post-link">
+                    <span class="view-count"><i class="fas fa-eye"></i> 8.2K</span>
+                    <span class="post-title">로컬 PC에서 LLM 구동하기: 완벽 가이드</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 태그 클라우드 -->
+    <div class="sidebar-widget widget-tags">
+        <h3 class="widget-title"><i class="fas fa-tags"></i> 인기 태그</h3>
+        <div class="tag-cloud">
+            <a href="/tags/chatgpt" class="tag-item tag-size-xl">#ChatGPT</a>
+            <a href="/tags/llm" class="tag-item tag-size-lg">#LLM</a>
+            <a href="/tags/stable-diffusion" class="tag-item tag-size-lg">#StableDiffusion</a>
+            <a href="/tags/prompt-engineering" class="tag-item tag-size-md">#프롬프트엔지니어링</a>
+            <a href="/tags/midjourney" class="tag-item tag-size-md">#Midjourney</a>
+            <a href="/tags/claude" class="tag-item tag-size-lg">#Claude</a>
+            <a href="/tags/python" class="tag-item tag-size-md">#Python</a>
+            <a href="/tags/rag" class="tag-item tag-size-sm">#RAG</a>
+            <a href="/tags/fine-tuning" class="tag-item tag-size-sm">#파인튜닝</a>
+            <a href="/tags/ai-art" class="tag-item tag-size-md">#AI아트</a>
+            <a href="/tags/automation" class="tag-item tag-size-sm">#자동화</a>
+            <a href="/tags/ethics" class="tag-item tag-size-sm">#AI윤리</a>
+        </div>
+    </div>
+
+    <!-- 아카이브 -->
+    <div class="sidebar-widget widget-archives">
+        <h3 class="widget-title"><i class="fas fa-archive"></i> 아카이브</h3>
+        <ul class="archive-list">
+            <li class="archive-item">
+                <a href="/archive/2025/07" class="archive-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="archive-month">2025년 7월</span>
+                    <span class="post-count">12</span>
+                </a>
+            </li>
+            <li class="archive-item">
+                <a href="/archive/2025/06" class="archive-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="archive-month">2025년 6월</span>
+                    <span class="post-count">28</span>
+                </a>
+            </li>
+            <li class="archive-item">
+                <a href="/archive/2025/05" class="archive-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="archive-month">2025년 5월</span>
+                    <span class="post-count">31</span>
+                </a>
+            </li>
+            <li class="archive-item">
+                <a href="/archive/2025/04" class="archive-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="archive-month">2025년 4월</span>
+                    <span class="post-count">25</span>
+                </a>
+            </li>
+        </ul>
+        <a href="/archive" class="view-all-archives">전체 아카이브 보기 →</a>
+    </div>
+
+    <!-- 뉴스레터 구독 -->
+    <div class="sidebar-widget widget-newsletter">
+        <h3 class="widget-title"><i class="fas fa-envelope"></i> AI 뉴스레터</h3>
+        <p class="newsletter-desc">최신 AI 트렌드와 기술 소식을 매주 받아보세요!</p>
+        <form action="/subscribe" method="post" class="newsletter-form">
+            <input type="email" name="email" placeholder="이메일 주소" required>
+            <button type="submit">구독하기</button>
+        </form>
+    </div>
+
+    <!-- 소셜 미디어 -->
+    <div class="sidebar-widget widget-social">
+        <h3 class="widget-title"><i class="fas fa-share-alt"></i> 팔로우하기</h3>
+        <div class="social-links">
+            <a href="#" class="social-link twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-link github"><i class="fab fa-github"></i></a>
+            <a href="#" class="social-link youtube"><i class="fab fa-youtube"></i></a>
+            <a href="#" class="social-link discord"><i class="fab fa-discord"></i></a>
+        </div>
+    </div>
+
+</aside>
