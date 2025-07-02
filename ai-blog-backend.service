@@ -1,0 +1,16 @@
+[Unit]
+Description=AI Auto Blog Backend Service
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/html/ai-auto-blog/backend
+ExecStart=/usr/bin/python3 /var/www/html/ai-auto-blog/backend/news_crawler.py
+Restart=always
+RestartSec=10
+Environment="PYTHONUNBUFFERED=1"
+
+[Install]
+WantedBy=multi-user.target

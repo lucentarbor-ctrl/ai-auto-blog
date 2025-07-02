@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 통합 자동 블로깅 시스템</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 사이드바 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-robot"></i> AI 자동 블로그</h2>
+                <p class="subtitle">통합 관리 시스템</p>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <!-- 대시보드 -->
+                <div class="nav-section active">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-home"></i>
+                        <span>대시보드</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('dashboard')"><i class="fas fa-chart-line"></i> 통계</a></li>
+                        <li><a href="#" onclick="showTab('recent')"><i class="fas fa-clock"></i> 최근 활동</a></li>
+                    </ul>
+                </div>
+                
+                <!-- 블로그 관리 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-blog"></i>
+                        <span>블로그 관리</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('write')"><i class="fas fa-pen"></i> 새 글 작성</a></li>
+                        <li><a href="#" onclick="showTab('posts')"><i class="fas fa-list"></i> 글 목록</a></li>
+                        <li><a href="#" onclick="showTab('drafts')"><i class="fas fa-file-alt"></i> 임시저장</a></li>
+                        <li><a href="#" onclick="showTab('schedule')"><i class="fas fa-calendar-alt"></i> 예약 발행</a></li>
+                        <li><a href="#" onclick="showTab('categories')"><i class="fas fa-folder"></i> 카테고리</a></li>
+                    </ul>
+                </div>
+                
+                <!-- AI 뉴스 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-newspaper"></i>
+                        <span>AI 뉴스</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('news-crawl')"><i class="fas fa-spider"></i> 크롤링 설정</a></li>
+                        <li><a href="#" onclick="showTab('news-list')"><i class="fas fa-list-alt"></i> 수집된 뉴스</a></li>
+                        <li><a href="#" onclick="showTab('news-schedule')"><i class="fas fa-clock"></i> 자동 수집</a></li>
+                    </ul>
+                </div>
+                
+                <!-- 유튜브 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fab fa-youtube"></i>
+                        <span>유튜브 요약</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('youtube-input')"><i class="fas fa-link"></i> URL 입력</a></li>
+                        <li><a href="#" onclick="showTab('youtube-list')"><i class="fas fa-video"></i> 요약 목록</a></li>
+                    </ul>
+                </div>
+                
+                <!-- 발행 설정 -->
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-share-alt"></i>
+                        <span>발행 설정</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showTab('platforms')"><i class="fas fa-globe"></i> 플랫폼 관리</a></li>
+                        <li><a href="#" onclick="showTab('api-keys')"><i class="fas fa-key"></i> API 키 설정</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- 메인 컨텐츠 영역 -->
+        <main class="content-area">
+            <!-- 글 작성 패널 -->
+            <div id="write-panel" class="content-panel active">
+                <div class="panel-header">
+                    <h2>새 글 작성</h2>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" onclick="saveDraft()">
+                            <i class="fas fa-save"></i> 임시저장
+                        </button>
+                        <button class="btn btn-primary" onclick="showPublishModal()">
+                            <i class="fas fa-paper-plane"></i> 발행하기
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="panel-content">
+                    <div class="form-group">
+                        <label for="postTitle">제목</label>
+                        <input type="text" id="postTitle" class="form-control" placeholder="포스트 제목을 입력하세요">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="postCategory">카테고리</label>
+                            <select id="postCategory" class="form-control">
+                                <option value="">카테고리 선택</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="postTags">태그</label>
+                            <input type="text" id="postTags" class="form-control" placeholder="쉼표로 구분 (예: AI, 기술, 트렌드)">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="postContent">내용</label>
+                        <textarea id="postContent" class="form-control content-editor" placeholder="내용을 입력하세요"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 카테고리 관리 패널 -->
+            <div id="categories-panel" class="content-panel">
+                <div class="panel-header">
+                    <h2>카테고리 관리</h2>
+                    <button class="btn btn-primary" onclick="showAddCategoryModal()">
+                        <i class="fas fa-plus"></i> 새 카테고리
+                    </button>
+                </div>
+                
+                <div class="panel-content">
+                    <div id="categoryList" class="category-list">
+                        <!-- 카테고리 목록이 여기에 표시됩니다 -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI 뉴스 크롤링 설정 패널 -->
+            <div id="news-crawl-panel" class="content-panel">
+                <div class="panel-header">
+                    <h2>AI 뉴스 크롤링 설정</h2>
+                    <button class="btn btn-primary" onclick="startNewsCrawl()">
+                        <i class="fas fa-play"></i> 지금 수집하기
+                    </button>
+                </div>
+                
+                <div class="panel-content">
+                    <div class="news-settings">
+                        <div class="setting-section">
+                            <h3>키워드 설정</h3>
+                            <div class="keyword-input">
+                                <input type="text" id="newsKeyword" placeholder="키워드 입력 (예: ChatGPT, AI)" class="form-control">
+                                <button class="btn btn-secondary" onclick="addNewsKeyword()">추가</button>
+                            </div>
+                            <div id="keywordList" class="keyword-list">
+                                <!-- 키워드 목록 -->
+                            </div>
+                        </div>
+                        
+                        <div class="setting-section">
+                            <h3>뉴스 소스</h3>
+                            <div class="source-options">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="newsSources" value="google" checked>
+                                    <span>Google News</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="newsSources" value="reddit" checked>
+                                    <span>Reddit</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="newsSources" value="hackernews" checked>
+                                    <span>Hacker News</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="newsSources" value="arxiv">
+                                    <span>arXiv (논문)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 뉴스 목록 패널 -->
+            <div id="news-list-panel" class="content-panel">
+                <div class="news-settings">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>수집된 뉴스</h3>
+                        <div>
+                            <button class="btn btn-primary" onclick="createNewsPost()">
+                                <i class="fas fa-edit"></i> 포스트 생성
+                            </button>
+                            <button class="btn btn-secondary" onclick="clearCollectedNews()">
+                                <i class="fas fa-trash"></i> 모두 삭제
+                            </button>
+                        </div>
+                    </div>
+                    <div id="collectedNewsList">
+                        <!-- 수집된 뉴스 목록 -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- 발행 모달 -->
+    <div id="publishModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>발행 설정</h3>
+                <span class="close" onclick="closePublishModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="publish-options">
+                    <label class="radio-label">
+                        <input type="radio" name="publishTime" value="now" checked>
+                        <span>지금 바로 발행</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="publishTime" value="schedule">
+                        <span>예약 발행</span>
+                    </label>
+                </div>
+                
+                <div id="scheduleOptions" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>날짜</label>
+                            <input type="date" id="scheduleDate" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>시간</label>
+                            <input type="time" id="scheduleTime" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="platform-selection">
+                    <h4>발행할 플랫폼 선택</h4>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="platforms" value="tistory" checked>
+                        <span>티스토리</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="platforms" value="naver">
+                        <span>네이버 블로그</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="platforms" value="velog">
+                        <span>Velog</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="platforms" value="medium">
+                        <span>Medium</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="platforms" value="wordpress">
+                        <span>WordPress</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closePublishModal()">취소</button>
+                <button class="btn btn-primary" onclick="publishPost()">발행</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast 알림 -->
+    <div id="toast" class="toast"></div>
+    
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/category-manager.js"></script>
+    <script src="js/post-manager.js"></script>
+    <script src="js/news-api-production.js"></script>
+</body>
+</html>
