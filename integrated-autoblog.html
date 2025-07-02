@@ -929,6 +929,26 @@
                         <!-- 예약된 포스트 목록 -->
                     </div>
                 </div>
+                
+                <!-- 뉴스 목록 패널 -->
+                <div id="news-list-panel" class="content-panel">
+                    <div class="news-settings">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3>수집된 뉴스</h3>
+                            <div>
+                                <button class="btn btn-primary" onclick="createNewsPost()">
+                                    <i class="fas fa-edit"></i> 포스트 생성
+                                </button>
+                                <button class="btn btn-secondary" onclick="clearCollectedNews()">
+                                    <i class="fas fa-trash"></i> 모두 삭제
+                                </button>
+                            </div>
+                        </div>
+                        <div id="collectedNewsList">
+                            <!-- 수집된 뉴스 목록 -->
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>

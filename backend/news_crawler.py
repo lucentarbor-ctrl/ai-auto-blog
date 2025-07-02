@@ -297,5 +297,5 @@ def summarize_news():
 
 if __name__ == '__main__':
     print("AI 뉴스 크롤러 서버 시작...")
-    print("http://localhost:5000")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    print("http://localhost:5001")
+    app.run(host='0.0.0.0', port=5001, debug=True)

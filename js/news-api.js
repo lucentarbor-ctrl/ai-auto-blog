@@ -1,5 +1,5 @@
 // AI 뉴스 API 연동
-const NEWS_API_BASE = 'http://localhost:5000/api/news';
+const NEWS_API_BASE = 'http://localhost:5001/api/news';
 
 class NewsAPI {
     constructor() {
