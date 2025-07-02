@@ -459,19 +459,6 @@
                     </ul>
                 </div>
                 
-                <!-- GitHub 프로젝트 -->
-                <div class="nav-section">
-                    <div class="nav-header" onclick="toggleSection(this)">
-                        <i class="fab fa-github"></i>
-                        <span>GitHub 프로젝트</span>
-                        <i class="fas fa-chevron-down toggle-icon"></i>
-                    </div>
-                    <ul class="nav-items">
-                        <li><a href="https://github.com/ray1derer" target="_blank"><i class="fas fa-user"></i> 내 프로필</a></li>
-                        <li><a href="https://github.com/ray1derer?tab=repositories" target="_blank"><i class="fas fa-folder-open"></i> 전체 저장소</a></li>
-                        <li><a href="https://github.com/ray1derer/ai-auto-blog" target="_blank"><i class="fas fa-robot"></i> AI 블로그 프로젝트</a></li>
-                    </ul>
-                </div>
             </nav>
         </aside>
         
@@ -581,10 +568,17 @@
                             <label for="smartPostCategory">카테고리</label>
                             <select id="smartPostCategory" class="form-control">
                                 <option value="">카테고리 선택</option>
-                                <option value="tech">기술</option>
-                                <option value="ai">AI & 머신러닝</option>
-                                <option value="productivity">생산성</option>
-                                <option value="review">리뷰</option>
+                                <optgroup label="일반 카테고리">
+                                    <option value="tech">기술</option>
+                                    <option value="ai">AI & 머신러닝</option>
+                                    <option value="productivity">생산성</option>
+                                    <option value="review">리뷰</option>
+                                </optgroup>
+                                <optgroup label="온라인 강좌">
+                                    <option value="노션 마스터 클래스">노션 마스터 클래스</option>
+                                    <option value="옵시디언 마스터 클래스">옵시디언 마스터 클래스</option>
+                                    <option value="Evoto 마스터 클래스">Evoto 마스터 클래스</option>
+                                </optgroup>
                             </select>
                         </div>
                         
@@ -883,12 +877,17 @@
         }
         
         // 글 목록 로드
-        function loadPosts() {
+        function loadPosts(category = null) {
             const dashboard = new DashboardManager();
-            const posts = dashboard.posts;
+            let posts = dashboard.posts;
             const container = document.getElementById('postsList');
             
             if (!container) return;
+            
+            // 카테고리 필터링
+            if (category) {
+                posts = posts.filter(post => post.category === category);
+            }
             
             if (posts.length === 0) {
                 container.innerHTML = '<p style="text-align: center; color: #999;">아직 작성된 글이 없습니다.</p>';
@@ -918,6 +917,67 @@
                     </div>
                 </div>
             `).join('');
+        }
+        
+        // 강좌 카테고리 표시
+        function showCourseCategory(courseType) {
+            // course-data.js 로드
+            if (typeof courseData === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'js/course-data.js';
+                script.onload = () => {
+                    displayCourseContent(courseType);
+                };
+                document.head.appendChild(script);
+            } else {
+                displayCourseContent(courseType);
+            }
+        }
+        
+        function displayCourseContent(courseType) {
+            const course = courseData[courseType];
+            if (!course) return;
+            
+            // 글 목록 패널로 전환
+            showTab('posts');
+            
+            // 헤더 업데이트
+            const header = document.querySelector('#posts-panel .panel-header h2');
+            header.innerHTML = `<i class="${course.icon}" style="color: ${course.color};"></i> ${course.name}`;
+            
+            // 강좌 목록 표시
+            const container = document.getElementById('postsList');
+            container.innerHTML = course.lessons.map(lesson => {
+                const lessonNum = lesson.id.toString().padStart(2, '0');
+                return `
+                    <div class="post-item" style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div>
+                                <h4>제${lesson.id}강: ${lesson.title}</h4>
+                                <div style="display: flex; gap: 15px; margin-top: 10px; font-size: 13px; color: #7f8c8d;">
+                                    <span><i class="fas fa-graduation-cap"></i> ${lesson.module}</span>
+                                    <span><i class="fas fa-play-circle"></i> 강좌 ${lesson.id}/${course.totalLessons}</span>
+                                    <span class="badge" style="background: ${course.color}; color: white;">${course.name}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <a href="${course.path}lesson${lessonNum}.html" target="_blank" class="btn btn-primary">
+                                    <i class="fas fa-external-link-alt"></i> 강좌 보기
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // 뒤로가기 버튼 추가
+            container.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <button class="btn btn-secondary" onclick="loadPosts(); document.querySelector('#posts-panel .panel-header h2').textContent = '전체 글';">
+                        <i class="fas fa-arrow-left"></i> 전체 글로 돌아가기
+                    </button>
+                </div>
+            ` + container.innerHTML;
         }
         
         // 카테고리 관리
