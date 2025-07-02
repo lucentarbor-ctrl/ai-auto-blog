@@ -1,0 +1,203 @@
+<aside id="ai-blog-sidebar" class="sidebar">
+    
+    <!-- 블로그 로고/타이틀 -->
+    <div class="sidebar-header">
+        <h2><i class="fas fa-pencil-alt"></i> AI 자동 블로깅</h2>
+        <p class="tagline">나만의 블로그 작성 & 배포 시스템</p>
+    </div>
+
+    <!-- 빠른 작업 버튼 -->
+    <div class="sidebar-widget widget-quick-actions">
+        <button class="btn-primary" onclick="newPost()">
+            <i class="fas fa-plus-circle"></i> 새 포스트 작성
+        </button>
+    </div>
+
+    <!-- 메인 네비게이션 -->
+    <nav class="main-navigation">
+        
+        <!-- 포스트 작성 -->
+        <div class="nav-section active">
+            <div class="nav-header">
+                <i class="fas fa-edit"></i>
+                <span>포스트 작성</span>
+            </div>
+            <ul class="nav-items">
+                <li><a href="/write/new"><i class="fas fa-file-alt"></i> 새 글 작성</a></li>
+                <li><a href="/write/ai-assist"><i class="fas fa-robot"></i> AI 글쓰기 도우미</a></li>
+                <li><a href="/write/templates"><i class="fas fa-file-invoice"></i> 템플릿 선택</a></li>
+                <li><a href="/write/drafts"><i class="fas fa-save"></i> 임시 저장 목록</a></li>
+                <li><a href="/write/ideas"><i class="fas fa-lightbulb"></i> 아이디어 노트</a></li>
+            </ul>
+        </div>
+
+        <!-- AI 도구 -->
+        <div class="nav-section">
+            <div class="nav-header">
+                <i class="fas fa-magic"></i>
+                <span>AI 콘텐츠 생성</span>
+            </div>
+            <ul class="nav-items">
+                <li><a href="/ai/topic-generator"><i class="fas fa-dice"></i> 주제 생성기</a></li>
+                <li><a href="/ai/title-optimizer"><i class="fas fa-heading"></i> 제목 최적화</a></li>
+                <li><a href="/ai/content-expander"><i class="fas fa-expand-alt"></i> 내용 확장</a></li>
+                <li><a href="/ai/image-generator"><i class="fas fa-image"></i> 썸네일 생성</a></li>
+                <li><a href="/ai/seo-optimizer"><i class="fas fa-search-plus"></i> SEO 최적화</a></li>
+                <li><a href="/ai/translator"><i class="fas fa-language"></i> 다국어 번역</a></li>
+            </ul>
+        </div>
+
+        <!-- 자동화 설정 -->
+        <div class="nav-section">
+            <div class="nav-header">
+                <i class="fas fa-cog"></i>
+                <span>자동화 설정</span>
+            </div>
+            <ul class="nav-items">
+                <li><a href="/automation/rss-feed"><i class="fas fa-rss"></i> RSS 피드 연동</a></li>
+                <li><a href="/automation/news-crawler"><i class="fas fa-newspaper"></i> 뉴스 크롤링</a></li>
+                <li><a href="/automation/schedule"><i class="fas fa-calendar-alt"></i> 예약 발행</a></li>
+                <li><a href="/automation/cross-posting"><i class="fas fa-share-nodes"></i> 멀티 플랫폼 배포</a></li>
+                <li><a href="/automation/workflow"><i class="fas fa-project-diagram"></i> 워크플로우 설정</a></li>
+            </ul>
+        </div>
+
+        <!-- 플랫폼 연동 -->
+        <div class="nav-section">
+            <div class="nav-header">
+                <i class="fas fa-plug"></i>
+                <span>플랫폼 연동</span>
+            </div>
+            <ul class="nav-items">
+                <li><a href="/platforms/tistory"><i class="fas fa-blog"></i> 티스토리</a></li>
+                <li><a href="/platforms/naver"><i class="fas fa-n"></i> 네이버 블로그</a></li>
+                <li><a href="/platforms/velog"><i class="fas fa-v"></i> Velog</a></li>
+                <li><a href="/platforms/medium"><i class="fab fa-medium"></i> Medium</a></li>
+                <li><a href="/platforms/wordpress"><i class="fab fa-wordpress"></i> WordPress</a></li>
+                <li><a href="/platforms/github"><i class="fab fa-github"></i> GitHub Pages</a></li>
+            </ul>
+        </div>
+
+        <!-- 콘텐츠 관리 -->
+        <div class="nav-section">
+            <div class="nav-header">
+                <i class="fas fa-folder-open"></i>
+                <span>콘텐츠 관리</span>
+            </div>
+            <ul class="nav-items">
+                <li><a href="/content/published"><i class="fas fa-check-circle"></i> 발행된 글</a></li>
+                <li><a href="/content/drafts"><i class="fas fa-file"></i> 초안 관리</a></li>
+                <li><a href="/content/categories"><i class="fas fa-tags"></i> 카테고리 관리</a></li>
+                <li><a href="/content/media"><i class="fas fa-photo-video"></i> 미디어 라이브러리</a></li>
+                <li><a href="/content/backup"><i class="fas fa-cloud-download-alt"></i> 백업 & 복원</a></li>
+            </ul>
+        </div>
+
+        <!-- 통계 & 분석 -->
+        <div class="nav-section">
+            <div class="nav-header">
+                <i class="fas fa-chart-line"></i>
+                <span>통계 & 분석</span>
+            </div>
+            <ul class="nav-items">
+                <li><a href="/analytics/overview"><i class="fas fa-dashboard"></i> 대시보드</a></li>
+                <li><a href="/analytics/posts"><i class="fas fa-chart-bar"></i> 포스트 성과</a></li>
+                <li><a href="/analytics/keywords"><i class="fas fa-key"></i> 키워드 분석</a></li>
+                <li><a href="/analytics/traffic"><i class="fas fa-users"></i> 트래픽 분석</a></li>
+                <li><a href="/analytics/trends"><i class="fas fa-trending-up"></i> 트렌드 추적</a></li>
+            </ul>
+        </div>
+
+        <!-- 도구 & 유틸리티 -->
+        <div class="nav-section">
+            <div class="nav-header">
+                <i class="fas fa-toolbox"></i>
+                <span>도구 & 유틸리티</span>
+            </div>
+            <ul class="nav-items">
+                <li><a href="/tools/prompt-library"><i class="fas fa-book"></i> 프롬프트 라이브러리</a></li>
+                <li><a href="/tools/keyword-research"><i class="fas fa-search"></i> 키워드 리서치</a></li>
+                <li><a href="/tools/plagiarism-check"><i class="fas fa-copy"></i> 표절 검사</a></li>
+                <li><a href="/tools/readability"><i class="fas fa-glasses"></i> 가독성 분석</a></li>
+                <li><a href="/tools/hashtag-generator"><i class="fas fa-hashtag"></i> 해시태그 생성</a></li>
+            </ul>
+        </div>
+
+        <!-- 설정 -->
+        <div class="nav-section">
+            <div class="nav-header">
+                <i class="fas fa-sliders-h"></i>
+                <span>설정</span>
+            </div>
+            <ul class="nav-items">
+                <li><a href="/settings/api-keys"><i class="fas fa-key"></i> API 키 관리</a></li>
+                <li><a href="/settings/platforms"><i class="fas fa-link"></i> 플랫폼 연결</a></li>
+                <li><a href="/settings/preferences"><i class="fas fa-user-cog"></i> 환경 설정</a></li>
+                <li><a href="/settings/templates"><i class="fas fa-file-code"></i> 템플릿 관리</a></li>
+                <li><a href="/settings/export"><i class="fas fa-download"></i> 데이터 내보내기</a></li>
+            </ul>
+        </div>
+
+    </nav>
+
+    <!-- 현재 작업 상태 -->
+    <div class="sidebar-widget widget-status">
+        <h3 class="widget-title"><i class="fas fa-tasks"></i> 작업 상태</h3>
+        <div class="status-list">
+            <div class="status-item">
+                <span class="status-label">오늘 작성</span>
+                <span class="status-value">3개</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">예약 발행</span>
+                <span class="status-value">5개</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">초안</span>
+                <span class="status-value">12개</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 빠른 실행 -->
+    <div class="sidebar-widget widget-shortcuts">
+        <h3 class="widget-title"><i class="fas fa-rocket"></i> 빠른 실행</h3>
+        <div class="shortcut-grid">
+            <button class="shortcut-btn" title="AI 글쓰기" onclick="quickAIWrite()">
+                <i class="fas fa-robot"></i>
+            </button>
+            <button class="shortcut-btn" title="뉴스 수집" onclick="collectNews()">
+                <i class="fas fa-newspaper"></i>
+            </button>
+            <button class="shortcut-btn" title="일괄 발행" onclick="bulkPublish()">
+                <i class="fas fa-upload"></i>
+            </button>
+            <button class="shortcut-btn" title="통계 확인" onclick="viewStats()">
+                <i class="fas fa-chart-pie"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 최근 활동 -->
+    <div class="sidebar-widget widget-activity">
+        <h3 class="widget-title"><i class="fas fa-history"></i> 최근 활동</h3>
+        <ul class="activity-list">
+            <li class="activity-item">
+                <i class="fas fa-check text-success"></i>
+                <span>"AI 트렌드 2025" 발행 완료</span>
+                <small>10분 전</small>
+            </li>
+            <li class="activity-item">
+                <i class="fas fa-edit text-info"></i>
+                <span>"ChatGPT 활용법" 초안 저장</span>
+                <small>30분 전</small>
+            </li>
+            <li class="activity-item">
+                <i class="fas fa-sync text-warning"></i>
+                <span>뉴스 크롤링 완료 (15건)</span>
+                <small>1시간 전</small>
+            </li>
+        </ul>
+    </div>
+
+</aside>

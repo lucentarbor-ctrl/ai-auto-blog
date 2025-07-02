@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 자동 블로깅 시스템</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        /* 레이아웃 */
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* 사이드바 */
+        .sidebar {
+            width: 280px;
+            background: #2c3e50;
+            color: white;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            background: #34495e;
+            text-align: center;
+        }
+        
+        .sidebar-header h2 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header .tagline {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        /* 빠른 작업 버튼 */
+        .btn-primary {
+            width: calc(100% - 40px);
+            margin: 20px;
+            padding: 12px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        /* 네비게이션 */
+        .nav-section {
+            margin-bottom: 5px;
+        }
+        
+        .nav-header {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.3s;
+        }
+        
+        .nav-header:hover {
+            background: #34495e;
+        }
+        
+        .nav-items {
+            list-style: none;
+            display: none;
+        }
+        
+        .nav-section.active .nav-items {
+            display: block;
+        }
+        
+        .nav-items a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px 10px 40px;
+            color: #ecf0f1;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .nav-items a:hover {
+            background: #34495e;
+            padding-left: 45px;
+        }
+        
+        /* 메인 콘텐츠 */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+        
+        /* 포스트 작성 영역 */
+        .post-editor {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .editor-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .editor-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-save {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .btn-save:hover {
+            background: #27ae60;
+        }
+        
+        .btn-publish {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-publish:hover {
+            background: #c0392b;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        /* 포스트 입력 필드 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 400px;
+            font-family: inherit;
+        }
+        
+        /* 카테고리 선택 */
+        .category-section {
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+        }
+        
+        .category-select {
+            flex: 1;
+        }
+        
+        .btn-add-category {
+            padding: 10px 20px;
+            background: #9b59b6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn-add-category:hover {
+            background: #8e44ad;
+        }
+        
+        /* 플랫폼 선택 */
+        .platform-selection {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .platform-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 15px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .platform-checkbox:hover {
+            background: #bdc3c7;
+        }
+        
+        .platform-checkbox input[type="checkbox"] {
+            cursor: pointer;
+        }
+        
+        .platform-checkbox.selected {
+            background: #3498db;
+            color: white;
+        }
+        
+        /* AI 도우미 패널 */
+        .ai-assistant {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 350px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: none;
+        }
+        
+        .ai-assistant.show {
+            display: block;
+        }
+        
+        .ai-header {
+            padding: 15px;
+            background: #3498db;
+            color: white;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .ai-body {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .ai-suggestions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .suggestion-item {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .suggestion-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        /* 카테고리 관리 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .category-list {
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .category-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .category-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        /* 통계 위젯 */
+        .stats-widget {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #3498db;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        /* 플로팅 액션 버튼 */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        /* 토스트 알림 */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            background: #2ecc71;
+            color: white;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1001;
+        }
+        
+        .toast.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateX(-50%) translateY(100%);
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                height: 100%;
+                z-index: 999;
+                transition: left 0.3s;
+            }
+            
+            .sidebar.show {
+                left: 0;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .category-section {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .ai-assistant {
+                width: calc(100% - 40px);
+                right: 20px;
+                left: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 사이드바 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-pencil-alt"></i> AI 자동 블로깅</h2>
+                <p class="tagline">나만의 블로그 작성 & 배포 시스템</p>
+            </div>
+
+            <button class="btn-primary" onclick="newPost()">
+                <i class="fas fa-plus-circle"></i> 새 포스트 작성
+            </button>
+
+            <nav class="main-navigation">
+                <div class="nav-section active">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-edit"></i>
+                        <span>포스트 작성</span>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#" onclick="showEditor()"><i class="fas fa-file-alt"></i> 새 글 작성</a></li>
+                        <li><a href="#" onclick="showAIAssistant()"><i class="fas fa-robot"></i> AI 글쓰기 도우미</a></li>
+                        <li><a href="#" onclick="showTemplates()"><i class="fas fa-file-invoice"></i> 템플릿 선택</a></li>
+                        <li><a href="#" onclick="showDrafts()"><i class="fas fa-save"></i> 임시 저장 목록</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-cog"></i>
+                        <span>자동화 설정</span>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#"><i class="fas fa-rss"></i> RSS 피드 연동</a></li>
+                        <li><a href="#"><i class="fas fa-newspaper"></i> 뉴스 크롤링</a></li>
+                        <li><a href="#"><i class="fas fa-calendar-alt"></i> 예약 발행</a></li>
+                        <li><a href="#"><i class="fas fa-share-nodes"></i> 멀티 플랫폼 배포</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-plug"></i>
+                        <span>플랫폼 연동</span>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#"><i class="fas fa-blog"></i> 티스토리</a></li>
+                        <li><a href="#"><i class="fas fa-n"></i> 네이버 블로그</a></li>
+                        <li><a href="#"><i class="fas fa-v"></i> Velog</a></li>
+                        <li><a href="#"><i class="fab fa-medium"></i> Medium</a></li>
+                        <li><a href="#"><i class="fab fa-wordpress"></i> WordPress</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-header" onclick="toggleSection(this)">
+                        <i class="fas fa-chart-line"></i>
+                        <span>통계 & 분석</span>
+                    </div>
+                    <ul class="nav-items">
+                        <li><a href="#"><i class="fas fa-dashboard"></i> 대시보드</a></li>
+                        <li><a href="#"><i class="fas fa-chart-bar"></i> 포스트 성과</a></li>
+                        <li><a href="#"><i class="fas fa-trending-up"></i> 트렌드 추적</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="main-content">
+            <!-- 통계 위젯 -->
+            <div class="stats-widget">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">24</div>
+                        <div class="stat-label">오늘 작성</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">156</div>
+                        <div class="stat-label">총 포스트</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">5</div>
+                        <div class="stat-label">예약 발행</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">초안</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 포스트 에디터 -->
+            <div class="post-editor">
+                <div class="editor-header">
+                    <h2 class="editor-title">새 포스트 작성</h2>
+                    <div class="editor-actions">
+                        <button class="btn btn-secondary" onclick="saveDraft()">
+                            <i class="fas fa-save"></i> 초안 저장
+                        </button>
+                        <button class="btn btn-save" onclick="savePost()">
+                            <i class="fas fa-check"></i> 저장
+                        </button>
+                        <button class="btn btn-publish" onclick="publishPost()">
+                            <i class="fas fa-upload"></i> 발행
+                        </button>
+                    </div>
+                </div>
+
+                <form id="postForm">
+                    <div class="form-group">
+                        <label class="form-label">제목</label>
+                        <input type="text" class="form-control" id="postTitle" placeholder="포스트 제목을 입력하세요">
+                    </div>
+
+                    <div class="form-group category-section">
+                        <div class="category-select">
+                            <label class="form-label">카테고리</label>
+                            <select class="form-control" id="postCategory">
+                                <option value="">카테고리 선택</option>
+                                <option value="tech">기술</option>
+                                <option value="life">라이프</option>
+                                <option value="review">리뷰</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn-add-category" onclick="showCategoryModal()">
+                            <i class="fas fa-plus"></i> 카테고리 관리
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">태그</label>
+                        <input type="text" class="form-control" id="postTags" placeholder="태그를 입력하세요 (쉼표로 구분)">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">내용</label>
+                        <textarea class="form-control" id="postContent" placeholder="포스트 내용을 입력하세요"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">발행 플랫폼</label>
+                        <div class="platform-selection">
+                            <label class="platform-checkbox">
+                                <input type="checkbox" name="platforms" value="tistory">
+                                <span>티스토리</span>
+                            </label>
+                            <label class="platform-checkbox">
+                                <input type="checkbox" name="platforms" value="naver">
+                                <span>네이버 블로그</span>
+                            </label>
+                            <label class="platform-checkbox">
+                                <input type="checkbox" name="platforms" value="velog">
+                                <span>Velog</span>
+                            </label>
+                            <label class="platform-checkbox">
+                                <input type="checkbox" name="platforms" value="medium">
+                                <span>Medium</span>
+                            </label>
+                            <label class="platform-checkbox">
+                                <input type="checkbox" name="platforms" value="wordpress">
+                                <span>WordPress</span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- AI 도우미 -->
+    <div class="ai-assistant" id="aiAssistant">
+        <div class="ai-header">
+            <h3><i class="fas fa-robot"></i> AI 도우미</h3>
+            <button class="modal-close" onclick="hideAIAssistant()">&times;</button>
+        </div>
+        <div class="ai-body">
+            <div class="ai-suggestions">
+                <div class="suggestion-item" onclick="useAISuggestion('title')">
+                    <i class="fas fa-heading"></i> 제목 추천
+                </div>
+                <div class="suggestion-item" onclick="useAISuggestion('intro')">
+                    <i class="fas fa-paragraph"></i> 서론 작성
+                </div>
+                <div class="suggestion-item" onclick="useAISuggestion('outline')">
+                    <i class="fas fa-list"></i> 개요 생성
+                </div>
+                <div class="suggestion-item" onclick="useAISuggestion('expand')">
+                    <i class="fas fa-expand-alt"></i> 내용 확장
+                </div>
+                <div class="suggestion-item" onclick="useAISuggestion('seo')">
+                    <i class="fas fa-search"></i> SEO 최적화
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 카테고리 관리 모달 -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">카테고리 관리</h3>
+                <button class="modal-close" onclick="hideCategoryModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">새 카테고리 추가</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" class="form-control" id="newCategoryName" placeholder="카테고리 이름">
+                        <button class="btn btn-save" onclick="addCategory()">추가</button>
+                    </div>
+                </div>
+                <div class="category-list" id="categoryList">
+                    <div class="category-item">
+                        <span>기술</span>
+                        <button class="btn-delete" onclick="deleteCategory('tech')">삭제</button>
+                    </div>
+                    <div class="category-item">
+                        <span>라이프</span>
+                        <button class="btn-delete" onclick="deleteCategory('life')">삭제</button>
+                    </div>
+                    <div class="category-item">
+                        <span>리뷰</span>
+                        <button class="btn-delete" onclick="deleteCategory('review')">삭제</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 플로팅 액션 버튼 -->
+    <button class="fab" onclick="showAIAssistant()">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <!-- 토스트 알림 -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 로컬 스토리지 키
+        const STORAGE_KEYS = {
+            categories: 'autoblog_categories',
+            drafts: 'autoblog_drafts',
+            posts: 'autoblog_posts'
+        };
+
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCategories();
+            setupPlatformCheckboxes();
+        });
+
+        // 사이드바 토글
+        function toggleSection(header) {
+            const section = header.parentElement;
+            section.classList.toggle('active');
+        }
+
+        // 새 포스트 작성
+        function newPost() {
+            document.getElementById('postForm').reset();
+            showToast('새 포스트를 작성합니다');
+        }
+
+        // AI 도우미 표시/숨기기
+        function showAIAssistant() {
+            document.getElementById('aiAssistant').classList.add('show');
+        }
+
+        function hideAIAssistant() {
+            document.getElementById('aiAssistant').classList.remove('show');
+        }
+
+        // AI 제안 사용
+        function useAISuggestion(type) {
+            switch(type) {
+                case 'title':
+                    generateTitle();
+                    break;
+                case 'intro':
+                    generateIntro();
+                    break;
+                case 'outline':
+                    generateOutline();
+                    break;
+                case 'expand':
+                    expandContent();
+                    break;
+                case 'seo':
+                    optimizeSEO();
+                    break;
+            }
+            showToast('AI가 콘텐츠를 생성 중입니다...');
+        }
+
+        // 제목 생성
+        function generateTitle() {
+            const content = document.getElementById('postContent').value;
+            // AI API 호출 시뮬레이션
+            setTimeout(() => {
+                document.getElementById('postTitle').value = 'AI가 생성한 매력적인 제목입니다';
+                showToast('제목이 생성되었습니다');
+            }, 1000);
+        }
+
+        // 카테고리 모달 표시/숨기기
+        function showCategoryModal() {
+            document.getElementById('categoryModal').classList.add('show');
+            loadCategoriesInModal();
+        }
+
+        function hideCategoryModal() {
+            document.getElementById('categoryModal').classList.remove('show');
+        }
+
+        // 카테고리 로드
+        function loadCategories() {
+            const categories = getCategories();
+            const select = document.getElementById('postCategory');
+            select.innerHTML = '<option value="">카테고리 선택</option>';
+            
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                select.appendChild(option);
+            });
+        }
+
+        // 카테고리 목록 로드 (모달)
+        function loadCategoriesInModal() {
+            const categories = getCategories();
+            const list = document.getElementById('categoryList');
+            list.innerHTML = '';
+            
+            categories.forEach(cat => {
+                const item = document.createElement('div');
+                item.className = 'category-item';
+                item.innerHTML = `
+                    <span>${cat.name}</span>
+                    <button class="btn-delete" onclick="deleteCategory('${cat.id}')">삭제</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        // 카테고리 추가
+        function addCategory() {
+            const name = document.getElementById('newCategoryName').value.trim();
+            if (!name) {
+                showToast('카테고리 이름을 입력하세요', 'error');
+                return;
+            }
+            
+            const categories = getCategories();
+            const newCategory = {
+                id: 'cat_' + Date.now(),
+                name: name
+            };
+            
+            categories.push(newCategory);
+            saveCategories(categories);
+            
+            document.getElementById('newCategoryName').value = '';
+            loadCategories();
+            loadCategoriesInModal();
+            showToast('카테고리가 추가되었습니다');
+        }
+
+        // 카테고리 삭제
+        function deleteCategory(id) {
+            if (!confirm('이 카테고리를 삭제하시겠습니까?')) return;
+            
+            const categories = getCategories().filter(cat => cat.id !== id);
+            saveCategories(categories);
+            
+            loadCategories();
+            loadCategoriesInModal();
+            showToast('카테고리가 삭제되었습니다');
+        }
+
+        // 카테고리 저장/로드
+        function getCategories() {
+            const saved = localStorage.getItem(STORAGE_KEYS.categories);
+            return saved ? JSON.parse(saved) : [
+                { id: 'tech', name: '기술' },
+                { id: 'life', name: '라이프' },
+                { id: 'review', name: '리뷰' }
+            ];
+        }
+
+        function saveCategories(categories) {
+            localStorage.setItem(STORAGE_KEYS.categories, JSON.stringify(categories));
+        }
+
+        // 플랫폼 체크박스 설정
+        function setupPlatformCheckboxes() {
+            const checkboxes = document.querySelectorAll('.platform-checkbox input');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    this.parentElement.classList.toggle('selected', this.checked);
+                });
+            });
+        }
+
+        // 포스트 저장
+        function savePost() {
+            const post = getPostData();
+            if (!validatePost(post)) return;
+            
+            const posts = getPosts();
+            post.id = 'post_' + Date.now();
+            post.createdAt = new Date().toISOString();
+            posts.push(post);
+            
+            savePosts(posts);
+            showToast('포스트가 저장되었습니다');
+        }
+
+        // 초안 저장
+        function saveDraft() {
+            const post = getPostData();
+            post.isDraft = true;
+            
+            const drafts = getDrafts();
+            post.id = 'draft_' + Date.now();
+            post.createdAt = new Date().toISOString();
+            drafts.push(post);
+            
+            saveDrafts(drafts);
+            showToast('초안이 저장되었습니다');
+        }
+
+        // 포스트 발행
+        function publishPost() {
+            const post = getPostData();
+            if (!validatePost(post)) return;
+            
+            const platforms = getSelectedPlatforms();
+            if (platforms.length === 0) {
+                showToast('발행할 플랫폼을 선택하세요', 'error');
+                return;
+            }
+            
+            // 각 플랫폼으로 발행 (API 호출 시뮬레이션)
+            platforms.forEach(platform => {
+                publishToPlatform(post, platform);
+            });
+            
+            showToast(`${platforms.length}개 플랫폼으로 발행 중...`);
+        }
+
+        // 플랫폼별 발행
+        function publishToPlatform(post, platform) {
+            // 실제로는 각 플랫폼 API를 호출
+            console.log(`Publishing to ${platform}:`, post);
+            
+            setTimeout(() => {
+                showToast(`${platform}에 발행 완료!`);
+            }, 2000);
+        }
+
+        // 포스트 데이터 가져오기
+        function getPostData() {
+            return {
+                title: document.getElementById('postTitle').value,
+                category: document.getElementById('postCategory').value,
+                tags: document.getElementById('postTags').value.split(',').map(t => t.trim()),
+                content: document.getElementById('postContent').value,
+                platforms: getSelectedPlatforms()
+            };
+        }
+
+        // 선택된 플랫폼 가져오기
+        function getSelectedPlatforms() {
+            const checkboxes = document.querySelectorAll('input[name="platforms"]:checked');
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        // 포스트 검증
+        function validatePost(post) {
+            if (!post.title) {
+                showToast('제목을 입력하세요', 'error');
+                return false;
+            }
+            if (!post.content) {
+                showToast('내용을 입력하세요', 'error');
+                return false;
+            }
+            return true;
+        }
+
+        // 포스트 저장/로드
+        function getPosts() {
+            const saved = localStorage.getItem(STORAGE_KEYS.posts);
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        function savePosts(posts) {
+            localStorage.setItem(STORAGE_KEYS.posts, JSON.stringify(posts));
+        }
+
+        // 초안 저장/로드
+        function getDrafts() {
+            const saved = localStorage.getItem(STORAGE_KEYS.drafts);
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        function saveDrafts(drafts) {
+            localStorage.setItem(STORAGE_KEYS.drafts, JSON.stringify(drafts));
+        }
+
+        // 토스트 알림
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = type === 'error' ? '#e74c3c' : '#2ecc71';
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 모바일 메뉴 토글
+        function toggleMobileMenu() {
+            document.querySelector('.sidebar').classList.toggle('show');
+        }
+    </script>
+</body>
+</html>
