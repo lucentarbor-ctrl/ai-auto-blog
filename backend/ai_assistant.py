@@ -10,13 +10,14 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from typing import List, Dict
 import re
+import openai
 
 # OpenAI API 키 (환경변수에서 가져오기)
 # export OPENAI_API_KEY="your-api-key"
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 # 개발 중에는 더미 응답 사용
-USE_DUMMY_RESPONSES = True  # API 키가 없을 때는 True로 설정
+USE_DUMMY_RESPONSES = False  # API 키가 없을 때는 True로 설정
 
 app = Flask(__name__)
 CORS(app)
@@ -26,6 +27,7 @@ class AIAssistant:
         self.api_key = OPENAI_API_KEY
         if not self.api_key and not USE_DUMMY_RESPONSES:
             raise ValueError("OpenAI API 키가 설정되지 않았습니다.")
+        self.client = openai.OpenAI(api_key=self.api_key)
     
     def generate_titles(self, topic: str, keywords: List[str] = None) -> List[Dict]:
         """SEO 최적화된 제목 5개 생성"""
@@ -96,12 +98,53 @@ class AIAssistant:
             "academic": "학술적이고 논리적인"
         }
         
-        if USE_DUMMY_RESPONSES:
-            style_desc = tone_styles.get(tone, "일반적인")
-            return f"[{style_desc} 톤으로 변경]\n{text}"
-        
         # TODO: 실제 OpenAI API 호출 구현
-        pass
+        # Use the client to make the API call
+        style_desc = tone_styles.get(tone, "일반적인")
+        
+        messages = [
+            {"role": "system", "content": f"You are a helpful assistant that can rewrite text in a specific tone. Rewrite the following text in a {style_desc} tone."},
+            {"role": "user", "content": text}
+        ]
+        
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-3.5-turbo", # Or a more suitable model like gpt-4
+                messages=messages,
+                max_tokens=1000,
+                temperature=0.7,
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            print(f"Error changing tone with OpenAI API: {e}")
+            return f"[오류: 톤 변경 실패] {text}"
+    
+    def generate_from_template(self, template_name: str, content: str) -> str:
+        """템플릿 기반 텍스트 생성"""
+        templates = {
+            "blog_post_intro": "You are a professional blogger. Write an engaging blog post introduction based on the following content: {content}",
+            "product_description": "You are a marketing expert. Write a compelling product description based on the following product details: {content}",
+            "social_media_post": "You are a social media manager. Write a short and catchy social media post based on the following content: {content}"
+        }
+        
+        prompt_template = templates.get(template_name, "You are a helpful assistant. Generate text based on the following content: {content}")
+        
+        messages = [
+            {"role": "system", "content": prompt_template.format(content=content)},
+            {"role": "user", "content": content}
+        ]
+        
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-3.5-turbo", # Or a more suitable model
+                messages=messages,
+                max_tokens=1500,
+                temperature=0.7,
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            print(f"Error generating from template with OpenAI API: {e}")
+            return f"[오류: 템플릿 생성 실패] {content}"
     
     def analyze_seo(self, title: str, content: str) -> Dict:
         """SEO 분석"""
@@ -295,15 +338,37 @@ def check_tone():
             'result': result
         })
         
-    except Exception as e:
-        return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 500
-
-@app.route('/api/ai/test', methods=['GET'])
-def test_ai():
-    """AI API 테스트"""
+            except Exception as e:
+                return jsonify({
+                    'status': 'error',
+                    'message': str(e)
+                }), 500
+    
+    @app.route('/api/ai/generate-from-template', methods=['POST'])
+    def generate_from_template_api():
+        """템플릿 기반 텍스트 생성 API"""
+        try:
+            data = request.get_json()
+            template_name = data.get('template_name', '')
+            content = data.get('content', '')
+            
+            if not template_name or not content:
+                return jsonify({'error': '템플릿 이름과 내용을 모두 입력해주세요'}), 400
+            
+            generated_text = assistant.generate_from_template(template_name, content)
+            return jsonify({
+                'status': 'success',
+                'generated_text': generated_text
+            })
+            
+        except Exception as e:
+            return jsonify({
+                'status': 'error',
+                'message': str(e)
+            }), 500
+    
+    @app.route('/api/ai/test', methods=['GET'])
+    def test_ai():    """AI API 테스트"""
     return jsonify({
         'status': 'success',
         'message': 'AI Assistant API is running',
@@ -314,7 +379,8 @@ def test_ai():
             '/api/ai/summarize',
             '/api/ai/change-tone',
             '/api/ai/analyze-seo',
-            '/api/ai/check-tone'
+            '/api/ai/check-tone',
+            '/api/ai/generate-from-template'
         ]
     })
 

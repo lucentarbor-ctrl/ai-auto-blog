@@ -1,5 +1,11 @@
-flask==3.0.0
-flask-cors==4.0.0
-requests==2.31.0
-beautifulsoup4==4.12.2
-feedparser==6.0.10
+fastapi
+uvicorn[standard]
+requests
+beautifulsoup4
+openai
+python-dotenv
+googlesearch-python
+sqlalchemy
+sumy
+nltk
+google-generativeai
