@@ -1,5 +1,5 @@
 // API 클라이언트 - 모든 서버 통신을 관리
-const API_BASE_URL = 'http://127.0.0.1:8003/api';
+const API_BASE_URL = 'http://3.34.5.55:5000';
 
 class APIClient {
     constructor() {
@@ -39,7 +39,8 @@ class APIClient {
     }
 
     async getTrendingKeywords(limit = 10) {
-        return this.request(`/trending-keywords?limit=${limit}`);
+        const response = await this.request(`/trending-keywords?limit=${limit}`);
+        return response.keywords || [];
     }
 
     async getAnalyticsByPeriod(days) {
