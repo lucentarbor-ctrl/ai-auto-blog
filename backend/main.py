@@ -237,7 +237,7 @@ def generate_titles_api(request: dict):
     if not topic.strip():
         return {"titles": []}
 
-    prompt = f"블로그 주제 '{topic}'에 대한 흥미로운 제목 5개를 제안해주세요. 각 제목은 60자 미만이어야 합니다. 결과는 'titles' 키를 가진 JSON 리스트 형식으로 반환해주세요. 예: [{"title": "제목1"}, {"title": "제목2"}]"
+    prompt = f"블로그 주제 '{topic}'에 대한 흥미로운 제목 5개를 제안해주세요. 각 제목은 60자 미만이어야 합니다. 결과는 'titles' 키를 가진 JSON 리스트 형식으로 반환해주세요. 예: [{{'title': '제목1'}}, {{'title': '제목2'}}]"
 
     try:
         model = genai.GenerativeModel("gemini-pro")
@@ -280,7 +280,9 @@ def fact_check_api(request: dict):
     if not content.strip():
         return {"results": []}
 
-    prompt = f"""다음 텍스트의 주요 주장들을 식별하고, 각 주장에 대한 팩트체크를 수행해주세요. 각 주장에 대해 '검증됨', '검증 필요', '오류' 중 하나의 상태와 함께 간단한 설명을 제공해주세요. 결과를 JSON 형식의 리스트로 반환해주세요. 각 항목은 'claim', 'status', 'explanation' 키를 가져야 합니다.\n\n텍스트: """{content}""""""
+    prompt = f"""다음 텍스트의 주요 주장들을 식별하고, 각 주장에 대한 팩트체크를 수행해주세요. 각 주장에 대해 '검증됨', '검증 필요', '오류' 중 하나의 상태와 함께 간단한 설명을 제공해주세요. 결과를 JSON 형식의 리스트로 반환해주세요. 각 항목은 'claim', 'status', 'explanation' 키를 가져야 합니다.
+
+텍스트: {content}"""
 
     try:
         model = genai.GenerativeModel("gemini-pro")
@@ -310,7 +312,9 @@ def analyze_seo_api(request: dict):
     if not content.strip():
         return {"score": 0, "suggestions": ["분석할 콘텐츠가 없습니다."]}
 
-    prompt = f"""다음 블로그 콘텐츠에 대한 SEO 분석을 수행하고, 100점 만점의 점수와 구체적인 개선 제안 목록을 제공해주세요. 점수는 'score' 키에, 제안 목록은 'suggestions' 키에 담아 JSON 형식으로 반환해주세요.\n\n콘텐츠: """{content}""""""
+    prompt = f"""다음 블로그 콘텐츠에 대한 SEO 분석을 수행하고, 100점 만점의 점수와 구체적인 개선 제안 목록을 제공해주세요. 점수는 'score' 키에, 제안 목록은 'suggestions' 키에 담아 JSON 형식으로 반환해주세요.
+
+콘텐츠: {content}"""
 
     try:
         model = genai.GenerativeModel("gemini-pro")
@@ -334,7 +338,7 @@ def generate_hashtags_api(request: dict):
     if not content.strip():
         return {"hashtags": []}
 
-    prompt = f"다음 콘텐츠에 가장 적합한 해시태그 목록을 생성해주세요. 결과는 JSON 형식의 리스트로, 각 해시태그는 '#'으로 시작해야 합니다.\n\n콘텐츠: """{content}""""
+    prompt = f"다음 콘텐츠에 가장 적합한 해시태그 목록을 생성해주세요. 결과는 JSON 형식의 리스트로, 각 해시태그는 '#'으로 시작해야 합니다.\n\n콘텐츠: {content}"
 
     try:
         model = genai.GenerativeModel("gemini-pro")
@@ -366,7 +370,9 @@ def analyze_readability_api(request: dict):
     if not content.strip():
         return {"score": 0, "level": "N/A", "suggestions": ["분석할 콘텐츠가 없습니다."]}
 
-    prompt = f"""다음 텍스트의 가독성을 분석해주세요. 100점 만점의 'score', 가독성 수준을 나타내는 'level' (예: 초급, 중급, 고급), 그리고 개선 제안 목록인 'suggestions'를 포함한 JSON 형식으로 결과를 반환해주세요.\n\n텍스트: """{content}""""""
+    prompt = f"""다음 텍스트의 가독성을 분석해주세요. 100점 만점의 'score', 가독성 수준을 나타내는 'level' (예: 초급, 중급, 고급), 그리고 개선 제안 목록인 'suggestions'를 포함한 JSON 형식으로 결과를 반환해주세요.
+
+텍스트: {content}"""
 
     try:
         model = genai.GenerativeModel("gemini-pro")

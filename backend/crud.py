@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
 from datetime import datetime, timedelta
 import models, schemas
+import urllib.parse
 
 # --- Post CRUD ---
 def get_post(db: Session, post_id: int):
@@ -165,12 +166,52 @@ def get_user_activity_stats(db: Session, days: int = 7):
     ).scalar() or 0
     
     bounce_rate = (single_page_sessions / total_sessions * 100) if total_sessions > 0 else 0
+
+    # 상위 유입 경로
+    top_referrers_query = db.query(
+        models.UserActivity.referrer,
+        func.count(models.UserActivity.referrer).label('count')
+    ).filter(
+        models.UserActivity.created_at >= start_date,
+        models.UserActivity.referrer != None
+    ).group_by(
+        models.UserActivity.referrer
+    ).order_by(
+        desc('count')
+    ).limit(5)
+
+    top_referrers = top_referrers_query.all()
+
+    total_referrers_count = db.query(models.UserActivity).filter(
+        models.UserActivity.created_at >= start_date,
+        models.UserActivity.referrer != None
+    ).count()
+
+    formatted_referrers = []
+    for referrer, count in top_referrers:
+        percentage = (count / total_referrers_count * 100) if total_referrers_count > 0 else 0
+        # 간단한 호스트네임 추출
+        try:
+            hostname = urllib.parse.urlparse(referrer).hostname
+            if hostname and 'google' in hostname:
+                hostname = 'Google'
+            elif hostname and 'naver' in hostname:
+                hostname = 'Naver'
+            elif hostname and 'facebook' in hostname:
+                hostname = 'Facebook'
+            else:
+                hostname = hostname or 'Direct'
+        except:
+            hostname = referrer or "Direct"
+
+        formatted_referrers.append({"source": hostname, "value": round(percentage, 1)})
     
     return {
         "page_views": page_views,
         "unique_visitors": unique_visitors,
         "avg_session_duration": round(avg_time, 2),
-        "bounce_rate": round(bounce_rate, 1)
+        "bounce_rate": round(bounce_rate, 1),
+        "top_referrers": formatted_referrers
     }
 
 # --- Trend Keywords CRUD ---

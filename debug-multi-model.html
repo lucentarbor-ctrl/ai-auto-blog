@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>6개 모델 디버그</title>
+    <style>
+        body { background: #1a1a1a; color: #e0e0e0; font-family: monospace; padding: 20px; }
+        .model { margin: 10px 0; padding: 15px; background: #2a2a2a; border-radius: 8px; }
+        .success { border-left: 4px solid #22c55e; }
+        .error { border-left: 4px solid #ef4444; }
+        .processing { border-left: 4px solid #f59e0b; }
+        button { padding: 15px 30px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; margin: 10px; }
+        button:hover { background: #5568d3; }
+    </style>
+</head>
+<body>
+    <h1>6개 AI 모델 동시 테스트</h1>
+    
+    <button onclick="testAll()">🚀 모든 모델 테스트 시작</button>
+    <button onclick="clearResults()">🗑️ 결과 지우기</button>
+    
+    <div id="results"></div>
+    
+    <script>
+        const models = [
+            {
+                name: 'Gemini 2.0 Flash',
+                type: 'gemini',
+                id: 'gemini-2.0-flash-exp',
+                apiKey: 'AIzaSyAmLSwyMGCkDpSojwPjQwTnYmlAQjrdH7g'
+            },
+            {
+                name: 'Gemini 2.0 Flash Pro',
+                type: 'gemini',
+                id: 'gemini-2.0-flash',
+                apiKey: 'AIzaSyAmLSwyMGCkDpSojwPjQwTnYmlAQjrdH7g'
+            },
+            {
+                name: 'DeepSeek v3.1',
+                type: 'ollama',
+                id: 'deepseek-v3.1:671b-cloud'
+            },
+            {
+                name: 'Qwen3 Coder',
+                type: 'ollama',
+                id: 'qwen3-coder:480b-cloud'
+            },
+            {
+                name: 'GPT-OSS',
+                type: 'ollama',
+                id: 'gpt-oss:120b-cloud'
+            },
+            {
+                name: 'Kimi K2',
+                type: 'ollama',
+                id: 'kimi-k2:1t-cloud'
+            }
+        ];
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        async function testAll() {
+            clearResults();
+            const prompt = 'AI가 바꾸는 미래의 교육에 대해 200자 내외로 작성해주세요.';
+            
+            // 병렬로 모든 모델 실행
+            const promises = models.map(model => testModel(model, prompt));
+            await Promise.allSettled(promises);
+        }
+        
+        async function testModel(model, prompt) {
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'model processing';
+            resultDiv.innerHTML = `<strong>${model.name}:</strong> 생성 중... ⏳`;
+            document.getElementById('results').appendChild(resultDiv);
+            
+            const startTime = Date.now();
+            
+            try {
+                let response;
+                let content;
+                
+                if (model.type === 'gemini') {
+                    // Gemini API
+                    console.log(`Testing ${model.name}...`);
+                    response = await fetch(
+                        `https://generativelanguage.googleapis.com/v1beta/models/${model.id}:generateContent?key=${model.apiKey}`,
+                        {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                contents: [{ parts: [{ text: prompt }] }],
+                                generationConfig: {
+                                    temperature: 0.8,
+                                    maxOutputTokens: 500
+                                }
+                            })
+                        }
+                    );
+                    
+                    const data = await response.json();
+                    content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    
+                    if (!content && data.error) {
+                        throw new Error(data.error.message);
+                    }
+                    
+                } else {
+                    // Ollama API
+                    console.log(`Testing ${model.name}...`);
+                    response = await fetch('http://localhost:11434/api/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            model: model.id,
+                            messages: [{ role: 'user', content: prompt }],
+                            stream: false,
+                            options: {
+                                temperature: 0.8,
+                                num_predict: 500
+                            }
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    content = data.message?.content;
+                    
+                    if (!content && data.error) {
+                        throw new Error(data.error);
+                    }
+                }
+                
+                const duration = Date.now() - startTime;
+                
+                if (content) {
+                    resultDiv.className = 'model success';
+                    resultDiv.innerHTML = `
+                        <strong>${model.name}:</strong> ✅ 성공 (${duration}ms)
+                        <div style="margin-top: 10px; padding: 10px; background: #1a1a1a; border-radius: 4px;">
+                            ${content.substring(0, 200)}${content.length > 200 ? '...' : ''}
+                        </div>
+                        <div style="margin-top: 5px; color: #666;">
+                            글자 수: ${content.length}자
+                        </div>
+                    `;
+                } else {
+                    throw new Error('콘텐츠가 비어있음');
+                }
+                
+            } catch (error) {
+                console.error(`Error with ${model.name}:`, error);
+                resultDiv.className = 'model error';
+                resultDiv.innerHTML = `
+                    <strong>${model.name}:</strong> ❌ 오류
+                    <div style="margin-top: 10px; color: #ef4444;">
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

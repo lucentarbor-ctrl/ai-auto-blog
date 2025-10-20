@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>간단한 AI 블로그 시스템</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+        
+        .status-dot.offline {
+            background: #ef4444;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+        
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .mode-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .mode-btn {
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .mode-btn.active {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+        
+        .mode-btn:hover {
+            border-color: #3b82f6;
+        }
+        
+        .mode-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .mode-desc {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 12px;
+        }
+        
+        #output {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 300px;
+            white-space: pre-wrap;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .tips {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 16px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        
+        .tips h3 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #92400e;
+        }
+        
+        .tips ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 13px;
+            color: #78350f;
+        }
+        
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .mode-selector {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 간단한 AI 블로그 시스템</h1>
+            <p style="color: #6b7280;">Gemini API를 활용한 즉시 사용 가능한 AI 블로그</p>
+        </div>
+        
+        <!-- 상태 표시 -->
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="status-dot" id="gemini-status"></span>
+                <span>Gemini API</span>
+            </div>
+            <div class="status-item">
+                <span class="status-dot offline" id="ollama-status"></span>
+                <span>Ollama (로컬)</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-coins" style="color: #f59e0b;"></i>
+                <span>무료 쿼터 사용 중</span>
+            </div>
+        </div>
+        
+        <div class="main-grid">
+            <!-- 왼쪽: 입력 -->
+            <div class="card">
+                <h2><i class="fas fa-pen"></i> AI 글쓰기</h2>
+                
+                <!-- 모드 선택 -->
+                <div class="mode-selector">
+                    <div class="mode-btn active" onclick="selectMode('balanced')" data-mode="balanced">
+                        <div class="mode-title">⚖️ 균형</div>
+                        <div class="mode-desc">속도와 품질 균형</div>
+                    </div>
+                    <div class="mode-btn" onclick="selectMode('quality')" data-mode="quality">
+                        <div class="mode-title">💎 고품질</div>
+                        <div class="mode-desc">최고 품질</div>
+                    </div>
+                    <div class="mode-btn" onclick="selectMode('speed')" data-mode="speed">
+                        <div class="mode-title">⚡ 빠른</div>
+                        <div class="mode-desc">빠른 생성</div>
+                    </div>
+                    <div class="mode-btn" onclick="selectMode('free')" data-mode="free">
+                        <div class="mode-title">🆓 무료</div>
+                        <div class="mode-desc">로컬 AI</div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>주제</label>
+                    <input type="text" id="topic" placeholder="예: AI가 바꾸는 미래의 교육" value="AI가 바꾸는 미래의 교육">
+                </div>
+                
+                <div class="input-group">
+                    <label>스타일</label>
+                    <select id="style">
+                        <option value="professional">전문적인</option>
+                        <option value="casual">캐주얼한</option>
+                        <option value="academic">학술적인</option>
+                        <option value="storytelling">스토리텔링</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label>타겟 독자</label>
+                    <input type="text" id="audience" placeholder="예: IT 전문가, 일반인" value="일반 독자">
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="generateSimple()">
+                        <i class="fas fa-magic"></i> 단순 생성
+                    </button>
+                    <button class="btn btn-primary" onclick="generateMixed()">
+                        <i class="fas fa-layer-group"></i> 믹스 생성
+                    </button>
+                </div>
+                
+                <div class="btn-group" style="margin-top: 12px;">
+                    <button class="btn btn-secondary" onclick="generateTitle()">
+                        <i class="fas fa-heading"></i> 제목만
+                    </button>
+                    <button class="btn btn-secondary" onclick="generateSEO()">
+                        <i class="fas fa-search"></i> SEO
+                    </button>
+                    <button class="btn btn-secondary" onclick="saveContent()">
+                        <i class="fas fa-save"></i> 저장
+                    </button>
+                </div>
+                
+                <div class="tips">
+                    <h3>💡 사용 팁</h3>
+                    <ul>
+                        <li>균형 모드가 가장 효율적입니다</li>
+                        <li>믹스 생성은 더 나은 품질을 제공합니다</li>
+                        <li>하루 1500회 무료 (Gemini)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- 오른쪽: 출력 -->
+            <div class="card">
+                <h2><i class="fas fa-file-alt"></i> 생성된 콘텐츠</h2>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>AI가 콘텐츠를 생성 중입니다...</p>
+                    <p style="font-size: 12px; color: #6b7280; margin-top: 8px;" id="loading-status">준비 중...</p>
+                </div>
+                
+                <div id="output">
+                    생성된 콘텐츠가 여기에 표시됩니다.
+                    
+                    주제를 입력하고 생성 버튼을 클릭하세요.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/simple-ai-manager.js"></script>
+    <script src="../js/data-manager.js"></script>
+    <script>
+        let currentMode = 'balanced';
+        let generatedContent = '';
+        
+        // 모드 선택
+        function selectMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+            
+            if (mode === 'free' && !window.simpleAI.models.local.available) {
+                alert('Ollama가 설치되어 있지 않습니다. Gemini를 사용합니다.');
+            }
+        }
+        
+        // 단순 생성
+        async function generateSimple() {
+            const topic = document.getElementById('topic').value;
+            const style = document.getElementById('style').value;
+            const audience = document.getElementById('audience').value;
+            
+            if (!topic) {
+                alert('주제를 입력해주세요');
+                return;
+            }
+            
+            showLoading('콘텐츠 생성 중...');
+            
+            try {
+                const prompt = window.simpleAI.getPrompt('blog', {
+                    topic,
+                    audience,
+                    style
+                });
+                
+                const content = await window.simpleAI.generateContent(prompt, {
+                    mode: currentMode
+                });
+                
+                generatedContent = content;
+                displayOutput(content);
+            } catch (error) {
+                console.error('생성 오류:', error);
+                alert('생성 중 오류가 발생했습니다');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // 믹스 생성 (더 나은 품질)
+        async function generateMixed() {
+            const topic = document.getElementById('topic').value;
+            const style = document.getElementById('style').value;
+            
+            if (!topic) {
+                alert('주제를 입력해주세요');
+                return;
+            }
+            
+            showLoading('1/3 개요 생성 중...');
+            
+            try {
+                const result = await window.simpleAI.generateMixedContent(topic, style);
+                
+                generatedContent = `
+=== 📋 개요 ===
+${result.outline}
+
+=== 📝 본문 ===
+${result.content}
+
+=== 🔍 SEO 최적화 ===
+${result.seo}
+                `;
+                
+                displayOutput(generatedContent);
+            } catch (error) {
+                console.error('생성 오류:', error);
+                alert('생성 중 오류가 발생했습니다');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // 제목 생성
+        async function generateTitle() {
+            if (!generatedContent) {
+                alert('먼저 콘텐츠를 생성해주세요');
+                return;
+            }
+            
+            showLoading('제목 생성 중...');
+            
+            try {
+                const prompt = window.simpleAI.getPrompt('title', {
+                    content: generatedContent
+                });
+                
+                const titles = await window.simpleAI.generateContent(prompt, {
+                    mode: 'speed'
+                });
+                
+                displayOutput(`=== 제목 제안 ===\n${titles}\n\n${generatedContent}`);
+            } catch (error) {
+                console.error('제목 생성 오류:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // SEO 최적화
+        async function generateSEO() {
+            if (!generatedContent) {
+                alert('먼저 콘텐츠를 생성해주세요');
+                return;
+            }
+            
+            showLoading('SEO 최적화 중...');
+            
+            try {
+                const prompt = window.simpleAI.getPrompt('seo', {
+                    content: generatedContent
+                });
+                
+                const seo = await window.simpleAI.generateContent(prompt, {
+                    mode: 'speed'
+                });
+                
+                displayOutput(`=== SEO 최적화 ===\n${seo}\n\n${generatedContent}`);
+            } catch (error) {
+                console.error('SEO 오류:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // 저장
+        function saveContent() {
+            if (!generatedContent) {
+                alert('저장할 콘텐츠가 없습니다');
+                return;
+            }
+            
+            const topic = document.getElementById('topic').value;
+            
+            // LocalStorage에 저장
+            const post = {
+                title: topic,
+                content: generatedContent,
+                category: 'AI 생성',
+                createdAt: new Date().toISOString()
+            };
+            
+            window.dataManager.saveDraft(post);
+            alert('임시저장되었습니다!');
+        }
+        
+        // UI 헬퍼 함수
+        function showLoading(message) {
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('loading-status').textContent = message;
+            document.getElementById('output').style.display = 'none';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('active');
+            document.getElementById('output').style.display = 'block';
+        }
+        
+        function displayOutput(content) {
+            document.getElementById('output').textContent = content;
+        }
+        
+        // 초기 상태 체크
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Gemini 상태
+            document.getElementById('gemini-status').classList.add('online');
+            
+            // Ollama 상태
+            try {
+                const response = await fetch('http://localhost:11434/api/tags');
+                if (response.ok) {
+                    document.getElementById('ollama-status').classList.remove('offline');
+                }
+            } catch (e) {
+                // Ollama 없음
+            }
+        });
+    </script>
+</body>
+</html>

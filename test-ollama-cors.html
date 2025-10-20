@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Ollama CORS 테스트</title>
+    <style>
+        body { background: #1a1a1a; color: #e0e0e0; font-family: monospace; padding: 20px; }
+        .result { margin: 10px 0; padding: 15px; background: #2a2a2a; border-radius: 8px; white-space: pre-wrap; }
+        button { padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Ollama API CORS 테스트</h1>
+    
+    <button onclick="testOllama()">Ollama API 테스트</button>
+    <button onclick="testWithTimeout()">타임아웃 테스트 (30초)</button>
+    
+    <div id="result" class="result">결과가 여기 표시됩니다...</div>
+    
+    <script>
+        async function testOllama() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = 'Testing Ollama API...\n';
+            
+            try {
+                console.log('Sending request to Ollama...');
+                resultDiv.textContent += 'Sending request...\n';
+                
+                const response = await fetch('http://localhost:11434/api/chat', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'deepseek-v3.1:671b-cloud',
+                        messages: [{ role: 'user', content: '한국어로 "안녕"이라고 짧게 답해줘' }],
+                        stream: false,
+                        options: {
+                            temperature: 0.7,
+                            num_predict: 50
+                        }
+                    })
+                });
+                
+                console.log('Response received:', response);
+                resultDiv.textContent += `Response status: ${response.status}\n`;
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                resultDiv.textContent += `Success!\n`;
+                resultDiv.textContent += `Model: ${data.model}\n`;
+                resultDiv.textContent += `Content: ${data.message?.content || 'No content'}\n`;
+                resultDiv.textContent += `Full response: ${JSON.stringify(data, null, 2)}`;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                resultDiv.textContent += `\nError: ${error.message}\n`;
+                resultDiv.textContent += `Error type: ${error.name}\n`;
+                resultDiv.textContent += `Stack: ${error.stack}`;
+            }
+        }
+        
+        async function testWithTimeout() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = 'Testing with 30 second timeout...\n';
+            
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+                
+                const startTime = Date.now();
+                
+                const response = await fetch('http://localhost:11434/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    signal: controller.signal,
+                    body: JSON.stringify({
+                        model: 'deepseek-v3.1:671b-cloud',
+                        messages: [{ role: 'user', content: 'Say "Hi" in one word' }],
+                        stream: false,
+                        options: {
+                            temperature: 0.1,
+                            num_predict: 10
+                        }
+                    })
+                });
+                
+                clearTimeout(timeoutId);
+                
+                const duration = Date.now() - startTime;
+                const data = await response.json();
+                
+                resultDiv.textContent += `Success in ${duration}ms!\n`;
+                resultDiv.textContent += `Response: ${data.message?.content || 'No content'}`;
+                
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    resultDiv.textContent += '\nTimeout after 30 seconds!';
+                } else {
+                    resultDiv.textContent += `\nError: ${error.message}`;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

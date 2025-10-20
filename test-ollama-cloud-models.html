@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ollama Cloud 대형 모델 테스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 36px;
+        }
+        
+        .test-controls {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .prompt-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .test-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .test-btn {
+            padding: 12px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .test-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        
+        .test-btn.running {
+            background: #f59e0b;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        
+        .model-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .model-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .model-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .model-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .model-params {
+            background: #667eea;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .model-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .status-waiting {
+            background: #e0e0e0;
+            color: #666;
+        }
+        
+        .status-running {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .model-result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .model-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .metric {
+            text-align: center;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .metric-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .comparison-table {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .winner {
+            background: #d1fae5;
+        }
+        
+        .loading-spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        .loading-spinner.active {
+            display: block;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ollama Cloud 대형 모델 종합 테스트</h1>
+        
+        <div class="test-controls">
+            <h2>테스트 설정</h2>
+            <input type="text" class="prompt-input" id="testPrompt" 
+                   placeholder="테스트할 프롬프트를 입력하세요..." 
+                   value="인공지능이 인류의 미래에 미칠 영향을 100자로 설명해주세요.">
+            
+            <div class="test-types">
+                <button class="test-btn" onclick="runAllTests()">전체 모델 테스트</button>
+                <button class="test-btn" onclick="runCodingTest()">코딩 능력 테스트</button>
+                <button class="test-btn" onclick="runReasoningTest()">추론 능력 테스트</button>
+                <button class="test-btn" onclick="runCreativeTest()">창의성 테스트</button>
+                <button class="test-btn" onclick="runSpeedTest()">속도 테스트</button>
+            </div>
+            
+            <div class="loading-spinner" id="globalSpinner"></div>
+        </div>
+        
+        <div class="model-grid" id="modelGrid">
+            <!-- 동적으로 생성됨 -->
+        </div>
+        
+        <div class="comparison-table" id="comparisonTable" style="display: none;">
+            <h2>모델 비교 결과</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>모델</th>
+                        <th>파라미터</th>
+                        <th>응답 시간</th>
+                        <th>토큰 수</th>
+                        <th>품질 점수</th>
+                        <th>특징</th>
+                    </tr>
+                </thead>
+                <tbody id="comparisonBody">
+                    <!-- 동적으로 생성됨 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        // 모든 AI 모델 정의 (Ollama Cloud + Gemini)
+        const models = {
+            // Ollama Cloud 모델들
+            'glm-4.6:cloud': {
+                name: 'GLM-4.6',
+                params: '355B',
+                context: 202752,
+                speciality: 'General + Reasoning + Coding',
+                capabilities: ['completion', 'tools', 'thinking'],
+                type: 'ollama'
+            },
+            'deepseek-v3.1:671b-cloud': {
+                name: 'DeepSeek v3.1',
+                params: '671B',
+                context: 163840,
+                speciality: 'State-of-the-art General AI',
+                capabilities: ['completion', 'tools', 'thinking'],
+                type: 'ollama'
+            },
+            'qwen3-coder:480b-cloud': {
+                name: 'Qwen3 Coder',
+                params: '480B',
+                context: 131072,
+                speciality: 'Advanced Coding',
+                capabilities: ['coding', 'multilingual'],
+                type: 'ollama'
+            },
+            'gpt-oss:120b-cloud': {
+                name: 'GPT-OSS',
+                params: '120B',
+                context: 128000,
+                speciality: 'General Purpose',
+                capabilities: ['completion'],
+                type: 'ollama'
+            },
+            'kimi-k2:1t-cloud': {
+                name: 'Kimi K2',
+                params: '1T',
+                context: 200000,
+                speciality: 'Ultra Long Context',
+                capabilities: ['long-context', 'reasoning'],
+                type: 'ollama'
+            },
+            
+            // Google Gemini 모델들
+            'gemini-2.5-flash': {
+                name: 'Gemini 2.5 Flash',
+                params: 'Unknown',
+                context: 8192,
+                speciality: 'Fast General Purpose',
+                capabilities: ['text', 'vision', 'code'],
+                type: 'gemini',
+                apiKey: 'AIzaSyAmLSwyMGCkDpSojwPjQwTnYmlAQjrdH7g'
+            },
+            'gemini-2.5-pro': {
+                name: 'Gemini 2.5 Pro',
+                params: 'Unknown',
+                context: 32768,
+                speciality: 'High Quality General AI',
+                capabilities: ['text', 'vision', 'code', 'long-context'],
+                type: 'gemini',
+                apiKey: 'AIzaSyAmLSwyMGCkDpSojwPjQwTnYmlAQjrdH7g'
+            }
+        };
+        
+        let testResults = {};
+        
+        // 초기화
+        function initializeGrid() {
+            const grid = document.getElementById('modelGrid');
+            grid.innerHTML = '';
+            
+            Object.entries(models).forEach(([modelId, model]) => {
+                const card = document.createElement('div');
+                card.className = 'model-card';
+                card.id = `card-${modelId.replace(':', '-')}`;
+                
+                card.innerHTML = `
+                    <div class="model-header">
+                        <div class="model-name">${model.name}</div>
+                        <div class="model-params">${model.params}</div>
+                    </div>
+                    <div class="model-status status-waiting">대기 중</div>
+                    <div style="color: #666; font-size: 14px;">
+                        <div>컨텍스트: ${model.context.toLocaleString()} 토큰</div>
+                        <div>특화: ${model.speciality}</div>
+                    </div>
+                    <div class="model-result" style="display: none;"></div>
+                    <div class="model-metrics" style="display: none;">
+                        <div class="metric">
+                            <div class="metric-label">응답 시간</div>
+                            <div class="metric-value">-</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">토큰</div>
+                            <div class="metric-value">-</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">품질</div>
+                            <div class="metric-value">-</div>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // 모델 테스트
+        async function testModel(modelId, prompt) {
+            const cardId = `card-${modelId.replace(/[:\.]/g, '-')}`;
+            const card = document.getElementById(cardId);
+            const statusEl = card.querySelector('.model-status');
+            const resultEl = card.querySelector('.model-result');
+            const metricsEl = card.querySelector('.model-metrics');
+            
+            statusEl.className = 'model-status status-running';
+            statusEl.textContent = '실행 중...';
+            
+            const startTime = Date.now();
+            const model = models[modelId];
+            
+            try {
+                let response;
+                let data;
+                
+                if (model.type === 'gemini') {
+                    // Gemini API 호출
+                    response = await fetch(
+                        `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${model.apiKey}`,
+                        {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                contents: [{
+                                    parts: [{ text: prompt }]
+                                }],
+                                generationConfig: {
+                                    temperature: 0.7,
+                                    maxOutputTokens: 500,
+                                    topP: 0.95
+                                }
+                            })
+                        }
+                    );
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    
+                    data = await response.json();
+                    const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                    
+                    const duration = Date.now() - startTime;
+                    
+                    // 결과를 Ollama 형식과 동일하게 처리
+                    data = {
+                        message: { content },
+                        duration
+                    };
+                    
+                } else {
+                    // Ollama API 호출
+                    response = await fetch('http://localhost:11434/api/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            model: modelId,
+                            messages: [
+                                { role: 'user', content: prompt }
+                            ],
+                            stream: false,
+                            options: {
+                                temperature: 0.7,
+                                num_predict: 500
+                            }
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    
+                    data = await response.json();
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const duration = Date.now() - startTime;
+                const content = data.message?.content || '';
+                
+                // 결과 표시
+                statusEl.className = 'model-status status-success';
+                statusEl.textContent = '완료';
+                
+                resultEl.style.display = 'block';
+                resultEl.textContent = content;
+                
+                metricsEl.style.display = 'grid';
+                metricsEl.querySelectorAll('.metric-value')[0].textContent = `${duration}ms`;
+                metricsEl.querySelectorAll('.metric-value')[1].textContent = content.length;
+                metricsEl.querySelectorAll('.metric-value')[2].textContent = calculateQuality(content, prompt);
+                
+                // 결과 저장
+                testResults[modelId] = {
+                    model: models[modelId].name,
+                    params: models[modelId].params,
+                    duration,
+                    content,
+                    tokens: content.length,
+                    quality: calculateQuality(content, prompt),
+                    success: true
+                };
+                
+                return testResults[modelId];
+                
+            } catch (error) {
+                statusEl.className = 'model-status status-error';
+                statusEl.textContent = '오류';
+                
+                resultEl.style.display = 'block';
+                resultEl.textContent = `오류: ${error.message}`;
+                
+                testResults[modelId] = {
+                    model: models[modelId].name,
+                    params: models[modelId].params,
+                    error: error.message,
+                    success: false
+                };
+                
+                return null;
+            }
+        }
+        
+        // 품질 점수 계산 (간단한 휴리스틱)
+        function calculateQuality(content, prompt) {
+            let score = 0;
+            
+            // 길이 적절성
+            if (content.length > 50 && content.length < 500) score += 30;
+            else if (content.length > 20) score += 20;
+            
+            // 문장 구조
+            if (content.includes('.') || content.includes('!') || content.includes('?')) score += 20;
+            
+            // 관련성 (프롬프트 키워드 포함)
+            const keywords = prompt.split(' ').filter(w => w.length > 3);
+            const matchedKeywords = keywords.filter(k => content.toLowerCase().includes(k.toLowerCase()));
+            score += Math.min(30, matchedKeywords.length * 10);
+            
+            // 구조화 (리스트, 단락 등)
+            if (content.includes('\n') || content.includes('-') || content.includes('•')) score += 20;
+            
+            return Math.min(100, score);
+        }
+        
+        // 전체 테스트
+        async function runAllTests() {
+            const prompt = document.getElementById('testPrompt').value;
+            if (!prompt) {
+                alert('프롬프트를 입력해주세요');
+                return;
+            }
+            
+            initializeGrid();
+            testResults = {};
+            
+            document.getElementById('globalSpinner').classList.add('active');
+            
+            // 병렬로 모든 모델 테스트
+            const promises = Object.keys(models).map(modelId => 
+                testModel(modelId, prompt)
+            );
+            
+            await Promise.allSettled(promises);
+            
+            document.getElementById('globalSpinner').classList.remove('active');
+            
+            // 비교 테이블 표시
+            showComparisonTable();
+        }
+        
+        // 코딩 테스트
+        async function runCodingTest() {
+            const prompt = "Python으로 피보나치 수열의 n번째 값을 구하는 함수를 작성해주세요. 재귀와 동적 프로그래밍 두 가지 방법으로.";
+            document.getElementById('testPrompt').value = prompt;
+            await runAllTests();
+        }
+        
+        // 추론 테스트
+        async function runReasoningTest() {
+            const prompt = "농부가 여우, 닭, 옥수수를 가지고 강을 건너야 합니다. 보트는 농부와 한 가지만 실을 수 있습니다. 여우는 닭을, 닭은 옥수수를 먹습니다. 어떻게 모두 안전하게 건널 수 있을까요?";
+            document.getElementById('testPrompt').value = prompt;
+            await runAllTests();
+        }
+        
+        // 창의성 테스트
+        async function runCreativeTest() {
+            const prompt = "2050년 AI가 예술가가 된 미래를 배경으로 한 짧은 SF 스토리를 100자로 작성해주세요.";
+            document.getElementById('testPrompt').value = prompt;
+            await runAllTests();
+        }
+        
+        // 속도 테스트
+        async function runSpeedTest() {
+            const prompt = "Hello";
+            document.getElementById('testPrompt').value = prompt;
+            await runAllTests();
+        }
+        
+        // 비교 테이블 표시
+        function showComparisonTable() {
+            const table = document.getElementById('comparisonTable');
+            const tbody = document.getElementById('comparisonBody');
+            
+            tbody.innerHTML = '';
+            
+            // 결과 정렬 (품질 점수 기준)
+            const sortedResults = Object.entries(testResults)
+                .filter(([_, result]) => result.success)
+                .sort((a, b) => (b[1].quality || 0) - (a[1].quality || 0));
+            
+            sortedResults.forEach(([modelId, result], index) => {
+                const row = document.createElement('tr');
+                if (index === 0) row.className = 'winner';
+                
+                row.innerHTML = `
+                    <td><strong>${result.model}</strong></td>
+                    <td>${result.params}</td>
+                    <td>${result.duration}ms</td>
+                    <td>${result.tokens}</td>
+                    <td>${result.quality}/100</td>
+                    <td>${models[modelId].speciality}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+            
+            table.style.display = 'block';
+            
+            // 최고 성능 모델 하이라이트
+            if (sortedResults.length > 0) {
+                const winnerId = sortedResults[0][0];
+                const winnerCard = document.getElementById(`card-${winnerId.replace(':', '-')}`);
+                if (winnerCard) {
+                    winnerCard.style.border = '3px solid #22c55e';
+                }
+            }
+        }
+        
+        // 페이지 로드 시 초기화
+        window.onload = () => {
+            initializeGrid();
+        };
+    </script>
+</body>
+</html>

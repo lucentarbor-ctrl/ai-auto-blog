@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 모델 테스트</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .test-container {
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            margin-bottom: 30px;
+            color: #667eea;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+        
+        .result {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .success {
+            border-left: 4px solid #22c55e;
+        }
+        
+        .error {
+            border-left: 4px solid #ef4444;
+        }
+        
+        .loading {
+            color: #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>AI 모델 통합 테스트</h1>
+        
+        <div class="button-group">
+            <button onclick="testGeminiDirect()">Gemini 직접 테스트</button>
+            <button onclick="testMultiAI()">Multi-AI Manager 테스트</button>
+            <button onclick="testComparison()">모델 비교 테스트</button>
+            <button onclick="checkOllama()">Ollama 상태 확인</button>
+        </div>
+        
+        <div id="result" class="result"></div>
+    </div>
+    
+    <script>
+        const GEMINI_KEY = 'AIzaSyAmLSwyMGCkDpSojwPjQwTnYmlAQjrdH7g';
+        
+        function log(message, type = 'info') {
+            const result = document.getElementById('result');
+            const timestamp = new Date().toLocaleTimeString();
+            result.className = 'result ' + (type === 'error' ? 'error' : type === 'success' ? 'success' : '');
+            result.innerHTML += `[${timestamp}] ${message}\n`;
+            result.scrollTop = result.scrollHeight;
+        }
+        
+        function clearLog() {
+            document.getElementById('result').innerHTML = '';
+        }
+        
+        // Gemini API 직접 테스트
+        async function testGeminiDirect() {
+            clearLog();
+            log('Gemini API 직접 테스트 시작...', 'loading');
+            
+            try {
+                const response = await fetch(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [{ text: 'Hello, test response in 10 words or less' }]
+                            }],
+                            generationConfig: {
+                                temperature: 0.7,
+                                maxOutputTokens: 100
+                            }
+                        })
+                    }
+                );
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(JSON.stringify(error, null, 2));
+                }
+                
+                const data = await response.json();
+                const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                log('✓ Gemini API 연결 성공!', 'success');
+                log('응답: ' + content, 'success');
+                
+            } catch (error) {
+                log('✗ Gemini API 오류: ' + error.message, 'error');
+            }
+        }
+        
+        // Multi-AI Manager 테스트
+        async function testMultiAI() {
+            clearLog();
+            log('Multi-AI Manager 로딩 중...', 'loading');
+            
+            // multi-ai-manager.js 동적 로드
+            try {
+                const script = document.createElement('script');
+                script.src = './js/multi-ai-manager.js';
+                document.head.appendChild(script);
+                
+                script.onload = async () => {
+                    log('✓ Multi-AI Manager 로드 완료', 'success');
+                    
+                    await window.multiAI.checkModelsAvailability();
+                    log('사용 가능한 모델:', 'info');
+                    
+                    Object.values(window.multiAI.models).forEach(model => {
+                        if (model.enabled) {
+                            log(`  - ${model.name} (${model.provider}): 활성화됨`, 'success');
+                        }
+                    });
+                    
+                    // 테스트 실행
+                    log('\n자동 모델 선택 테스트...', 'loading');
+                    
+                    const result = await window.multiAI.generateContent(
+                        'AI의 미래를 한 문장으로 설명해주세요',
+                        { autoSelect: true }
+                    );
+                    
+                    log(`✓ 선택된 모델: ${result.model}`, 'success');
+                    log(`응답 시간: ${result.duration}ms`, 'info');
+                    log(`응답: ${result.content}`, 'success');
+                };
+                
+                script.onerror = () => {
+                    log('✗ Multi-AI Manager 로드 실패', 'error');
+                };
+                
+            } catch (error) {
+                log('✗ 오류: ' + error.message, 'error');
+            }
+        }
+        
+        // 모델 비교 테스트
+        async function testComparison() {
+            clearLog();
+            
+            if (!window.multiAI) {
+                log('먼저 Multi-AI Manager를 로드해주세요', 'error');
+                return;
+            }
+            
+            log('모델 비교 테스트 시작...', 'loading');
+            
+            try {
+                const prompt = '인공지능이 인간을 대체할 수 있을까요? 50자 이내로 답해주세요.';
+                
+                log('프롬프트: ' + prompt, 'info');
+                log('병렬 실행 중...', 'loading');
+                
+                const results = await window.multiAI.generateParallel(
+                    prompt,
+                    ['gemini-flash', 'gemini-pro']
+                );
+                
+                results.forEach((result, index) => {
+                    if (result.error) {
+                        log(`\n모델 ${index + 1} 오류: ${result.error}`, 'error');
+                    } else {
+                        log(`\n모델: ${result.model}`, 'success');
+                        log(`시간: ${result.duration}ms`, 'info');
+                        log(`응답: ${result.content}`, 'info');
+                    }
+                });
+                
+            } catch (error) {
+                log('✗ 비교 테스트 오류: ' + error.message, 'error');
+            }
+        }
+        
+        // Ollama 상태 확인
+        async function checkOllama() {
+            clearLog();
+            log('Ollama 상태 확인 중...', 'loading');
+            
+            try {
+                const response = await fetch('http://localhost:11434/api/tags');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('✓ Ollama 실행 중', 'success');
+                    
+                    if (data.models && data.models.length > 0) {
+                        log('설치된 모델:', 'info');
+                        data.models.forEach(model => {
+                            log(`  - ${model.name} (${(model.size / 1024 / 1024 / 1024).toFixed(2)} GB)`, 'info');
+                        });
+                    } else {
+                        log('설치된 모델이 없습니다', 'info');
+                        log('설치 명령: ollama pull llama3.2', 'info');
+                    }
+                } else {
+                    throw new Error('Ollama 응답 실패');
+                }
+                
+            } catch (error) {
+                log('✗ Ollama가 실행되지 않고 있습니다', 'error');
+                log('시작 명령: ollama serve', 'info');
+            }
+        }
+        
+        // 페이지 로드 시 자동 테스트
+        window.onload = () => {
+            log('테스트 환경 준비 완료', 'success');
+            log('버튼을 클릭하여 테스트를 시작하세요\n', 'info');
+        };
+    </script>
+</body>
+</html>

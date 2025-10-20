@@ -1,12 +1,6 @@
 function updateDashboard() {
     console.log("Fetching dashboard stats from the backend...");
-    fetch('http://localhost:8001/api/stats')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
+    window.apiClient.getDashboardStats()
         .then(data => {
             console.log("Received stats:", data);
 

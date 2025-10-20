@@ -1,179 +1,200 @@
-# AI 자동 블로그 시스템
+# AI Auto Blog System 🤖
 
-개인용 AI 기반 자동 블로깅 시스템으로, 다양한 플랫폼에 자동으로 글을 발행할 수 있는 통합 솔루션입니다.
+AI 기반 자동 블로그 콘텐츠 생성 및 관리 시스템
 
-## 🚀 프로젝트 개요
+## 🌟 주요 기능
 
-이 프로젝트는 블로그 작성, 관리, 자동 발행을 위한 개인용 도구입니다. AI를 활용한 글쓰기 도우미, 뉴스 크롤링, 멀티플랫폼 발행 등의 기능을 제공합니다.
+### 🧠 AI 멀티모델 시스템
+- **6개 AI 모델 동시 생성**: Gemini Flash, Gemini Pro, DeepSeek, Qwen, GPT-OSS, Kimi
+- **실시간 스트리밍 출력**: Ollama 모델 실시간 스트리밍 지원
+- **자동 품질 평가**: 관련성, 완성도, 창의성, 가독성, SEO 점수 자동 계산
+- **비용 효율성 분석**: 모델별 비용 추적 및 ROI 분석
 
-### 주요 특징
-- 📝 AI 글쓰기 도우미 (슬래시 명령어 지원)
-- 📰 AI 뉴스 자동 수집 및 요약
-- 📅 예약 발행 시스템
-- 🎯 멀티플랫폼 동시 발행
-- 📊 실시간 대시보드 및 분석
-- 🎓 온라인 강좌 통합 관리
+### 📚 콘텐츠 관리
+- **프롬프트 라이브러리**: 블로그, 리뷰, 튜토리얼 등 다양한 템플릿
+- **콘텐츠 데이터베이스**: 생성된 모든 콘텐츠 검색 및 관리
+- **스마트 에디터**: AI 어시스턴트 기반 글쓰기 도구
 
-## 🌐 라이브 데모
+### 📊 분석 및 최적화
+- **실시간 대시보드**: 블로그 운영 현황 한눈에 확인
+- **독자 분석**: 독자 행동 패턴 및 선호도 분석
+- **SEO 최적화**: 자동 SEO 점수 계산 및 개선 제안
 
-- **AWS S3**: http://ai-blog-frontend-1750017109.s3-website.ap-northeast-2.amazonaws.com/full-featured-blog.html
-- **GitHub 저장소**: https://github.com/ray1derer/ai-auto-blog
+## 🚀 시작하기
+
+### 필수 요구사항
+- Node.js 16.0 이상
+- npm 또는 yarn
+- Ollama (로컬 AI 모델용)
+- Google Gemini API 키
+
+### 설치 방법
+
+1. **저장소 클론**
+```bash
+git clone https://github.com/yourusername/ai-auto-blog.git
+cd ai-auto-blog
+```
+
+2. **의존성 설치**
+```bash
+npm install
+```
+
+3. **환경 변수 설정**
+```bash
+cp .env.example .env
+```
+`.env` 파일을 열고 필요한 API 키와 설정을 입력하세요.
+
+4. **Ollama 설치 및 설정**
+```bash
+# macOS/Linux
+curl -fsSL https://ollama.com/install.sh | sh
+
+# 모델 다운로드
+ollama pull deepseek-v3
+ollama pull qwen2.5-coder
+ollama pull llama3.3
+ollama pull qwen2.5
+
+# CORS 활성화하여 실행
+OLLAMA_ORIGINS="*" OLLAMA_HOST="0.0.0.0:11434" ollama serve
+```
+
+5. **애플리케이션 실행**
+```bash
+# 개발 모드
+npm run dev
+
+# 프로덕션 모드
+npm run build
+npm start
+```
+
+6. **브라우저에서 열기**
+```
+http://localhost:3000
+```
+
+## 🔑 API 키 설정
+
+### Google Gemini API
+1. [Google AI Studio](https://makersuite.google.com/app/apikey) 방문
+2. "Create API Key" 클릭
+3. 생성된 키를 `.env` 파일의 `GEMINI_API_KEY`에 입력
+
+### Ollama Cloud (선택사항)
+1. [Ollama Cloud](https://ollama.com/cloud) 가입
+2. API 키 생성
+3. `.env` 파일의 `OLLAMA_CLOUD_API_KEY`에 입력
+
+## 🚢 AWS 배포 가이드
+
+### EC2 인스턴스 설정
+
+1. **EC2 인스턴스 생성**
+   - AMI: Ubuntu 22.04 LTS
+   - 인스턴스 타입: t3.medium 이상 권장
+   - 보안 그룹: 포트 3000, 22, 11434 오픈
+
+2. **인스턴스 접속**
+```bash
+ssh -i your-key.pem ubuntu@your-instance-ip
+```
+
+3. **Node.js 설치**
+```bash
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs
+```
+
+4. **프로젝트 배포**
+```bash
+git clone https://github.com/yourusername/ai-auto-blog.git
+cd ai-auto-blog
+npm install
+npm run build
+```
+
+5. **PM2로 프로세스 관리**
+```bash
+sudo npm install -g pm2
+pm2 start npm --name "ai-blog" -- start
+pm2 save
+pm2 startup
+```
+
+### S3 버킷 설정
+
+1. **S3 버킷 생성**
+   - 버킷 이름: `your-blog-content`
+   - 리전: `ap-northeast-2`
+   - 퍼블릭 액세스 차단 해제 (정적 웹사이트 호스팅용)
+
+2. **IAM 사용자 생성**
+   - `AmazonS3FullAccess` 정책 연결
+   - 액세스 키 생성
+   - `.env` 파일에 키 추가
+
+### CloudFront 설정 (선택사항)
+
+1. **CloudFront 배포 생성**
+   - Origin: S3 버킷
+   - Caching: 최적화된 캐싱 정책 적용
+   - SSL 인증서 설정
 
 ## 📁 프로젝트 구조
 
 ```
 ai-auto-blog/
-├── index.html                 # 메인 페이지
-├── full-featured-blog.html    # 전체 기능 통합 버전
-├── css/
-│   └── styles.css            # 메인 스타일시트
-├── js/
-│   ├── main.js               # 메인 JavaScript
-│   ├── dashboard.js          # 대시보드 관리
-│   ├── post-manager.js       # 글 관리 모듈
-│   ├── category-manager.js   # 카테고리 관리
-│   ├── news-api.js           # 뉴스 API 연동
-│   ├── ai-writer.js          # AI 글쓰기 도우미
-│   └── course-data.js        # 강좌 데이터
-└── backend/
-    ├── app.py                # Flask 백엔드
-    └── news_crawler.py       # 뉴스 크롤러
+├── frontend/              # 프론트엔드 파일
+│   ├── modern-blog.html  # 메인 대시보드
+│   ├── advanced-multi-model.html  # AI 멀티모델 시스템
+│   ├── multi-model-blog.html     # 6-AI 동시 생성
+│   ├── content-database.html     # 콘텐츠 DB
+│   ├── cost-analysis.html        # 비용 분석
+│   └── prompt-library.html       # 프롬프트 라이브러리
+├── backend/              # 백엔드 서버 (개발 예정)
+├── js/                   # JavaScript 파일
+│   ├── gemini-api.js    # Gemini API 통합
+│   ├── ollama-cloud-manager.js  # Ollama 관리
+│   └── data-manager.js  # 데이터 관리
+├── config/               # 설정 파일
+├── docs/                 # 문서
+├── .env.example         # 환경 변수 템플릿
+├── .gitignore          # Git 제외 파일
+├── package.json        # NPM 패키지 설정
+└── README.md          # 프로젝트 문서
 ```
 
-## 🛠️ 주요 기능
+## 🛠 기술 스택
 
-### 1. AI 글쓰기 도우미
-- `/` 명령어로 AI 기능 활성화
-- 자동 제목 생성
-- 개요 작성
-- SEO 최적화 체크
-- 톤 일관성 검사
+- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
+- **AI Models**: 
+  - Google Gemini (Flash & Pro)
+  - Ollama (DeepSeek, Qwen, GPT-OSS, Kimi)
+- **Storage**: LocalStorage, AWS S3
+- **Deployment**: AWS EC2, CloudFront
+- **Process Manager**: PM2
 
-### 2. 콘텐츠 관리
-- **글 관리**: 작성, 수정, 삭제, 카테고리 분류
-- **카테고리 관리**: 동적 카테고리 생성 및 관리
-- **아이디어 뱅크**: 아이디어 저장 및 글로 발전
-- **시리즈 관리**: 연재물 체계적 관리
+## 📈 성능 최적화
 
-### 3. 온라인 강좌 통합
-- **노션 마스터 클래스** (30강)
-- **옵시디언 마스터 클래스** (35강)
-- **Evoto 마스터 클래스** (40강)
+- **캐싱**: LocalStorage를 활용한 클라이언트 사이드 캐싱
+- **스트리밍**: Server-Sent Events를 통한 실시간 스트리밍
+- **비동기 처리**: Promise.all을 활용한 병렬 AI 요청
+- **지연 로딩**: 필요한 컴포넌트만 동적 로드
 
-### 4. 자동화 기능
-- **AI 뉴스 크롤링**: Google News, Reddit, Hacker News, arXiv
-- **예약 발행**: 날짜/시간 지정 발행
-- **멀티플랫폼 발행**: 여러 블로그 플랫폼 동시 발행 (준비 중)
+## 🔐 보안 고려사항
 
-### 5. 분석 및 인사이트
-- **실시간 대시보드**: 조회수, 구독자, 참여율 통계
-- **인기 콘텐츠 분석**: 가장 많이 읽힌 글 추적
-- **독자 인사이트**: 독자 행동 패턴 분석
-- **성과 보고서**: Excel/PDF 형식 내보내기
+- API 키는 절대 클라이언트 코드에 포함시키지 마세요
+- 프로덕션 환경에서는 백엔드 프록시 서버 사용 권장
+- HTTPS 사용 필수
+- CORS 정책 적절히 설정
 
-## 🔧 기술 스택
+## 🤝 기여하기
 
-### Frontend
-- HTML5 / CSS3 / JavaScript (Vanilla)
-- Font Awesome 아이콘
-- LocalStorage 기반 데이터 저장
-- 반응형 디자인
-
-### Backend
-- Python Flask
-- BeautifulSoup4 (웹 크롤링)
-- Feedparser (RSS 파싱)
-- CORS 지원
-
-### 배포
-- AWS S3 정적 웹사이트 호스팅
-- GitHub Pages (백업)
-
-## 📝 설치 및 실행
-
-### Frontend
-```bash
-# 저장소 클론
-git clone https://github.com/ray1derer/ai-auto-blog.git
-cd ai-auto-blog
-
-# 로컬 서버 실행 (Python)
-python -m http.server 8080
-
-# 브라우저에서 접속
-http://localhost:8080/full-featured-blog.html
-```
-
-### Backend (선택사항)
-```bash
-# 백엔드 디렉토리로 이동
-cd backend
-
-# 의존성 설치
-pip install -r requirements.txt
-
-# Flask 서버 실행
-python app.py
-```
-
-## 🚀 배포 방법
-
-### AWS S3 배포
-```bash
-# S3 버킷에 동기화
-aws s3 sync . s3://your-bucket-name/ \
-  --exclude ".git/*" \
-  --exclude "backend/*" \
-  --delete
-
-# 정적 웹사이트 호스팅 활성화
-aws s3 website s3://your-bucket-name/ \
-  --index-document index.html \
-  --error-document error.html
-```
-
-## 📋 사용법
-
-### 글 작성
-1. 사이드바에서 "AI 글쓰기" → "스마트 에디터" 클릭
-2. 제목과 내용 입력
-3. `/` 입력으로 AI 도우미 활용
-4. 카테고리와 태그 설정
-5. "발행하기" 또는 "임시저장" 클릭
-
-### 강좌 관리
-1. 사이드바에서 "글 관리" 클릭
-2. 노션/옵시디언/Evoto 마스터 클래스 선택
-3. 각 강좌의 전체 레슨 목록 확인
-4. "강좌 보기" 버튼으로 실제 강좌 페이지 이동
-
-### AI 뉴스 수집
-1. "AI 뉴스" → "크롤링 설정" 이동
-2. 키워드 추가 (예: ChatGPT, AI)
-3. 뉴스 소스 선택
-4. "지금 수집하기" 클릭
-
-## 🔄 업데이트 내역
-
-### 2025.07.02
-- 강좌를 별도 메뉴에서 글 관리 카테고리로 통합
-- course-data.js 파일로 모든 강좌 정보 중앙 관리
-- showCourseCategory() 함수로 강좌별 글 목록 표시
-
-### 2025.07.01
-- 전체 기능 통합 버전 출시
-- LocalStorage 기반 실시간 대시보드 구현
-- AI 글쓰기 슬래시 명령어 기능 추가
-- 50+ 메뉴 아이템 통합
-
-### 2025.06.30
-- 초기 버전 출시
-- AI 뉴스 크롤링 백엔드 구현
-- 멀티플랫폼 발행 인터페이스 설계
-
-## 🤝 기여 방법
-
-이 프로젝트는 개인용으로 개발되었지만, 개선 사항이나 버그 리포트는 언제든 환영합니다.
+프로젝트에 기여하고 싶으시면 Pull Request를 보내주세요!
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -181,15 +202,14 @@ aws s3 website s3://your-bucket-name/ \
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 라이선스
+## 📝 라이선스
 
-이 프로젝트는 MIT 라이선스 하에 있습니다. 자세한 내용은 `LICENSE` 파일을 참조하세요.
+이 프로젝트는 MIT 라이선스 하에 있습니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
 
-## 📞 연락처
+## 📞 문의
 
-- GitHub: [@ray1derer](https://github.com/ray1derer)
-- 프로젝트 링크: [https://github.com/ray1derer/ai-auto-blog](https://github.com/ray1derer/ai-auto-blog)
+프로젝트 관련 문의사항이 있으시면 Issues를 통해 남겨주세요.
 
 ---
 
-🤖 Generated with [Claude Code](https://claude.ai/code)
+**Made with ❤️ by AI Auto Blog Team**

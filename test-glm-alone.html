@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>GLM 단독 테스트</title>
+    <style>
+        body { 
+            font-family: monospace; 
+            padding: 20px; 
+            background: #1a1a1a; 
+            color: #e0e0e0; 
+        }
+        button { 
+            padding: 10px 20px; 
+            margin: 5px; 
+            background: #667eea; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+        }
+        .result { 
+            margin: 20px 0; 
+            padding: 15px; 
+            background: #2a2a2a; 
+            border-radius: 8px; 
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>GLM-4.6 Cloud 모델 단독 테스트</h1>
+    
+    <button onclick="testSimple()">간단한 테스트 (Hi)</button>
+    <button onclick="testKorean()">한국어 테스트</button>
+    <button onclick="testFull()">전체 프롬프트 테스트</button>
+    
+    <div id="result" class="result"></div>
+    
+    <script>
+        function log(msg) {
+            document.getElementById('result').textContent = msg;
+            console.log(msg);
+        }
+        
+        async function testSimple() {
+            log('Testing with simple prompt...');
+            
+            const request = {
+                model: 'glm-4.6:cloud',
+                prompt: 'Hi',
+                stream: false
+            };
+            
+            try {
+                const response = await fetch('http://localhost:11434/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(request)
+                });
+                
+                const data = await response.json();
+                log(`Response:\n${JSON.stringify(data, null, 2)}\n\nContent:\n${data.response}`);
+            } catch (error) {
+                log(`Error: ${error.message}`);
+            }
+        }
+        
+        async function testKorean() {
+            log('Testing with Korean prompt...');
+            
+            const request = {
+                model: 'glm-4.6:cloud',
+                prompt: '안녕하세요. 한국어로 답해주세요.',
+                stream: false,
+                options: {
+                    temperature: 0.8,
+                    num_predict: 200
+                }
+            };
+            
+            try {
+                const response = await fetch('http://localhost:11434/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(request)
+                });
+                
+                const data = await response.json();
+                log(`Response:\n${JSON.stringify(data, null, 2)}\n\nContent:\n${data.response}`);
+            } catch (error) {
+                log(`Error: ${error.message}`);
+            }
+        }
+        
+        async function testFull() {
+            log('Testing with full prompt...');
+            
+            const fullPrompt = `
+주제: AI가 바꾸는 미래의 교육
+타입: blog
+길이: 약 500자
+
+위 주제로 blog 형식의 콘텐츠를 500자 내외로 작성해주세요.
+한국어로 작성하고, 전문적이면서도 읽기 쉽게 작성해주세요.
+            `.trim();
+            
+            const request = {
+                model: 'glm-4.6:cloud',
+                prompt: fullPrompt,
+                stream: false,
+                options: {
+                    temperature: 0.8,
+                    num_predict: 1500
+                }
+            };
+            
+            try {
+                log('Sending request...');
+                const startTime = Date.now();
+                
+                const response = await fetch('http://localhost:11434/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(request)
+                });
+                
+                const data = await response.json();
+                const duration = Date.now() - startTime;
+                
+                log(`Duration: ${duration}ms\n\nResponse:\n${JSON.stringify(data, null, 2)}\n\nContent:\n${data.response}`);
+            } catch (error) {
+                log(`Error: ${error.message}\n${error.stack}`);
+            }
+        }
+    </script>
+</body>
+</html>

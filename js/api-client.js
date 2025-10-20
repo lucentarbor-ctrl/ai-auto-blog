@@ -1,5 +1,5 @@
 // API 클라이언트 - 모든 서버 통신을 관리
-const API_BASE_URL = 'http://3.34.5.55:5000';
+const API_BASE_URL = 'http://localhost:8001/api';
 
 class APIClient {
     constructor() {

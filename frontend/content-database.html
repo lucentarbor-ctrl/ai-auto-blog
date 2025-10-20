@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 콘텐츠 데이터베이스</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --dark: #0a0a0a;
+            --dark-light: #1a1a1a;
+            --dark-lighter: #2a2a2a;
+            --text: #e0e0e0;
+            --text-dim: #999;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        .controls {
+            background: var(--dark-light);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 16px;
+            background: var(--dark);
+            border: 2px solid #333;
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 15px;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .filter-select {
+            padding: 12px 16px;
+            background: var(--dark);
+            border: 2px solid #333;
+            border-radius: 8px;
+            color: var(--text);
+            min-width: 150px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--dark-lighter);
+            color: var(--text);
+            border: 2px solid #444;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--dark-light);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        
+        .content-card {
+            background: var(--dark-light);
+            border-radius: 16px;
+            padding: 20px;
+            border: 2px solid #333;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .content-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .content-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            flex: 1;
+            margin-right: 15px;
+        }
+        
+        .content-meta {
+            display: flex;
+            gap: 8px;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        .meta-badge {
+            padding: 4px 8px;
+            background: var(--primary);
+            color: white;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .content-preview {
+            background: var(--dark);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            max-height: 150px;
+            overflow: hidden;
+            position: relative;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .content-preview::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: linear-gradient(transparent, var(--dark));
+        }
+        
+        .content-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .metric {
+            background: var(--dark);
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+        
+        .metric-label {
+            font-size: 10px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+        
+        .metric-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .content-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .action-btn.edit {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .action-btn.delete {
+            background: var(--error);
+            color: white;
+        }
+        
+        .action-btn.copy {
+            background: var(--success);
+            color: white;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--dark-light);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 2px solid var(--primary);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .close-btn:hover {
+            color: var(--text);
+        }
+        
+        .full-content {
+            background: var(--dark);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            white-space: pre-wrap;
+            font-size: 15px;
+            line-height: 1.8;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .page-btn {
+            padding: 8px 12px;
+            background: var(--dark-lighter);
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .page-btn:hover,
+        .page-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-dim);
+        }
+        
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-database"></i> AI 콘텐츠 데이터베이스</h1>
+        <p>생성된 모든 AI 콘텐츠를 관리하고 검색하세요</p>
+    </div>
+    
+    <div class="container">
+        <!-- Controls -->
+        <div class="controls">
+            <input type="text" class="search-box" id="searchBox" placeholder="콘텐츠 검색...">
+            
+            <select class="filter-select" id="modelFilter">
+                <option value="">모든 모델</option>
+                <option value="gemini">Gemini</option>
+                <option value="deepseek">DeepSeek</option>
+                <option value="qwen">Qwen</option>
+                <option value="gpt-oss">GPT-OSS</option>
+                <option value="kimi">Kimi</option>
+            </select>
+            
+            <select class="filter-select" id="typeFilter">
+                <option value="">모든 타입</option>
+                <option value="blog">블로그</option>
+                <option value="article">기사</option>
+                <option value="tutorial">튜토리얼</option>
+                <option value="review">리뷰</option>
+                <option value="story">스토리</option>
+            </select>
+            
+            <select class="filter-select" id="sortBy">
+                <option value="date">최신순</option>
+                <option value="score">점수순</option>
+                <option value="length">길이순</option>
+                <option value="model">모델순</option>
+            </select>
+            
+            <button class="btn btn-primary" onclick="refreshDatabase()">
+                <i class="fas fa-sync"></i> 새로고침
+            </button>
+            
+            <button class="btn btn-secondary" onclick="exportData()">
+                <i class="fas fa-download"></i> 내보내기
+            </button>
+            
+            <button class="btn btn-secondary" onclick="clearDatabase()">
+                <i class="fas fa-trash"></i> 전체 삭제
+            </button>
+        </div>
+        
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalCount">0</div>
+                <div class="stat-label">총 콘텐츠</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="todayCount">0</div>
+                <div class="stat-label">오늘 생성</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgScore">0</div>
+                <div class="stat-label">평균 점수</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="topModel">-</div>
+                <div class="stat-label">최고 모델</div>
+            </div>
+        </div>
+        
+        <!-- Content Grid -->
+        <div class="content-grid" id="contentGrid">
+            <!-- Content cards will be dynamically generated -->
+        </div>
+        
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="fas fa-inbox"></i>
+            <h3>저장된 콘텐츠가 없습니다</h3>
+            <p>AI 모델로 콘텐츠를 생성하면 여기에 표시됩니다</p>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination" id="pagination">
+            <!-- Pagination buttons will be dynamically generated -->
+        </div>
+    </div>
+    
+    <!-- Modal -->
+    <div class="modal" id="contentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">콘텐츠 상세보기</div>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <div id="modalBody">
+                <!-- Modal content will be dynamically generated -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let allContents = [];
+        let filteredContents = [];
+        let currentPage = 1;
+        const itemsPerPage = 12;
+        
+        // Initialize database
+        function initDatabase() {
+            loadStoredContents();
+            updateStats();
+            renderContents();
+            setupEventListeners();
+        }
+        
+        // Load contents from localStorage
+        function loadStoredContents() {
+            const stored = localStorage.getItem('advancedModelResults');
+            if (stored) {
+                try {
+                    const data = JSON.parse(stored);
+                    // Convert single result to array format
+                    if (!Array.isArray(data)) {
+                        allContents = [data];
+                    } else {
+                        allContents = data;
+                    }
+                } catch (e) {
+                    allContents = [];
+                }
+            }
+            
+            // Also load from multi-model results
+            const multiResults = localStorage.getItem('multiModelResults');
+            if (multiResults) {
+                try {
+                    const data = JSON.parse(multiResults);
+                    if (!allContents.some(c => c.timestamp === data.timestamp)) {
+                        allContents.push(data);
+                    }
+                } catch (e) {
+                    // Ignore errors
+                }
+            }
+            
+            // Sort by timestamp (newest first)
+            allContents.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            filteredContents = [...allContents];
+        }
+        
+        // Update statistics
+        function updateStats() {
+            const total = allContents.length;
+            document.getElementById('totalCount').textContent = total;
+            
+            // Today's count
+            const today = new Date().toDateString();
+            const todayCount = allContents.filter(c => 
+                new Date(c.timestamp).toDateString() === today
+            ).length;
+            document.getElementById('todayCount').textContent = todayCount;
+            
+            // Average score
+            const scores = allContents.flatMap(c => 
+                Object.values(c.scores || {}).map(s => s.total)
+            ).filter(s => s);
+            
+            const avgScore = scores.length > 0 
+                ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
+                : 0;
+            document.getElementById('avgScore').textContent = avgScore;
+            
+            // Top model
+            const modelCounts = {};
+            allContents.forEach(c => {
+                if (c.scores) {
+                    const topModel = Object.entries(c.scores)
+                        .sort((a, b) => b[1].total - a[1].total)[0];
+                    if (topModel) {
+                        const modelName = getModelName(topModel[0]);
+                        modelCounts[modelName] = (modelCounts[modelName] || 0) + 1;
+                    }
+                }
+            });
+            
+            const topModel = Object.entries(modelCounts)
+                .sort((a, b) => b[1] - a[1])[0];
+            document.getElementById('topModel').textContent = topModel ? topModel[0] : '-';
+        }
+        
+        // Get model display name
+        function getModelName(key) {
+            const models = {
+                'gemini-flash': 'Gemini Flash',
+                'gemini-pro': 'Gemini Pro',
+                'deepseek': 'DeepSeek',
+                'qwen': 'Qwen',
+                'gpt-oss': 'GPT-OSS',
+                'kimi': 'Kimi'
+            };
+            return models[key] || key;
+        }
+        
+        // Render content cards
+        function renderContents() {
+            const grid = document.getElementById('contentGrid');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (filteredContents.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            grid.style.display = 'grid';
+            emptyState.style.display = 'none';
+            
+            // Pagination
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageContents = filteredContents.slice(startIndex, endIndex);
+            
+            grid.innerHTML = '';
+            
+            pageContents.forEach((content, index) => {
+                const card = createContentCard(content, startIndex + index);
+                grid.appendChild(card);
+            });
+            
+            renderPagination();
+        }
+        
+        // Create content card
+        function createContentCard(content, index) {
+            const card = document.createElement('div');
+            card.className = 'content-card';
+            card.onclick = () => showContentModal(content);
+            
+            // Get best result
+            const bestResult = getBestResult(content);
+            const preview = bestResult?.content?.substring(0, 200) || '내용 없음';
+            
+            card.innerHTML = `
+                <div class="content-header">
+                    <div class="content-title">${content.topic || '제목 없음'}</div>
+                    <div class="content-meta">
+                        <div class="meta-badge">${content.settings?.contentType || 'unknown'}</div>
+                        <div style="font-size: 11px; color: var(--text-dim);">
+                            ${new Date(content.timestamp).toLocaleDateString()}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-preview">${preview}...</div>
+                
+                <div class="content-metrics">
+                    <div class="metric">
+                        <div class="metric-label">모델 수</div>
+                        <div class="metric-value">${Object.keys(content.results || {}).length}</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">최고 점수</div>
+                        <div class="metric-value">${bestResult?.score || 0}</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">길이</div>
+                        <div class="metric-value">${bestResult?.content?.length || 0}자</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">시간</div>
+                        <div class="metric-value">${bestResult?.duration || 0}ms</div>
+                    </div>
+                </div>
+                
+                <div class="content-actions">
+                    <button class="action-btn copy" onclick="event.stopPropagation(); copyContent('${index}')">
+                        <i class="fas fa-copy"></i> 복사
+                    </button>
+                    <button class="action-btn edit" onclick="event.stopPropagation(); editContent('${index}')">
+                        <i class="fas fa-edit"></i> 편집
+                    </button>
+                    <button class="action-btn delete" onclick="event.stopPropagation(); deleteContent('${index}')">
+                        <i class="fas fa-trash"></i> 삭제
+                    </button>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        // Get best result from content
+        function getBestResult(content) {
+            if (!content.scores || !content.results) return null;
+            
+            const bestModelKey = Object.entries(content.scores)
+                .sort((a, b) => b[1].total - a[1].total)[0]?.[0];
+            
+            if (!bestModelKey) return null;
+            
+            return {
+                content: content.results[bestModelKey]?.content,
+                score: content.scores[bestModelKey]?.total,
+                duration: content.results[bestModelKey]?.duration
+            };
+        }
+        
+        // Show content modal
+        function showContentModal(content) {
+            const modal = document.getElementById('contentModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+            
+            title.textContent = content.topic || '제목 없음';
+            
+            let modalContent = `
+                <div style="margin-bottom: 20px;">
+                    <strong>생성 일시:</strong> ${new Date(content.timestamp).toLocaleString()}<br>
+                    <strong>콘텐츠 타입:</strong> ${content.settings?.contentType || 'unknown'}<br>
+                    <strong>길이 설정:</strong> ${content.settings?.contentLength || 'unknown'}자<br>
+                    <strong>톤:</strong> ${content.settings?.tone || 'unknown'}
+                </div>
+            `;
+            
+            // Show all model results
+            if (content.results) {
+                Object.entries(content.results).forEach(([key, result]) => {
+                    if (result.success && result.content) {
+                        const score = content.scores?.[key]?.total || 0;
+                        modalContent += `
+                            <div style="margin-bottom: 30px; padding: 20px; background: var(--dark-lighter); border-radius: 12px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                    <h3 style="color: var(--primary);">${getModelName(key)}</h3>
+                                    <div style="display: flex; gap: 15px; font-size: 12px; color: var(--text-dim);">
+                                        <span>점수: ${score}</span>
+                                        <span>시간: ${result.duration}ms</span>
+                                        <span>길이: ${result.content.length}자</span>
+                                    </div>
+                                </div>
+                                <div class="full-content">${result.content}</div>
+                            </div>
+                        `;
+                    }
+                });
+            }
+            
+            body.innerHTML = modalContent;
+            modal.classList.add('show');
+        }
+        
+        // Close modal
+        function closeModal() {
+            document.getElementById('contentModal').classList.remove('show');
+        }
+        
+        // Copy content
+        function copyContent(index) {
+            const content = filteredContents[index];
+            const bestResult = getBestResult(content);
+            
+            if (bestResult?.content) {
+                navigator.clipboard.writeText(bestResult.content).then(() => {
+                    alert('콘텐츠가 클립보드에 복사되었습니다!');
+                }).catch(() => {
+                    alert('복사에 실패했습니다.');
+                });
+            }
+        }
+        
+        // Edit content (placeholder)
+        function editContent(index) {
+            alert('편집 기능은 곧 구현됩니다!');
+        }
+        
+        // Delete content
+        function deleteContent(index) {
+            if (confirm('이 콘텐츠를 삭제하시겠습니까?')) {
+                const content = filteredContents[index];
+                const originalIndex = allContents.findIndex(c => c.timestamp === content.timestamp);
+                
+                if (originalIndex > -1) {
+                    allContents.splice(originalIndex, 1);
+                    saveToStorage();
+                    loadStoredContents();
+                    applyFilters();
+                    updateStats();
+                }
+            }
+        }
+        
+        // Clear database
+        function clearDatabase() {
+            if (confirm('모든 저장된 콘텐츠를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                allContents = [];
+                filteredContents = [];
+                localStorage.removeItem('advancedModelResults');
+                localStorage.removeItem('multiModelResults');
+                updateStats();
+                renderContents();
+            }
+        }
+        
+        // Export data
+        function exportData() {
+            const data = {
+                exportDate: new Date().toISOString(),
+                totalContents: allContents.length,
+                contents: allContents
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ai-content-database-${Date.now()}.json`;
+            a.click();
+        }
+        
+        // Refresh database
+        function refreshDatabase() {
+            loadStoredContents();
+            applyFilters();
+            updateStats();
+        }
+        
+        // Apply filters
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const modelFilter = document.getElementById('modelFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+            const sortBy = document.getElementById('sortBy').value;
+            
+            filteredContents = allContents.filter(content => {
+                // Search filter
+                if (searchTerm) {
+                    const searchable = [
+                        content.topic,
+                        ...Object.values(content.results || {}).map(r => r.content)
+                    ].join(' ').toLowerCase();
+                    
+                    if (!searchable.includes(searchTerm)) return false;
+                }
+                
+                // Model filter
+                if (modelFilter) {
+                    const hasModel = Object.keys(content.results || {})
+                        .some(key => key.includes(modelFilter));
+                    if (!hasModel) return false;
+                }
+                
+                // Type filter
+                if (typeFilter && content.settings?.contentType !== typeFilter) {
+                    return false;
+                }
+                
+                return true;
+            });
+            
+            // Sort
+            filteredContents.sort((a, b) => {
+                switch (sortBy) {
+                    case 'score':
+                        const aScore = Math.max(...Object.values(a.scores || {}).map(s => s.total));
+                        const bScore = Math.max(...Object.values(b.scores || {}).map(s => s.total));
+                        return bScore - aScore;
+                    case 'length':
+                        const aLength = Math.max(...Object.values(a.results || {}).map(r => r.content?.length || 0));
+                        const bLength = Math.max(...Object.values(b.results || {}).map(r => r.content?.length || 0));
+                        return bLength - aLength;
+                    case 'model':
+                        return (a.topic || '').localeCompare(b.topic || '');
+                    default: // date
+                        return new Date(b.timestamp) - new Date(a.timestamp);
+                }
+            });
+            
+            currentPage = 1;
+            renderContents();
+        }
+        
+        // Render pagination
+        function renderPagination() {
+            const pagination = document.getElementById('pagination');
+            const totalPages = Math.ceil(filteredContents.length / itemsPerPage);
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            
+            // Previous button
+            if (currentPage > 1) {
+                html += `<button class="page-btn" onclick="changePage(${currentPage - 1})">이전</button>`;
+            }
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === currentPage) {
+                    html += `<button class="page-btn active">${i}</button>`;
+                } else if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) {
+                    html += `<button class="page-btn" onclick="changePage(${i})">${i}</button>`;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    html += `<span class="page-btn">...</span>`;
+                }
+            }
+            
+            // Next button
+            if (currentPage < totalPages) {
+                html += `<button class="page-btn" onclick="changePage(${currentPage + 1})">다음</button>`;
+            }
+            
+            pagination.innerHTML = html;
+        }
+        
+        // Change page
+        function changePage(page) {
+            currentPage = page;
+            renderContents();
+        }
+        
+        // Save to storage
+        function saveToStorage() {
+            if (allContents.length > 0) {
+                localStorage.setItem('advancedModelResults', JSON.stringify(allContents));
+            }
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('searchBox').addEventListener('input', applyFilters);
+            document.getElementById('modelFilter').addEventListener('change', applyFilters);
+            document.getElementById('typeFilter').addEventListener('change', applyFilters);
+            document.getElementById('sortBy').addEventListener('change', applyFilters);
+            
+            // Close modal on background click
+            document.getElementById('contentModal').addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    closeModal();
+                }
+            });
+        }
+        
+        // Initialize on load
+        window.onload = initDatabase;
+    </script>
+</body>
+</html>

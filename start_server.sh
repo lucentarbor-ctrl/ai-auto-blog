@@ -3,6 +3,9 @@
 echo "AI 자동 블로깅 시스템 시작..."
 echo "================================"
 
+# Python 가상환경 활성화
+source .venv/bin/activate
+
 # Python 백엔드 서버 시작
 echo "1. AI 뉴스 크롤러 서버 시작 (포트 5001)..."
 cd backend

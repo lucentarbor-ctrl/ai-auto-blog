@@ -112,6 +112,46 @@
             </a>
         </div>
         
+        <!-- AI 콘텐츠 생성 -->
+        <div class="nav-section">
+            <h3 class="nav-section-title">🤖 AI 콘텐츠 생성</h3>
+            <a href="./advanced-multi-model.html" class="nav-item" onclick="event.preventDefault(); openAdvancedMultiModel();">
+                <span class="nav-item-content">
+                    <span>🧠</span>
+                    <span>고급 멀티모델 AI</span>
+                </span>
+                <span class="nav-badge new">NEW</span>
+            </a>
+            <a href="./multi-model-blog.html" class="nav-item" onclick="event.preventDefault(); openMultiModel();">
+                <span class="nav-item-content">
+                    <span>🚀</span>
+                    <span>6-AI 동시생성</span>
+                </span>
+                <span class="nav-count">6</span>
+            </a>
+            <a href="./prompt-library.html" class="nav-item" onclick="event.preventDefault(); openPromptLibrary();">
+                <span class="nav-item-content">
+                    <span>📚</span>
+                    <span>프롬프트 라이브러리</span>
+                </span>
+                <span class="nav-badge new">NEW</span>
+            </a>
+            <a href="./content-database.html" class="nav-item" onclick="event.preventDefault(); openContentDatabase();">
+                <span class="nav-item-content">
+                    <span>🗄️</span>
+                    <span>AI 콘텐츠 DB</span>
+                </span>
+                <span class="nav-badge new">NEW</span>
+            </a>
+            <a href="./cost-analysis.html" class="nav-item" onclick="event.preventDefault(); openCostAnalysis();">
+                <span class="nav-item-content">
+                    <span>📊</span>
+                    <span>비용 & 효율성 분석</span>
+                </span>
+                <span class="nav-badge new">NEW</span>
+            </a>
+        </div>
+        
         <!-- 빠른 실행 -->
         <div class="nav-section">
             <h3 class="nav-section-title">🚀 빠른 실행</h3>
@@ -498,6 +538,27 @@ function openPromptTester() {
 
 function openCodeSnippets() {
     window.location.href = '/snippets.html';
+}
+
+// 새로운 AI 기능 페이지들 열기
+function openAdvancedMultiModel() {
+    window.open('./advanced-multi-model.html', '_blank');
+}
+
+function openMultiModel() {
+    window.open('./multi-model-blog.html', '_blank');
+}
+
+function openPromptLibrary() {
+    window.open('./prompt-library.html', '_blank');
+}
+
+function openContentDatabase() {
+    window.open('./content-database.html', '_blank');
+}
+
+function openCostAnalysis() {
+    window.open('./cost-analysis.html', '_blank');
 }
 
 // 현재 페이지 활성화

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>모델 디버그 테스트</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #e0e0e0; }
+        .test { margin: 20px 0; padding: 15px; background: #2a2a2a; border-radius: 8px; }
+        .success { border-left: 4px solid #22c55e; }
+        .error { border-left: 4px solid #ef4444; }
+        .loading { border-left: 4px solid #f59e0b; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+        button { padding: 10px 20px; margin: 5px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #5568d3; }
+    </style>
+</head>
+<body>
+    <h1>7개 모델 디버그 테스트</h1>
+    
+    <div>
+        <button onclick="testGeminiFlash()">Gemini Flash 테스트</button>
+        <button onclick="testGeminiPro()">Gemini Pro 테스트</button>
+        <button onclick="testGLM()">GLM 테스트</button>
+        <button onclick="testAll()">전체 테스트</button>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script>
+        const GEMINI_KEY = 'AIzaSyAmLSwyMGCkDpSojwPjQwTnYmlAQjrdH7g';
+        
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong><pre>${message}</pre>`;
+            results.prepend(div);
+        }
+        
+        async function testGeminiFlash() {
+            log('Gemini Flash 테스트 시작...', 'loading');
+            
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
+            const body = {
+                contents: [{
+                    parts: [{ text: "한국어로 'AI의 미래'를 50자로 설명해주세요" }]
+                }],
+                generationConfig: {
+                    temperature: 0.7,
+                    maxOutputTokens: 200
+                }
+            };
+            
+            try {
+                console.log('Request URL:', url);
+                console.log('Request Body:', JSON.stringify(body, null, 2));
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                
+                console.log('Response Status:', response.status);
+                console.log('Response Headers:', response.headers);
+                
+                const text = await response.text();
+                console.log('Response Text:', text);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${text}`);
+                }
+                
+                const data = JSON.parse(text);
+                const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (content) {
+                    log(`✓ Gemini Flash 성공:\n${content}`, 'success');
+                } else {
+                    log(`⚠️ Gemini Flash: 콘텐츠 없음\n${text}`, 'error');
+                }
+                
+            } catch (error) {
+                console.error('Gemini Flash Error:', error);
+                log(`✗ Gemini Flash 오류:\n${error.message}\n${error.stack}`, 'error');
+            }
+        }
+        
+        async function testGeminiPro() {
+            log('Gemini Pro 테스트 시작...', 'loading');
+            
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_KEY}`;
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: "AI의 미래를 한국어 50자로" }]
+                        }],
+                        generationConfig: {
+                            temperature: 0.7,
+                            maxOutputTokens: 200
+                        }
+                    })
+                });
+                
+                const text = await response.text();
+                console.log('Gemini Pro Response:', text);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${text}`);
+                }
+                
+                const data = JSON.parse(text);
+                const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (content) {
+                    log(`✓ Gemini Pro 성공:\n${content}`, 'success');
+                } else {
+                    log(`⚠️ Gemini Pro: 콘텐츠 없음\n${text}`, 'error');
+                }
+                
+            } catch (error) {
+                console.error('Gemini Pro Error:', error);
+                log(`✗ Gemini Pro 오류:\n${error.message}`, 'error');
+            }
+        }
+        
+        async function testGLM() {
+            log('GLM 테스트 시작...', 'loading');
+            
+            try {
+                const response = await fetch('http://localhost:11434/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: 'glm-4.6:cloud',
+                        messages: [
+                            { role: 'user', content: '한국어로 AI의 미래를 50자로 설명해주세요' }
+                        ],
+                        stream: false,
+                        options: {
+                            temperature: 0.7,
+                            num_predict: 200
+                        }
+                    })
+                });
+                
+                const text = await response.text();
+                console.log('GLM Response:', text);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${text}`);
+                }
+                
+                const data = JSON.parse(text);
+                const content = data.message?.content;
+                
+                if (content) {
+                    log(`✓ GLM 성공:\n${content}`, 'success');
+                } else {
+                    log(`⚠️ GLM: 콘텐츠 없음\n${text}`, 'error');
+                }
+                
+            } catch (error) {
+                console.error('GLM Error:', error);
+                log(`✗ GLM 오류:\n${error.message}`, 'error');
+            }
+        }
+        
+        async function testAll() {
+            log('전체 테스트 시작', 'loading');
+            
+            const models = [
+                { name: 'Gemini Flash', test: testGeminiFlash },
+                { name: 'Gemini Pro', test: testGeminiPro },
+                { name: 'GLM', test: testGLM },
+                { name: 'DeepSeek', test: () => testOllama('deepseek-v3.1:671b-cloud', 'DeepSeek') },
+                { name: 'Qwen', test: () => testOllama('qwen3-coder:480b-cloud', 'Qwen') },
+                { name: 'GPT-OSS', test: () => testOllama('gpt-oss:120b-cloud', 'GPT-OSS') },
+                { name: 'Kimi', test: () => testOllama('kimi-k2:1t-cloud', 'Kimi') }
+            ];
+            
+            for (const model of models) {
+                await model.test();
+                await new Promise(resolve => setTimeout(resolve, 1000)); // 1초 대기
+            }
+            
+            log('전체 테스트 완료', 'success');
+        }
+        
+        async function testOllama(modelId, modelName) {
+            log(`${modelName} 테스트 시작...`, 'loading');
+            
+            try {
+                const response = await fetch('http://localhost:11434/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: modelId,
+                        messages: [
+                            { role: 'user', content: '한국어로 AI의 미래를 50자로 설명해주세요' }
+                        ],
+                        stream: false,
+                        options: {
+                            temperature: 0.7,
+                            num_predict: 200
+                        }
+                    })
+                });
+                
+                const text = await response.text();
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${text}`);
+                }
+                
+                const data = JSON.parse(text);
+                const content = data.message?.content;
+                
+                if (content) {
+                    log(`✓ ${modelName} 성공:\n${content}`, 'success');
+                } else {
+                    log(`⚠️ ${modelName}: 콘텐츠 없음`, 'error');
+                }
+                
+            } catch (error) {
+                log(`✗ ${modelName} 오류:\n${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

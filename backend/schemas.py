@@ -16,7 +16,7 @@ class PostVersion(PostVersionBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class SeriesBase(BaseModel):
     title: str
@@ -41,7 +41,7 @@ class Series(SeriesBase):
     posts: List['Post'] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class Post(PostBase):
     id: int
@@ -55,9 +55,7 @@ class Post(PostBase):
     versions: List[PostVersion] = []
 
     class Config:
-        orm_mode = True
-
-Series.update_forward_refs(Post=Post)
+        from_attributes = True
 
 # --- Idea Schemas ---
 class IdeaBase(BaseModel):
@@ -71,7 +69,7 @@ class Idea(IdeaBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # --- Analytics Schemas ---
 class AnalyticsBase(BaseModel):
@@ -88,7 +86,7 @@ class Analytics(AnalyticsBase):
     date: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # --- Dashboard Stats Schema ---
 class DashboardStats(BaseModel):
@@ -110,7 +108,7 @@ class UserActivity(UserActivityCreate):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # --- Trend Keyword Schemas ---
 class TrendKeywordBase(BaseModel):
@@ -127,7 +125,7 @@ class TrendKeyword(TrendKeywordBase):
     date_added: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # --- Insight Schemas ---
 class InsightBase(BaseModel):
@@ -145,7 +143,7 @@ class Insight(InsightBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # --- Request Schemas ---
 class ResearchRequest(BaseModel):

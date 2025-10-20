@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Blog Studio - Modern Design</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #000000;
+            --secondary: #ffffff;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --accent: #0066ff;
+            --success: #00d68f;
+            --warning: #ffaa00;
+            --danger: #ff3d71;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
+            --radius: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-900);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* 상단 네비게이션 */
+        .top-nav {
+            background: var(--secondary);
+            border-bottom: 1px solid var(--gray-200);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            color: var(--accent);
+        }
+
+        .top-nav-menu {
+            margin-left: auto;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .top-nav-item {
+            color: var(--gray-700);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .top-nav-item:hover {
+            color: var(--accent);
+        }
+
+        .top-nav-item.active {
+            color: var(--accent);
+        }
+
+        .top-nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -25px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent);
+        }
+
+        /* 메인 컨테이너 */
+        .main-container {
+            margin-top: 70px;
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+
+        /* 사이드바 */
+        .sidebar {
+            width: 280px;
+            background: var(--secondary);
+            border-right: 1px solid var(--gray-200);
+            padding: 30px 20px;
+            overflow-y: auto;
+            position: fixed;
+            left: 0;
+            top: 70px;
+            bottom: 0;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--gray-400);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-500);
+        }
+
+        /* 사이드바 메뉴 */
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+
+        .sidebar-title {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            padding: 0 10px;
+            opacity: 0.7;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-item {
+            margin-bottom: 4px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            color: var(--gray-700);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-weight: 300;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+        }
+
+        .sidebar-link:hover {
+            background: var(--gray-100);
+            color: var(--primary);
+        }
+
+        .sidebar-link.active {
+            background: var(--primary);
+            color: var(--secondary);
+            font-weight: 400;
+        }
+
+        .sidebar-link i {
+            width: 20px;
+            text-align: center;
+            font-size: 14px;
+            opacity: 0.6;
+        }
+        
+        .sidebar-link:hover i {
+            opacity: 1;
+        }
+        
+        .sidebar-link.active i {
+            opacity: 1;
+        }
+
+        .sidebar-badge {
+            margin-left: auto;
+            background: var(--accent);
+            color: var(--secondary);
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* 콘텐츠 영역 */
+        .content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 30px;
+        }
+
+        /* 페이지 헤더 */
+        .page-header {
+            background: var(--secondary);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: var(--gray-600);
+            font-size: 16px;
+        }
+
+        .header-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+        }
+
+        /* 버튼 스타일 */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--secondary);
+        }
+
+        .btn-primary:hover {
+            background: var(--gray-800);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--primary);
+            border: 2px solid var(--gray-300);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-100);
+            border-color: var(--primary);
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: var(--secondary);
+        }
+
+        .btn-accent:hover {
+            background: #0052cc;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* 통계 카드 그리드 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--secondary);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid var(--gray-200);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gray-100);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            font-size: 20px;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--gray-600);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+
+        .stat-change {
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: var(--gray-100);
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+            background: rgba(0, 214, 143, 0.1);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+            background: rgba(255, 61, 113, 0.1);
+        }
+
+        /* 콘텐츠 카드 */
+        .content-card {
+            background: var(--secondary);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* 리스트 스타일 */
+        .modern-list {
+            list-style: none;
+        }
+
+        .modern-list-item {
+            padding: 16px;
+            border-bottom: 1px solid var(--gray-100);
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .modern-list-item:hover {
+            background: var(--gray-50);
+            padding-left: 24px;
+        }
+
+        .modern-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gray-100);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+        }
+
+        .list-content {
+            flex: 1;
+        }
+
+        .list-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .list-subtitle {
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        .list-meta {
+            text-align: right;
+        }
+
+        .list-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: var(--gray-100);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        /* 입력 필드 */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+            display: block;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: var(--transition);
+            background: var(--secondary);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+        }
+
+        /* 플로팅 액션 버튼 */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            color: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            z-index: 100;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            background: var(--accent);
+        }
+
+        /* 태그 */
+        .tag {
+            display: inline-block;
+            padding: 6px 12px;
+            background: var(--gray-100);
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-right: 8px;
+            margin-bottom: 8px;
+            transition: var(--transition);
+        }
+
+        .tag:hover {
+            background: var(--primary);
+            color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        /* 프로그레스 바 */
+        .progress {
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #00b4d8);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .content {
+                margin-left: 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-nav {
+                padding: 0 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .page-header {
+                padding: 20px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 애니메이션 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* 스켈레톤 로딩 */
+        .skeleton {
+            background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 상단 네비게이션 -->
+    <nav class="top-nav">
+        <a href="#" class="logo">
+            <i class="fas fa-cube"></i>
+            AI Blog Studio
+        </a>
+        <div class="top-nav-menu">
+            <a href="#dashboard" class="top-nav-item active">대시보드</a>
+            <a href="#write" class="top-nav-item">글쓰기</a>
+            <a href="#posts" class="top-nav-item">콘텐츠</a>
+            <a href="#analytics" class="top-nav-item">분석</a>
+            <a href="#settings" class="top-nav-item">설정</a>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <!-- 사이드바 -->
+        <aside class="sidebar">
+            <!-- ===== 핵심 기능 ===== -->
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fas fa-star"></i> 핵심 기능
+                </div>
+                
+                <!-- 대시보드 -->
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link active" onclick="showPage('dashboard')">
+                            <i class="fas fa-home"></i>
+                            <span>대시보드</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('insights')">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>AI 인사이트</span>
+                            <span class="sidebar-badge">NEW</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('analytics')">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>독자 분석</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('trends')">
+                            <i class="fas fa-fire"></i>
+                            <span>트렌드 분석</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- AI 글쓰기 도우미 -->
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fas fa-magic"></i> AI 글쓰기
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('smart-write')">
+                            <i class="fas fa-pen-fancy"></i>
+                            <span>스마트 에디터</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('templates')">
+                            <i class="fas fa-file-alt"></i>
+                            <span>AI 템플릿</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('tone-manager')">
+                            <i class="fas fa-sliders-h"></i>
+                            <span>톤 매니저</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('research')">
+                            <i class="fas fa-search"></i>
+                            <span>스마트 리서치</span>
+                            <span class="sidebar-badge">BETA</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('fact-check')">
+                            <i class="fas fa-check-circle"></i>
+                            <span>팩트체크</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- AI 멀티모델 시스템 -->
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fas fa-brain"></i> AI 멀티모델 시스템
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showAIPage('advanced-multi-model')">
+                            <i class="fas fa-microchip"></i>
+                            <span>고급 멀티모델 AI</span>
+                            <span class="sidebar-badge">NEW</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showAIPage('multi-model-blog')">
+                            <i class="fas fa-layer-group"></i>
+                            <span>6-AI 동시생성</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showAIPage('prompt-library')">
+                            <i class="fas fa-book-open"></i>
+                            <span>프롬프트 라이브러리</span>
+                            <span class="sidebar-badge">NEW</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showAIPage('content-database')">
+                            <i class="fas fa-database"></i>
+                            <span>AI 콘텐츠 DB</span>
+                            <span class="sidebar-badge">NEW</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showAIPage('cost-analysis')">
+                            <i class="fas fa-chart-line"></i>
+                            <span>비용 & 효율성 분석</span>
+                            <span class="sidebar-badge">NEW</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 콘텐츠 최적화 -->
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fas fa-rocket"></i> 콘텐츠 최적화
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('seo-optimizer')">
+                            <i class="fas fa-search-plus"></i>
+                            <span>SEO 최적화</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('title-ab')">
+                            <i class="fas fa-vial"></i>
+                            <span>제목 A/B 테스트</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('thumbnail-gen')">
+                            <i class="fas fa-image"></i>
+                            <span>썸네일 생성기</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('hashtag-ai')">
+                            <i class="fas fa-hashtag"></i>
+                            <span>해시태그 AI</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('readability')">
+                            <i class="fas fa-glasses"></i>
+                            <span>가독성 분석</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- ===== 콘텐츠 관리 ===== -->
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fas fa-folder"></i> 콘텐츠 관리
+                </div>
+                
+                <!-- 아이디어 뱅크 -->
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('ideas-board')">
+                            <i class="fas fa-sticky-note"></i>
+                            <span>아이디어 보드</span>
+                            <span class="sidebar-badge">23</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('voice-memo')">
+                            <i class="fas fa-microphone"></i>
+                            <span>음성 메모</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('ai-brainstorm')">
+                            <i class="fas fa-cloud"></i>
+                            <span>AI 브레인스토밍</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 글 관리 -->
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fas fa-file-text"></i> 글 관리
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('posts')">
+                            <i class="fas fa-list"></i>
+                            <span>전체 글</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('drafts')">
+                            <i class="fas fa-file"></i>
+                            <span>임시저장</span>
+                            <span class="sidebar-badge">5</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('scheduled')">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>예약 발행</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('series')">
+                            <i class="fas fa-layer-group"></i>
+                            <span>시리즈 관리</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 콘텐츠 재활용 -->
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fas fa-recycle"></i> 콘텐츠 재활용
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('repurpose')">
+                            <i class="fas fa-sync"></i>
+                            <span>포맷 변환</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('social-cards')">
+                            <i class="fas fa-share-square"></i>
+                            <span>SNS 카드</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('newsletter')">
+                            <i class="fas fa-envelope"></i>
+                            <span>뉴스레터</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('ebook')">
+                            <i class="fas fa-book"></i>
+                            <span>전자책 제작</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('podcast')">
+                            <i class="fas fa-podcast"></i>
+                            <span>팟캐스트 변환</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- ===== 자동화 & 수집 ===== -->
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fas fa-robot"></i> 자동화 & 수집
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('news-setup')">
+                            <i class="fas fa-cog"></i>
+                            <span>크롤링 설정</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('news-collected')">
+                            <i class="fas fa-inbox"></i>
+                            <span>수집된 뉴스</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('news-digest')">
+                            <i class="fas fa-newspaper"></i>
+                            <span>일일 다이제스트</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('trend-topics')">
+                            <i class="fas fa-trending-up"></i>
+                            <span>트렌드 토픽</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 유튜브 & 미디어 -->
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fab fa-youtube"></i> 미디어 변환
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('youtube-summary')">
+                            <i class="fas fa-video"></i>
+                            <span>유튜브 요약</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('podcast-notes')">
+                            <i class="fas fa-headphones"></i>
+                            <span>팟캐스트 정리</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('image-to-text')">
+                            <i class="fas fa-file-image"></i>
+                            <span>이미지→텍스트</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('voice-to-post')">
+                            <i class="fas fa-microphone-alt"></i>
+                            <span>음성→포스트</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- ===== 분석 & 인사이트 ===== -->
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fas fa-chart-pie"></i> 분석 & 인사이트
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('performance-dash')">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>성과 대시보드</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('audience-analytics')">
+                            <i class="fas fa-users"></i>
+                            <span>독자 분석</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('engagement-analytics')">
+                            <i class="fas fa-heart"></i>
+                            <span>참여도 분석</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('competitor-analysis')">
+                            <i class="fas fa-chess"></i>
+                            <span>경쟁사 분석</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- ===== 발행 & 배포 ===== -->
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fas fa-share-alt"></i> 발행 & 배포
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('platforms')">
+                            <i class="fas fa-plug"></i>
+                            <span>플랫폼 연결</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('publish-queue')">
+                            <i class="fas fa-clock"></i>
+                            <span>발행 큐</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('cross-post')">
+                            <i class="fas fa-share-nodes"></i>
+                            <span>동시 발행</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('platform-optimize')">
+                            <i class="fas fa-sliders-h"></i>
+                            <span>플랫폼별 최적화</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 캘린더 & 계획 -->
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fas fa-calendar-alt"></i> 캘린더 & 계획
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('content-calendar')">
+                            <i class="fas fa-calendar"></i>
+                            <span>콘텐츠 캘린더</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('posting-schedule')">
+                            <i class="fas fa-clock"></i>
+                            <span>최적 시간 분석</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('milestone')">
+                            <i class="fas fa-flag"></i>
+                            <span>마일스톤</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('reminders')">
+                            <i class="fas fa-bell"></i>
+                            <span>리마인더</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- ===== 도구 & 설정 ===== -->
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fas fa-tools"></i> 도구 & 설정
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('backup')">
+                            <i class="fas fa-database"></i>
+                            <span>백업 & 복원</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('export')">
+                            <i class="fas fa-file-export"></i>
+                            <span>내보내기</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('import')">
+                            <i class="fas fa-file-import"></i>
+                            <span>가져오기</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('security')">
+                            <i class="fas fa-lock"></i>
+                            <span>보안 설정</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('preferences')">
+                            <i class="fas fa-user-cog"></i>
+                            <span>환경설정</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('api-keys')">
+                            <i class="fas fa-key"></i>
+                            <span>API 키 관리</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('integrations')">
+                            <i class="fas fa-plug"></i>
+                            <span>통합 관리</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- ===== 온라인 강좌 ===== -->
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="fas fa-graduation-cap"></i> 온라인 강좌
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('notion-course')">
+                            <i class="fas fa-book"></i>
+                            <span>노션 마스터 클래스</span>
+                            <span class="sidebar-badge">30강</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('obsidian-course')">
+                            <i class="fas fa-book"></i>
+                            <span>옵시디언 마스터</span>
+                            <span class="sidebar-badge">35강</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" onclick="showPage('evoto-course')">
+                            <i class="fas fa-camera"></i>
+                            <span>Evoto 마스터</span>
+                            <span class="sidebar-badge">40강</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="content">
+            <!-- 대시보드 페이지 -->
+            <div id="dashboard-page" class="page-content fade-in">
+                <div class="page-header">
+                    <h1 class="page-title">대시보드</h1>
+                    <p class="page-subtitle">블로그 운영 현황을 한눈에 확인하세요</p>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" onclick="refreshDashboard()">
+                            <i class="fas fa-sync"></i> 새로고침
+                        </button>
+                        <button class="btn btn-primary" onclick="exportReport()">
+                            <i class="fas fa-download"></i> 리포트 다운로드
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 통계 카드 -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="stat-label">총 조회수</div>
+                        <div class="stat-value" id="total-views">24,538</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> 12.5%
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="stat-label">발행 글</div>
+                        <div class="stat-value" id="total-posts">142</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> +8 이번 주
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-label">구독자</div>
+                        <div class="stat-value" id="total-subscribers">1,847</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> +124
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="stat-label">참여율</div>
+                        <div class="stat-value" id="engagement-rate">23.7%</div>
+                        <div class="stat-change negative">
+                            <i class="fas fa-arrow-down"></i> -2.1%
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 최근 활동 -->
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2 class="card-title">최근 활동</h2>
+                        <button class="btn btn-accent">
+                            <i class="fas fa-plus"></i> 새 글 작성
+                        </button>
+                    </div>
+                    <ul class="modern-list" id="recent-activity">
+                        <li class="modern-list-item">
+                            <div class="list-icon">
+                                <i class="fas fa-pen"></i>
+                            </div>
+                            <div class="list-content">
+                                <div class="list-title">AI 시대의 콘텐츠 마케팅 전략</div>
+                                <div class="list-subtitle">블로그 포스트 발행</div>
+                            </div>
+                            <div class="list-meta">
+                                <div class="list-badge">2시간 전</div>
+                            </div>
+                        </li>
+                        <li class="modern-list-item">
+                            <div class="list-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="list-content">
+                                <div class="list-title">주간 트래픽 분석 완료</div>
+                                <div class="list-subtitle">조회수 15% 증가</div>
+                            </div>
+                            <div class="list-meta">
+                                <div class="list-badge">5시간 전</div>
+                            </div>
+                        </li>
+                        <li class="modern-list-item">
+                            <div class="list-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="list-content">
+                                <div class="list-title">AI 뉴스 큐레이션</div>
+                                <div class="list-subtitle">15개 관련 뉴스 수집</div>
+                            </div>
+                            <div class="list-meta">
+                                <div class="list-badge">어제</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 인기 콘텐츠 -->
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2 class="card-title">인기 콘텐츠</h2>
+                        <a href="#" class="btn btn-secondary">전체 보기</a>
+                    </div>
+                    <div id="popular-content">
+                        <div class="progress">
+                            <div class="progress-bar" style="width: 85%"></div>
+                        </div>
+                        <p style="margin: 16px 0; font-weight: 600;">ChatGPT 활용법 완벽 가이드</p>
+                        <div style="display: flex; gap: 20px; color: var(--gray-600); font-size: 14px;">
+                            <span><i class="fas fa-eye"></i> 3,248 views</span>
+                            <span><i class="fas fa-heart"></i> 428 likes</span>
+                            <span><i class="fas fa-comment"></i> 52 comments</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI 글쓰기 페이지 -->
+            <div id="ai-write-page" class="page-content" style="display: none;">
+                <div class="page-header">
+                    <h1 class="page-title">AI 글쓰기</h1>
+                    <p class="page-subtitle">AI와 함께 완벽한 콘텐츠를 작성하세요</p>
+                </div>
+
+                <div class="content-card">
+                    <div class="form-group">
+                        <label class="form-label">제목</label>
+                        <input type="text" class="form-control" id="post-title" placeholder="매력적인 제목을 입력하세요">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">카테고리</label>
+                        <select class="form-control" id="post-category">
+                            <option>카테고리 선택</option>
+                            <option>기술</option>
+                            <option>AI</option>
+                            <option>마케팅</option>
+                            <option>라이프스타일</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">내용</label>
+                        <div id="editor" style="min-height: 400px; border: 2px solid var(--gray-300); border-radius: 8px; padding: 16px;">
+                            <!-- 에디터 영역 -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">태그</label>
+                        <input type="text" class="form-control" id="post-tags" placeholder="#AI #블로그 #콘텐츠마케팅">
+                    </div>
+                    
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" onclick="generateWithAI()">
+                            <i class="fas fa-robot"></i> AI 생성
+                        </button>
+                        <button class="btn btn-secondary" onclick="saveDraft()">
+                            <i class="fas fa-save"></i> 임시저장
+                        </button>
+                        <button class="btn btn-primary" onclick="publishPost()">
+                            <i class="fas fa-paper-plane"></i> 발행하기
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 빈 페이지들 추가 -->
+            <div id="insights-page" class="page-content" style="display: none;">
+                <div class="page-header">
+                    <h1 class="page-title">AI 인사이트</h1>
+                    <p class="page-subtitle">AI가 분석한 블로그 운영 인사이트</p>
+                </div>
+                <div class="content-card" style="padding: 40px; text-align: center;">
+                    <i class="fas fa-lightbulb" style="font-size: 48px; color: var(--accent); margin-bottom: 20px;"></i>
+                    <h3>AI 인사이트 분석 중...</h3>
+                    <p style="color: var(--gray-600);">블로그 데이터를 분석하여 개선 방안을 제시합니다.</p>
+                </div>
+            </div>
+
+            <div id="analytics-page" class="page-content" style="display: none;">
+                <div class="page-header">
+                    <h1 class="page-title">독자 분석</h1>
+                    <p class="page-subtitle">독자 행동 패턴과 선호도 분석</p>
+                </div>
+                <div class="content-card" style="padding: 40px; text-align: center;">
+                    <i class="fas fa-chart-bar" style="font-size: 48px; color: var(--accent); margin-bottom: 20px;"></i>
+                    <h3>독자 분석 대시보드</h3>
+                    <p style="color: var(--gray-600);">독자의 관심사와 행동 패턴을 분석합니다.</p>
+                </div>
+            </div>
+
+            <div id="trends-page" class="page-content" style="display: none;">
+                <div class="page-header">
+                    <h1 class="page-title">트렌드 분석</h1>
+                    <p class="page-subtitle">실시간 트렌드와 키워드 분석</p>
+                </div>
+                <div class="content-card" style="padding: 40px; text-align: center;">
+                    <i class="fas fa-fire" style="font-size: 48px; color: var(--danger); margin-bottom: 20px;"></i>
+                    <h3>트렌드 모니터링</h3>
+                    <p style="color: var(--gray-600);">현재 인기 있는 주제와 키워드를 실시간으로 추적합니다.</p>
+                </div>
+            </div>
+
+            <div id="smart-write-page" class="page-content" style="display: none;">
+                <div class="page-header">
+                    <h1 class="page-title">스마트 에디터</h1>
+                    <p class="page-subtitle">AI가 도와주는 스마트한 글쓰기</p>
+                </div>
+                <div class="content-card" style="padding: 40px;">
+                    <div class="form-group">
+                        <label class="form-label">AI 어시스턴트</label>
+                        <textarea class="form-control" rows="10" placeholder="AI가 글쓰기를 도와드립니다..."></textarea>
+                    </div>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-magic"></i> AI 제안 받기
+                    </button>
+                </div>
+            </div>
+
+            <div id="templates-page" class="page-content" style="display: none;">
+                <div class="page-header">
+                    <h1 class="page-title">AI 템플릿</h1>
+                    <p class="page-subtitle">다양한 콘텐츠 템플릿 모음</p>
+                </div>
+                <div class="content-card" style="padding: 40px; text-align: center;">
+                    <i class="fas fa-file-alt" style="font-size: 48px; color: var(--accent); margin-bottom: 20px;"></i>
+                    <h3>템플릿 라이브러리</h3>
+                    <p style="color: var(--gray-600);">블로그, 뉴스레터, 소셜 미디어 등 다양한 템플릿을 제공합니다.</p>
+                </div>
+            </div>
+
+            <div id="posts-page" class="page-content" style="display: none;">
+                <div class="page-header">
+                    <h1 class="page-title">전체 글</h1>
+                    <p class="page-subtitle">작성한 모든 콘텐츠를 관리하세요</p>
+                </div>
+                <div class="content-card" style="padding: 40px; text-align: center;">
+                    <i class="fas fa-list" style="font-size: 48px; color: var(--accent); margin-bottom: 20px;"></i>
+                    <h3>콘텐츠 목록</h3>
+                    <p style="color: var(--gray-600);">아직 작성된 글이 없습니다.</p>
+                </div>
+            </div>
+
+            <div id="drafts-page" class="page-content" style="display: none;">
+                <div class="page-header">
+                    <h1 class="page-title">임시저장</h1>
+                    <p class="page-subtitle">작성 중인 글 목록</p>
+                </div>
+                <div class="content-card" style="padding: 40px; text-align: center;">
+                    <i class="fas fa-file" style="font-size: 48px; color: var(--gray-500); margin-bottom: 20px;"></i>
+                    <h3>임시저장된 글</h3>
+                    <p style="color: var(--gray-600);">5개의 임시저장된 글이 있습니다.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 플로팅 액션 버튼 -->
+    <button class="fab" onclick="quickAction()">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Scripts -->
+    <script src="../js/data-manager.js"></script>
+    <script src="../js/gemini-api.js"></script>
+    <script>
+        // 페이지 전환
+        function showPage(pageId) {
+            // 모든 페이지 숨기기
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.style.display = 'none';
+            });
+            
+            // iframe 컨테이너도 숨기기
+            const iframeContainer = document.getElementById('ai-iframe-container');
+            if (iframeContainer) {
+                iframeContainer.style.display = 'none';
+            }
+            
+            // 선택된 페이지 찾기
+            let selectedPage = document.getElementById(pageId + '-page');
+            
+            // 페이지가 없으면 생성
+            if (!selectedPage) {
+                createDefaultPage(pageId);
+                selectedPage = document.getElementById(pageId + '-page');
+            }
+            
+            // 페이지 표시
+            if (selectedPage) {
+                selectedPage.style.display = 'block';
+                selectedPage.classList.add('fade-in');
+            }
+            
+            // 사이드바 메뉴 활성화
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            if (event && event.target) {
+                const link = event.target.closest('.sidebar-link');
+                if (link) link.classList.add('active');
+            }
+        }
+        
+        // AI 페이지를 iframe으로 표시
+        function showAIPage(pageName) {
+            // 모든 페이지 숨기기
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.style.display = 'none';
+            });
+            
+            // iframe 컨테이너 찾기 또는 생성
+            let iframeContainer = document.getElementById('ai-iframe-container');
+            if (!iframeContainer) {
+                // 컨테이너가 없으면 생성
+                iframeContainer = document.createElement('div');
+                iframeContainer.id = 'ai-iframe-container';
+                iframeContainer.className = 'page-content';
+                iframeContainer.style.cssText = 'display: none;';
+                
+                // content 영역에 추가
+                const contentArea = document.querySelector('.content');
+                if (contentArea) {
+                    contentArea.appendChild(iframeContainer);
+                }
+            }
+            
+            // iframe 생성 또는 URL 변경
+            let iframe = iframeContainer.querySelector('iframe');
+            if (!iframe) {
+                iframe = document.createElement('iframe');
+                iframe.style.cssText = 'width: 100%; height: calc(100vh - 100px); border: none; background: white;';
+                iframeContainer.innerHTML = ''; // 기존 내용 제거
+                iframeContainer.appendChild(iframe);
+            }
+            
+            // iframe src 설정
+            iframe.src = `./${pageName}.html`;
+            
+            // 컨테이너 표시
+            iframeContainer.style.display = 'block';
+            
+            // 사이드바 메뉴 활성화
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            if (event && event.target) {
+                const link = event.target.closest('.sidebar-link');
+                if (link) link.classList.add('active');
+            }
+        }
+        
+        // 기본 페이지 생성 함수
+        function createDefaultPage(pageId) {
+            const contentArea = document.querySelector('.content');
+            if (!contentArea) return;
+            
+            const pageDiv = document.createElement('div');
+            pageDiv.id = pageId + '-page';
+            pageDiv.className = 'page-content';
+            pageDiv.style.display = 'none';
+            
+            const pageTitles = {
+                'tone-manager': '톤 매니저',
+                'research': '스마트 리서치',
+                'fact-check': '팩트체크',
+                'seo-optimizer': 'SEO 최적화',
+                'title-ab': '제목 A/B 테스트',
+                'thumbnail-gen': '썸네일 생성기',
+                'hashtag-ai': '해시태그 AI',
+                'readability': '가독성 분석',
+                'ideas-board': '아이디어 보드',
+                'voice-memo': '음성 메모',
+                'ai-brainstorm': 'AI 브레인스토밍',
+                'scheduled': '예약 발행',
+                'series': '시리즈 관리',
+                'repurpose': '포맷 변환',
+                'social-cards': 'SNS 카드',
+                'newsletter': '뉴스레터',
+                'ebook': '전자책 제작',
+                'podcast': '팟캐스트 변환',
+                'news-setup': '크롤링 설정',
+                'news-collected': '수집된 뉴스',
+                'news-digest': '일일 다이제스트',
+                'trend-topics': '트렌드 토픽',
+                'youtube-summary': '유튜브 요약',
+                'podcast-notes': '팟캐스트 정리',
+                'image-to-text': '이미지→텍스트',
+                'voice-to-post': '음성→포스트',
+                'performance-dash': '성과 대시보드',
+                'audience-analytics': '독자 분석',
+                'engagement-analytics': '참여도 분석',
+                'competitor-analysis': '경쟁사 분석',
+                'platforms': '플랫폼 연결',
+                'publish-queue': '발행 큐',
+                'cross-post': '동시 발행',
+                'platform-optimize': '플랫폼별 최적화',
+                'content-calendar': '콘텐츠 캘린더',
+                'workflow': '워크플로우',
+                'editorial-calendar': '편집 캘린더',
+                'settings': '설정',
+                'api-settings': 'API 설정',
+                'backup': '백업',
+                'import-export': '가져오기/내보내기',
+                'security': '보안 설정',
+                'preferences': '환경설정',
+                'api-keys': 'API 키 관리',
+                'integrations': '통합 관리',
+                'notion-course': '노션 마스터 클래스',
+                'obsidian-course': '옵시디언 마스터',
+                'ai-course': 'AI 활용 마스터'
+            };
+            
+            const pageTitle = pageTitles[pageId] || pageId;
+            
+            pageDiv.innerHTML = `
+                <div class="page-header">
+                    <h1 class="page-title">${pageTitle}</h1>
+                    <p class="page-subtitle">${pageTitle} 페이지입니다</p>
+                </div>
+                <div class="content-card" style="padding: 40px; text-align: center;">
+                    <i class="fas fa-tools" style="font-size: 48px; color: var(--accent); margin-bottom: 20px;"></i>
+                    <h3>준비 중입니다</h3>
+                    <p style="color: var(--gray-600);">이 기능은 곧 추가될 예정입니다.</p>
+                </div>
+            `;
+            
+            contentArea.appendChild(pageDiv);
+        }
+        
+        // 대시보드 새로고침
+        function refreshDashboard() {
+            const dashboardData = window.dataManager?.getDashboardData();
+            if (dashboardData) {
+                document.getElementById('total-views').textContent = dashboardData.totalViews.toLocaleString();
+                document.getElementById('total-posts').textContent = dashboardData.publishedPosts;
+                document.getElementById('total-subscribers').textContent = dashboardData.subscribers.toLocaleString();
+                document.getElementById('engagement-rate').textContent = dashboardData.engagementRate + '%';
+            }
+            
+            // 스켈레톤 로딩 효과
+            document.querySelectorAll('.stat-value').forEach(el => {
+                el.classList.add('skeleton');
+                setTimeout(() => el.classList.remove('skeleton'), 1000);
+            });
+        }
+        
+        // AI로 콘텐츠 생성
+        async function generateWithAI() {
+            const title = document.getElementById('post-title').value;
+            if (!title) {
+                alert('먼저 제목을 입력해주세요');
+                return;
+            }
+            
+            try {
+                const content = await window.geminiAPI.generateBlogPost(title);
+                document.getElementById('editor').innerHTML = `<div style="white-space: pre-wrap;">${content}</div>`;
+            } catch (error) {
+                console.error('AI 생성 오류:', error);
+                alert('AI 생성 중 오류가 발생했습니다');
+            }
+        }
+        
+        // 임시저장
+        function saveDraft() {
+            const title = document.getElementById('post-title').value;
+            const content = document.getElementById('editor').innerText;
+            const category = document.getElementById('post-category').value;
+            const tags = document.getElementById('post-tags').value;
+            
+            if (!title || !content) {
+                alert('제목과 내용을 입력해주세요');
+                return;
+            }
+            
+            window.dataManager.saveDraft({
+                title,
+                content,
+                category,
+                tags: tags.split(' ').filter(t => t)
+            });
+            
+            alert('임시저장되었습니다!');
+        }
+        
+        // 발행
+        function publishPost() {
+            const title = document.getElementById('post-title').value;
+            const content = document.getElementById('editor').innerText;
+            const category = document.getElementById('post-category').value;
+            const tags = document.getElementById('post-tags').value;
+            
+            if (!title || !content) {
+                alert('제목과 내용을 입력해주세요');
+                return;
+            }
+            
+            window.dataManager.publishPost({
+                title,
+                content,
+                category,
+                tags: tags.split(' ').filter(t => t)
+            });
+            
+            alert('게시글이 발행되었습니다!');
+            
+            // 입력 초기화
+            document.getElementById('post-title').value = '';
+            document.getElementById('editor').innerHTML = '';
+            document.getElementById('post-tags').value = '';
+            
+            // 대시보드로 이동
+            showPage('dashboard');
+            refreshDashboard();
+        }
+        
+        // 빠른 액션
+        function quickAction() {
+            showPage('ai-write');
+        }
+        
+        // 리포트 다운로드
+        function exportReport() {
+            const data = window.dataManager.getDashboardData();
+            const report = `블로그 리포트 - ${new Date().toLocaleDateString('ko-KR')}
+            
+총 조회수: ${data.totalViews}
+발행 글: ${data.publishedPosts}
+구독자: ${data.subscribers}
+참여율: ${data.engagementRate}%`;
+            
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'blog-report.txt';
+            a.click();
+        }
+        
+        // 초기 로드
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshDashboard();
+        });
+    </script>
+</body>
+</html>
