@@ -5,9 +5,11 @@
 import http.server
 import socketserver
 import os
+import sys
 from urllib.parse import urlparse
 
-PORT = 8080
+# 포트 설정: 커맨드 라인 인자 또는 환경변수 또는 기본값 8080
+PORT = int(sys.argv[1]) if len(sys.argv) > 1 else int(os.getenv('PORT', 8080))
 
 class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
