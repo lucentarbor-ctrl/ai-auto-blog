@@ -20,18 +20,34 @@ jobs:
           HOST: ${{ secrets.EC2_HOST }}
           USER: ${{ secrets.EC2_USER }}
         run: |
+          # SSH 디렉토리 생성
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
           # SSH 키 설정
-          echo "$PRIVATE_KEY" > private_key.pem
-          chmod 600 private_key.pem
+          echo "$PRIVATE_KEY" > ~/.ssh/deploy_key.pem
+          chmod 600 ~/.ssh/deploy_key.pem
+
+          # known_hosts에 호스트 추가
+          ssh-keyscan -H $HOST >> ~/.ssh/known_hosts 2>/dev/null
+
+          # 연결 테스트
+          echo "🔍 EC2 연결 테스트..."
+          ssh -v -i ~/.ssh/deploy_key.pem -o ConnectTimeout=10 ${USER}@${HOST} "echo '✅ 연결 성공!'"
 
           # EC2에 배포
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ${USER}@${HOST} << 'EOF'
-            cd ~/ai-auto-blog
+          echo "🚀 배포 시작..."
+          ssh -i ~/.ssh/deploy_key.pem ${USER}@${HOST} << 'EOF'
+            set -e
+            cd ~/ai-auto-blog || { echo "❌ 디렉토리 없음"; exit 1; }
+
             git fetch origin
             git checkout ${{ github.ref_name }}
             git pull origin ${{ github.ref_name }}
+
             echo "✅ 배포 완료: $(date)"
+            echo "📝 현재 커밋: $(git log -1 --oneline)"
           EOF
 
           # 키 삭제
-          rm -f private_key.pem
+          rm -f ~/.ssh/deploy_key.pem
