@@ -1,10 +1,17 @@
 // AI 글쓰기 도우미 - 프론트엔드 통합
 class AIWriter {
     constructor() {
-        this.apiBase = 'http://localhost:5002/api/ai';
+        // API 엔드포인트 - 환경에 따라 자동 설정
+        const isProduction = window.location.hostname !== 'localhost';
+        this.apiBase = isProduction
+            ? `http://${window.location.hostname}:5000/api/ai`  // EC2: http://3.34.5.55:5000/api/ai
+            : 'http://localhost:5000/api/ai';  // 로컬 개발
+
         this.currentEditor = null;
         this.slashMenuVisible = false;
         this.selectedText = '';
+
+        console.log('🚀 AI Writer initialized with API:', this.apiBase);
     }
 
     // 에디터에 AI 기능 통합
