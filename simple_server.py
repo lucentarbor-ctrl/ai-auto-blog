@@ -21,9 +21,9 @@ class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         parsed_path = urlparse(self.path)
         path = parsed_path.path
 
-        # 루트 경로를 full-featured-blog.html로 리다이렉트
+        # 루트 경로를 index.html로 리다이렉트
         if path == "/" or path == "":
-            self.path = "/full-featured-blog.html"
+            self.path = "/index.html"
 
         # 기본 핸들러 호출
         return super().do_GET()
@@ -38,9 +38,9 @@ if __name__ == "__main__":
     
     with socketserver.TCPServer(("", PORT), MyHTTPRequestHandler) as httpd:
         print(f"🚀 AI Auto Blog 서버가 시작되었습니다!")
-        print(f"📍 메인 블로그: http://localhost:{PORT}/full-featured-blog.html")
+        print(f"📍 메인 블로그: http://localhost:{PORT}/")
+        print(f"📍 index.html: http://localhost:{PORT}/index.html")
         print(f"📍 프론트엔드: http://localhost:{PORT}/frontend/")
-        print(f"📍 관리자 페이지: http://localhost:{PORT}/frontend/admin/dashboard.html")
         print(f"\n종료하려면 Ctrl+C를 누르세요.")
         
         try:
