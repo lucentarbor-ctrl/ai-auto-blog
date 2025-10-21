@@ -681,9 +681,40 @@
         </div>
     </div>
     
+    <!-- Ollama Cloud API 추가 -->
+    <script src="../js/ollama-cloud-api.js"></script>
+    
     <script>
-        // Model configurations
+        // Model configurations - Ollama Cloud 통합
         const models = {
+            'llama3': {
+                id: 'llama3.2',
+                name: 'Llama 3.2 Latest',
+                type: 'ollama-cloud',
+                params: '8B',
+                apiKey: '3c59fcbdf15b4c02b64e93a544add018.4gypXlrDEbnV4gtneL7jCoB4'
+            },
+            'qwen25': {
+                id: 'qwen2.5',
+                name: 'Qwen 2.5 Coder',
+                type: 'ollama-cloud',
+                params: '7B',
+                apiKey: '3c59fcbdf15b4c02b64e93a544add018.4gypXlrDEbnV4gtneL7jCoB4'
+            },
+            'gemma2': {
+                id: 'gemma2',
+                name: 'Google Gemma 2',
+                type: 'ollama-cloud',
+                params: '9B',
+                apiKey: '3c59fcbdf15b4c02b64e93a544add018.4gypXlrDEbnV4gtneL7jCoB4'
+            },
+            'mistral': {
+                id: 'mistral',
+                name: 'Mistral Latest',
+                type: 'ollama-cloud',
+                params: '7B',
+                apiKey: '3c59fcbdf15b4c02b64e93a544add018.4gypXlrDEbnV4gtneL7jCoB4'
+            },
             'gemini-flash': {
                 id: 'gemini-2.0-flash-exp',
                 name: 'Gemini 2.0 Flash',
@@ -693,34 +724,10 @@
             },
             'gemini-pro': {
                 id: 'gemini-2.0-flash',
-                name: 'Gemini 2.0 Flash Pro',
+                name: 'Gemini Flash Pro',
                 type: 'gemini',
                 apiKey: 'AIzaSyAmLSwyMGCkDpSojwPjQwTnYmlAQjrdH7g',
-                params: 'Flash Pro'
-            },
-            'deepseek': {
-                id: 'deepseek-v3.1:671b-cloud',
-                name: 'DeepSeek v3.1',
-                type: 'ollama',
-                params: '671B'
-            },
-            'qwen': {
-                id: 'qwen3-coder:480b-cloud',
-                name: 'Qwen3 Coder',
-                type: 'ollama',
-                params: '480B'
-            },
-            'gpt-oss': {
-                id: 'gpt-oss:120b-cloud',
-                name: 'GPT-OSS',
-                type: 'ollama',
-                params: '120B'
-            },
-            'kimi': {
-                id: 'kimi-k2:1t-cloud',
-                name: 'Kimi K2',
-                type: 'ollama',
-                params: '1T'
+                params: 'Pro'
             }
         };
         
@@ -855,7 +862,19 @@ ${additionalPrompt ? `추가 지시: ${additionalPrompt}` : ''}
                     const data = await response.json();
                     content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
                     
+                } else if (model.type === 'ollama-cloud') {
+                    // Ollama Cloud API 사용
+                    if (window.ollamaCloudAPI) {
+                        window.ollamaCloudAPI.setModel(model.id);
+                        content = await window.ollamaCloudAPI.generateContent(prompt, {
+                            maxTokens: parseInt(document.getElementById('contentLength').value) * 2,
+                            temperature: 0.8
+                        });
+                    } else {
+                        throw new Error('Ollama Cloud API가 로드되지 않았습니다');
+                    }
                 } else {
+                    // 로컬 Ollama (폴백)
                     response = await fetch('http://localhost:11434/api/chat', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },

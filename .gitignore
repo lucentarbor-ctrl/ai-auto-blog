@@ -41,6 +41,7 @@ build/
 tmp/
 temp/
 .cache/
+nohup.out
 
 # Database
 *.db

@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 스마트 에디터 Pro - 6개 모델 통합</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #000000;
+            --secondary: #ffffff;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --accent: #0066ff;
+            --success: #00d68f;
+            --warning: #ffaa00;
+            --danger: #ff3d71;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
+            --radius: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-900);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* 헤더 */
+        .header {
+            background: var(--secondary);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 70px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header h1 i {
+            color: var(--accent);
+        }
+        
+        .header-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .header-btn {
+            padding: 10px 20px;
+            background: var(--secondary);
+            border: 2px solid var(--gray-300);
+            color: var(--gray-700);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .header-btn:hover {
+            background: var(--gray-100);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .header-btn.primary {
+            background: var(--primary);
+            color: var(--secondary);
+            border-color: var(--primary);
+        }
+        
+        .header-btn.primary:hover {
+            background: var(--gray-800);
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* 메인 컨테이너 */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            margin-top: 70px;
+            min-height: calc(100vh - 70px);
+            background: var(--gray-100);
+        }
+        
+        /* 에디터 섹션 */
+        .editor-section {
+            flex: 1;
+            display: flex;
+            background: var(--secondary);
+            margin: 20px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* 에디터 영역 */
+        .editor-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+        .editor-toolbar {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: var(--gray-100);
+            border-radius: var(--radius);
+            flex-wrap: wrap;
+        }
+        
+        .toolbar-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--secondary);
+            border: 2px solid var(--gray-300);
+            color: var(--gray-700);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .toolbar-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--gray-100);
+            transform: translateY(-2px);
+        }
+        
+        .toolbar-separator {
+            width: 2px;
+            background: var(--gray-300);
+            margin: 0 10px;
+        }
+        
+        #editor {
+            flex: 1;
+            background: var(--secondary);
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius);
+            padding: 30px;
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--gray-900);
+            overflow-y: auto;
+            outline: none;
+        }
+        
+        #editor:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+        }
+        
+        .editor-footer {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background: var(--gray-100);
+            border-radius: var(--radius);
+            margin-top: 15px;
+        }
+        
+        .word-count {
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+        
+        /* 빠른 도구 패널 */
+        .quick-tools {
+            width: 350px;
+            background: var(--gray-100);
+            padding: 25px;
+            overflow-y: auto;
+            border-left: 1px solid var(--gray-200);
+        }
+        
+        .tool-section {
+            margin-bottom: 25px;
+        }
+        
+        .tool-header {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        
+        .tool-btn {
+            padding: 12px;
+            background: var(--secondary);
+            border: 2px solid var(--gray-300);
+            border-radius: 8px;
+            color: var(--gray-700);
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+        
+        .tool-btn:hover {
+            border-color: var(--accent);
+            background: var(--gray-100);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .tool-btn i {
+            display: block;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        /* AI 프롬프트 영역 */
+        .ai-prompt-area {
+            padding: 20px;
+            background: var(--secondary);
+            border-radius: var(--radius);
+            margin-bottom: 15px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .ai-input {
+            width: 100%;
+            padding: 12px;
+            background: var(--secondary);
+            border: 2px solid var(--gray-300);
+            border-radius: 8px;
+            color: var(--gray-900);
+            font-size: 14px;
+            margin-bottom: 10px;
+            resize: none;
+            transition: var(--transition);
+        }
+        
+        .ai-input:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+        }
+        
+        .generate-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: var(--secondary);
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .generate-btn:hover {
+            background: var(--gray-800);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* AI 결과 섹션 (하단) */
+        .ai-results-section {
+            height: 450px;
+            background: var(--secondary);
+            display: none;
+            flex-direction: column;
+            margin: 0 20px 20px 20px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .ai-results-section.active {
+            display: flex;
+        }
+        
+        /* 탭 헤더 */
+        .results-header {
+            padding: 20px 25px;
+            background: var(--gray-100);
+            border-bottom: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .results-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .results-title i {
+            color: var(--accent);
+        }
+        
+        .results-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            padding: 8px 16px;
+            background: var(--dark);
+            border: 2px solid var(--border);
+            color: var(--text);
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary);
+        }
+        
+        /* AI 모델 카드 그리드 */
+        .models-grid {
+            flex: 1;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            overflow-y: auto;
+        }
+        
+        .model-card {
+            background: var(--dark);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .model-card.processing {
+            border-color: var(--warning);
+            animation: pulse 2s infinite;
+        }
+        
+        .model-card.completed {
+            border-color: var(--success);
+        }
+        
+        .model-card.error {
+            border-color: var(--error);
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .model-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .model-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .model-status {
+            font-size: 12px;
+            padding: 3px 8px;
+            background: var(--dark-lighter);
+            border-radius: 4px;
+        }
+        
+        .model-content {
+            flex: 1;
+            font-size: 13px;
+            line-height: 1.5;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            max-height: 150px;
+        }
+        
+        .model-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .model-score {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .model-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .model-btn {
+            padding: 5px 10px;
+            background: var(--dark-lighter);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .model-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        /* 우승자 하이라이트 */
+        .winner-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: gold;
+            color: black;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            animation: rotate 3s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 로딩 스피너 */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 반응형 */
+        @media (max-width: 1400px) {
+            .models-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 1000px) {
+            .quick-tools {
+                display: none;
+            }
+            .models-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* 토스트 알림 */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 20px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+            z-index: 1000;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 헤더 -->
+    <div class="header">
+        <div class="header-left">
+            <h1><i class="fas fa-rocket"></i> AI 스마트 에디터 Pro</h1>
+            <span style="background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 20px; font-size: 12px;">
+                6개 AI 모델 통합
+            </span>
+        </div>
+        <div class="header-controls">
+            <button class="header-btn" onclick="saveWork()">
+                <i class="fas fa-save"></i> 저장
+            </button>
+            <button class="header-btn" onclick="exportWork()">
+                <i class="fas fa-download"></i> 내보내기
+            </button>
+            <button class="header-btn" onclick="publishWork()">
+                <i class="fas fa-paper-plane"></i> 발행
+            </button>
+        </div>
+    </div>
+    
+    <!-- 메인 컨테이너 -->
+    <div class="main-container">
+        <!-- 에디터 섹션 (상단) -->
+        <div class="editor-section">
+            <!-- 메인 에디터 -->
+            <div class="editor-area">
+                <!-- 툴바 -->
+                <div class="editor-toolbar">
+                    <button class="toolbar-btn" onclick="formatText('bold')" title="굵게">
+                        <i class="fas fa-bold"></i>
+                    </button>
+                    <button class="toolbar-btn" onclick="formatText('italic')" title="기울임">
+                        <i class="fas fa-italic"></i>
+                    </button>
+                    <button class="toolbar-btn" onclick="formatText('underline')" title="밑줄">
+                        <i class="fas fa-underline"></i>
+                    </button>
+                    <button class="toolbar-btn" onclick="formatText('strikeThrough')" title="취소선">
+                        <i class="fas fa-strikethrough"></i>
+                    </button>
+                    <div class="toolbar-separator"></div>
+                    <button class="toolbar-btn" onclick="formatText('justifyLeft')" title="왼쪽 정렬">
+                        <i class="fas fa-align-left"></i>
+                    </button>
+                    <button class="toolbar-btn" onclick="formatText('justifyCenter')" title="가운데 정렬">
+                        <i class="fas fa-align-center"></i>
+                    </button>
+                    <button class="toolbar-btn" onclick="formatText('justifyRight')" title="오른쪽 정렬">
+                        <i class="fas fa-align-right"></i>
+                    </button>
+                    <div class="toolbar-separator"></div>
+                    <button class="toolbar-btn" onclick="formatText('insertOrderedList')" title="번호 목록">
+                        <i class="fas fa-list-ol"></i>
+                    </button>
+                    <button class="toolbar-btn" onclick="formatText('insertUnorderedList')" title="글머리 목록">
+                        <i class="fas fa-list-ul"></i>
+                    </button>
+                    <div class="toolbar-separator"></div>
+                    <button class="toolbar-btn" onclick="insertLink()" title="링크">
+                        <i class="fas fa-link"></i>
+                    </button>
+                    <button class="toolbar-btn" onclick="insertImage()" title="이미지">
+                        <i class="fas fa-image"></i>
+                    </button>
+                    <button class="toolbar-btn" onclick="insertTable()" title="표">
+                        <i class="fas fa-table"></i>
+                    </button>
+                    <div class="toolbar-separator"></div>
+                    <button class="toolbar-btn" onclick="formatText('undo')" title="실행 취소">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <button class="toolbar-btn" onclick="formatText('redo')" title="다시 실행">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </div>
+                
+                <!-- 에디터 본문 -->
+                <div id="editor" contenteditable="true" onkeyup="updateWordCount()">
+                    <h1>여기에 제목을 입력하세요</h1>
+                    <p>내용을 작성해보세요. AI가 6개 모델로 동시에 도와드립니다.</p>
+                </div>
+                
+                <!-- 에디터 푸터 -->
+                <div class="editor-footer">
+                    <div class="word-count">
+                        <i class="fas fa-font"></i> 글자: <span id="charCount">0</span> | 
+                        <i class="fas fa-paragraph"></i> 단어: <span id="wordCount">0</span> | 
+                        <i class="fas fa-file-alt"></i> 단락: <span id="paraCount">0</span>
+                    </div>
+                    <div>
+                        <span style="color: var(--success); font-size: 13px;">
+                            <i class="fas fa-check-circle"></i> 자동 저장 중
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 빠른 도구 패널 -->
+            <div class="quick-tools">
+                <!-- AI 프롬프트 -->
+                <div class="tool-section">
+                    <div class="tool-header">
+                        <i class="fas fa-magic"></i> AI 프롬프트
+                    </div>
+                    <div class="ai-prompt-area">
+                        <textarea class="ai-input" id="aiPrompt" rows="3" 
+                            placeholder="예: 이 주제로 SEO 최적화된 블로그 포스트를 작성해줘"></textarea>
+                        <button class="generate-btn" onclick="generateAll()">
+                            <i class="fas fa-rocket"></i> 6개 모델 동시 생성
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 빠른 액션 -->
+                <div class="tool-section">
+                    <div class="tool-header">
+                        <i class="fas fa-bolt"></i> 빠른 액션
+                    </div>
+                    <div class="tool-grid">
+                        <button class="tool-btn" onclick="quickAction('expand')">
+                            <i class="fas fa-expand-alt"></i>
+                            확장
+                        </button>
+                        <button class="tool-btn" onclick="quickAction('summarize')">
+                            <i class="fas fa-compress-alt"></i>
+                            요약
+                        </button>
+                        <button class="tool-btn" onclick="quickAction('improve')">
+                            <i class="fas fa-sparkles"></i>
+                            개선
+                        </button>
+                        <button class="tool-btn" onclick="quickAction('translate')">
+                            <i class="fas fa-language"></i>
+                            번역
+                        </button>
+                        <button class="tool-btn" onclick="quickAction('tone-professional')">
+                            <i class="fas fa-user-tie"></i>
+                            전문적
+                        </button>
+                        <button class="tool-btn" onclick="quickAction('tone-casual')">
+                            <i class="fas fa-smile"></i>
+                            친근한
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- SEO 도구 -->
+                <div class="tool-section">
+                    <div class="tool-header">
+                        <i class="fas fa-search"></i> SEO 도구
+                    </div>
+                    <div class="tool-grid">
+                        <button class="tool-btn" onclick="seoTool('title')">
+                            <i class="fas fa-heading"></i>
+                            제목
+                        </button>
+                        <button class="tool-btn" onclick="seoTool('meta')">
+                            <i class="fas fa-tags"></i>
+                            메타
+                        </button>
+                        <button class="tool-btn" onclick="seoTool('keywords')">
+                            <i class="fas fa-key"></i>
+                            키워드
+                        </button>
+                        <button class="tool-btn" onclick="seoTool('hashtag')">
+                            <i class="fas fa-hashtag"></i>
+                            해시태그
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 템플릿 -->
+                <div class="tool-section">
+                    <div class="tool-header">
+                        <i class="fas fa-file-alt"></i> 템플릿
+                    </div>
+                    <div class="tool-grid">
+                        <button class="tool-btn" onclick="loadTemplate('blog')">
+                            <i class="fas fa-blog"></i>
+                            블로그
+                        </button>
+                        <button class="tool-btn" onclick="loadTemplate('news')">
+                            <i class="fas fa-newspaper"></i>
+                            뉴스
+                        </button>
+                        <button class="tool-btn" onclick="loadTemplate('review')">
+                            <i class="fas fa-star"></i>
+                            리뷰
+                        </button>
+                        <button class="tool-btn" onclick="loadTemplate('guide')">
+                            <i class="fas fa-book"></i>
+                            가이드
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AI 결과 섹션 (하단) -->
+        <div class="ai-results-section" id="aiResultsSection">
+            <!-- 결과 헤더 -->
+            <div class="results-header">
+                <div class="results-title">
+                    <i class="fas fa-robot"></i> AI 생성 결과
+                    <span id="resultsStatus" style="font-size: 13px; color: var(--text-dim);">
+                        6개 모델 처리 중...
+                    </span>
+                </div>
+                <div class="results-actions">
+                    <button class="action-btn" onclick="selectBest()">
+                        <i class="fas fa-trophy"></i> 최고 선택
+                    </button>
+                    <button class="action-btn" onclick="compareResults()">
+                        <i class="fas fa-compress"></i> 비교
+                    </button>
+                    <button class="action-btn" onclick="regenerateAll()">
+                        <i class="fas fa-sync"></i> 재생성
+                    </button>
+                    <button class="action-btn" onclick="closeResults()">
+                        <i class="fas fa-times"></i> 닫기
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 모델 카드 그리드 -->
+            <div class="models-grid" id="modelsGrid">
+                <!-- 동적으로 생성됨 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/ollama-cloud-api.js"></script>
+    
+    <script>
+        // 6개 모델 설정
+        const models = {
+            'llama3': {
+                id: 'llama3.2',
+                name: 'Llama 3.2',
+                type: 'ollama-cloud'
+            },
+            'qwen25': {
+                id: 'qwen2.5',
+                name: 'Qwen 2.5',
+                type: 'ollama-cloud'
+            },
+            'gemma2': {
+                id: 'gemma2',
+                name: 'Gemma 2',
+                type: 'ollama-cloud'
+            },
+            'mistral': {
+                id: 'mistral',
+                name: 'Mistral',
+                type: 'ollama-cloud'
+            },
+            'gemini-flash': {
+                id: 'gemini-2.0-flash-exp',
+                name: 'Gemini Flash',
+                type: 'gemini',
+                apiKey: 'AIzaSyAmLSwyMGCkDpSojwPjQwTnYmlAQjrdH7g'
+            },
+            'gemini-pro': {
+                id: 'gemini-2.0-flash',
+                name: 'Gemini Pro',
+                type: 'gemini',
+                apiKey: 'AIzaSyAmLSwyMGCkDpSojwPjQwTnYmlAQjrdH7g'
+            }
+        };
+        
+        let results = {};
+        let autoSaveTimer;
+        
+        // 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            updateWordCount();
+            startAutoSave();
+            loadFromStorage();
+        });
+        
+        // 6개 모델 동시 생성
+        async function generateAll() {
+            const prompt = document.getElementById('aiPrompt').value;
+            const editorContent = document.getElementById('editor').innerText;
+            
+            if (!prompt && !editorContent) {
+                showToast('프롬프트나 내용을 입력해주세요', 'warning');
+                return;
+            }
+            
+            // 결과 섹션 표시
+            document.getElementById('aiResultsSection').classList.add('active');
+            document.getElementById('resultsStatus').textContent = '6개 모델 처리 중...';
+            
+            // 모델 카드 초기화
+            initializeModelCards();
+            
+            // 전체 프롬프트 구성
+            const fullPrompt = prompt || `다음 내용을 개선해주세요:\n\n${editorContent}`;
+            
+            // 병렬 처리
+            const promises = Object.entries(models).map(([key, model]) => 
+                generateForModel(key, model, fullPrompt)
+            );
+            
+            await Promise.allSettled(promises);
+            
+            // 완료 알림
+            document.getElementById('resultsStatus').textContent = '생성 완료!';
+            showToast('모든 모델 생성 완료!', 'success');
+            
+            // 최고 점수 자동 선택
+            setTimeout(() => selectBest(), 1000);
+        }
+        
+        // 개별 모델 생성
+        async function generateForModel(key, model, prompt) {
+            const card = document.getElementById(`model-${key}`);
+            const statusEl = card.querySelector('.model-status');
+            const contentEl = card.querySelector('.model-content');
+            const scoreEl = card.querySelector('.model-score');
+            
+            card.classList.add('processing');
+            statusEl.textContent = '생성 중...';
+            
+            const startTime = Date.now();
+            
+            try {
+                let response;
+                
+                if (model.type === 'ollama-cloud') {
+                    window.ollamaCloudAPI.setModel(model.id);
+                    response = await window.ollamaCloudAPI.generateContent(prompt);
+                } else if (model.type === 'gemini') {
+                    const res = await fetch(
+                        `https://generativelanguage.googleapis.com/v1beta/models/${model.id}:generateContent?key=${model.apiKey}`,
+                        {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                contents: [{ parts: [{ text: prompt }] }]
+                            })
+                        }
+                    );
+                    const data = await res.json();
+                    response = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                }
+                
+                const duration = Date.now() - startTime;
+                const score = calculateScore(response, duration);
+                
+                results[key] = { content: response, score, duration };
+                
+                // UI 업데이트
+                card.classList.remove('processing');
+                card.classList.add('completed');
+                statusEl.textContent = `${duration}ms`;
+                contentEl.textContent = response.substring(0, 200) + '...';
+                scoreEl.textContent = score;
+                
+            } catch (error) {
+                card.classList.remove('processing');
+                card.classList.add('error');
+                statusEl.textContent = '오류';
+                contentEl.textContent = error.message;
+                scoreEl.textContent = '0';
+            }
+        }
+        
+        // 모델 카드 초기화
+        function initializeModelCards() {
+            const grid = document.getElementById('modelsGrid');
+            grid.innerHTML = '';
+            results = {};
+            
+            Object.entries(models).forEach(([key, model]) => {
+                const card = document.createElement('div');
+                card.className = 'model-card';
+                card.id = `model-${key}`;
+                card.innerHTML = `
+                    <div class="model-header">
+                        <div class="model-name">${model.name}</div>
+                        <div class="model-status">대기 중</div>
+                    </div>
+                    <div class="model-content"></div>
+                    <div class="model-footer">
+                        <div class="model-score">-</div>
+                        <div class="model-actions">
+                            <button class="model-btn" onclick="useResult('${key}')">사용</button>
+                            <button class="model-btn" onclick="copyResult('${key}')">복사</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        
+        // 점수 계산
+        function calculateScore(content, duration) {
+            let score = 50;
+            
+            // 길이 점수
+            if (content.length > 500) score += 20;
+            else if (content.length > 200) score += 10;
+            
+            // 속도 점수
+            if (duration < 2000) score += 20;
+            else if (duration < 5000) score += 10;
+            
+            // 품질 점수 (간단한 체크)
+            if (content.includes('\n')) score += 5;
+            if (content.includes('.')) score += 5;
+            
+            return Math.min(100, score);
+        }
+        
+        // 최고 선택
+        function selectBest() {
+            let bestKey = null;
+            let bestScore = 0;
+            
+            Object.entries(results).forEach(([key, result]) => {
+                if (result.score > bestScore) {
+                    bestScore = result.score;
+                    bestKey = key;
+                }
+            });
+            
+            if (bestKey) {
+                useResult(bestKey);
+                
+                // 우승 표시
+                const card = document.getElementById(`model-${bestKey}`);
+                const badge = document.createElement('div');
+                badge.className = 'winner-badge';
+                badge.innerHTML = '👑';
+                card.style.position = 'relative';
+                card.appendChild(badge);
+            }
+        }
+        
+        // 결과 사용
+        function useResult(key) {
+            const result = results[key];
+            if (result && result.content) {
+                document.getElementById('editor').innerHTML += '<br><br>' + result.content.replace(/\n/g, '<br>');
+                updateWordCount();
+                showToast(`${models[key].name} 결과를 적용했습니다`, 'success');
+            }
+        }
+        
+        // 결과 복사
+        function copyResult(key) {
+            const result = results[key];
+            if (result && result.content) {
+                navigator.clipboard.writeText(result.content);
+                showToast('클립보드에 복사되었습니다', 'success');
+            }
+        }
+        
+        // 빠른 액션
+        async function quickAction(action) {
+            const selectedText = window.getSelection().toString();
+            const text = selectedText || document.getElementById('editor').innerText;
+            
+            if (!text) {
+                showToast('텍스트를 입력하거나 선택해주세요', 'warning');
+                return;
+            }
+            
+            let prompt = '';
+            switch(action) {
+                case 'expand':
+                    prompt = `다음 텍스트를 더 자세히 확장해주세요:\n${text}`;
+                    break;
+                case 'summarize':
+                    prompt = `다음 텍스트를 간단히 요약해주세요:\n${text}`;
+                    break;
+                case 'improve':
+                    prompt = `다음 텍스트를 개선해주세요:\n${text}`;
+                    break;
+                case 'translate':
+                    prompt = `다음 텍스트를 영어로 번역해주세요:\n${text}`;
+                    break;
+                case 'tone-professional':
+                    prompt = `다음 텍스트를 전문적인 톤으로 다시 작성해주세요:\n${text}`;
+                    break;
+                case 'tone-casual':
+                    prompt = `다음 텍스트를 친근한 톤으로 다시 작성해주세요:\n${text}`;
+                    break;
+            }
+            
+            document.getElementById('aiPrompt').value = prompt;
+            generateAll();
+        }
+        
+        // SEO 도구
+        async function seoTool(type) {
+            const content = document.getElementById('editor').innerText;
+            if (!content) {
+                showToast('먼저 내용을 작성해주세요', 'warning');
+                return;
+            }
+            
+            let prompt = '';
+            switch(type) {
+                case 'title':
+                    prompt = `다음 내용에 대한 SEO 최적화된 제목 5개를 생성해주세요:\n${content}`;
+                    break;
+                case 'meta':
+                    prompt = `다음 내용에 대한 메타 디스크립션을 작성해주세요:\n${content}`;
+                    break;
+                case 'keywords':
+                    prompt = `다음 내용에서 중요 키워드 10개를 추출해주세요:\n${content}`;
+                    break;
+                case 'hashtag':
+                    prompt = `다음 내용에 대한 해시태그 10개를 생성해주세요:\n${content}`;
+                    break;
+            }
+            
+            document.getElementById('aiPrompt').value = prompt;
+            generateAll();
+        }
+        
+        // 템플릿 로드
+        function loadTemplate(type) {
+            const templates = {
+                blog: `<h1>블로그 제목</h1>
+<p>서론을 작성하세요.</p>
+<h2>주요 내용 1</h2>
+<p>내용을 작성하세요.</p>
+<h2>주요 내용 2</h2>
+<p>내용을 작성하세요.</p>
+<h2>결론</h2>
+<p>마무리를 작성하세요.</p>`,
+                news: `<h1>뉴스 헤드라인</h1>
+<p><strong>리드:</strong> 핵심 내용 요약</p>
+<p>본문 내용...</p>`,
+                review: `<h1>제품 리뷰</h1>
+<p><strong>장점:</strong></p>
+<ul><li>장점 1</li><li>장점 2</li></ul>
+<p><strong>단점:</strong></p>
+<ul><li>단점 1</li></ul>
+<p><strong>총평:</strong> ⭐⭐⭐⭐☆</p>`,
+                guide: `<h1>가이드 제목</h1>
+<h2>Step 1: 준비</h2>
+<p>설명...</p>
+<h2>Step 2: 실행</h2>
+<p>설명...</p>
+<h2>Step 3: 완료</h2>
+<p>설명...</p>`
+            };
+            
+            document.getElementById('editor').innerHTML = templates[type];
+            updateWordCount();
+            showToast('템플릿이 적용되었습니다', 'success');
+        }
+        
+        // 텍스트 포맷
+        function formatText(command) {
+            document.execCommand(command, false, null);
+        }
+        
+        // 링크 삽입
+        function insertLink() {
+            const url = prompt('링크 URL:');
+            if (url) document.execCommand('createLink', false, url);
+        }
+        
+        // 이미지 삽입
+        function insertImage() {
+            const url = prompt('이미지 URL:');
+            if (url) document.execCommand('insertImage', false, url);
+        }
+        
+        // 표 삽입
+        function insertTable() {
+            const html = `<table border="1" style="width: 100%; border-collapse: collapse;">
+                <tr><th>제목1</th><th>제목2</th></tr>
+                <tr><td>내용1</td><td>내용2</td></tr>
+            </table>`;
+            document.execCommand('insertHTML', false, html);
+        }
+        
+        // 글자 수 업데이트
+        function updateWordCount() {
+            const text = document.getElementById('editor').innerText;
+            const chars = text.length;
+            const words = text.trim().split(/\s+/).filter(w => w).length;
+            const paras = text.trim().split(/\n\n+/).filter(p => p).length;
+            
+            document.getElementById('charCount').textContent = chars;
+            document.getElementById('wordCount').textContent = words;
+            document.getElementById('paraCount').textContent = paras;
+        }
+        
+        // 자동 저장
+        function startAutoSave() {
+            autoSaveTimer = setInterval(() => {
+                saveToStorage();
+            }, 30000);
+        }
+        
+        function saveToStorage() {
+            const content = document.getElementById('editor').innerHTML;
+            localStorage.setItem('smartEditorContent', content);
+            console.log('자동 저장됨');
+        }
+        
+        function loadFromStorage() {
+            const saved = localStorage.getItem('smartEditorContent');
+            if (saved) {
+                document.getElementById('editor').innerHTML = saved;
+                updateWordCount();
+            }
+        }
+        
+        // 저장, 내보내기, 발행
+        function saveWork() {
+            saveToStorage();
+            showToast('저장되었습니다', 'success');
+        }
+        
+        function exportWork() {
+            const content = document.getElementById('editor').innerHTML;
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'document.html';
+            a.click();
+        }
+        
+        function publishWork() {
+            if (confirm('발행하시겠습니까?')) {
+                showToast('발행되었습니다!', 'success');
+            }
+        }
+        
+        // 결과 섹션 제어
+        function closeResults() {
+            document.getElementById('aiResultsSection').classList.remove('active');
+        }
+        
+        function compareResults() {
+            // 비교 모드 구현
+            showToast('비교 기능 준비 중', 'info');
+        }
+        
+        function regenerateAll() {
+            generateAll();
+        }
+        
+        // 토스트 알림
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            
+            if (type === 'success') toast.style.background = 'var(--success)';
+            else if (type === 'warning') toast.style.background = 'var(--warning)';
+            else if (type === 'error') toast.style.background = 'var(--error)';
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        // 키보드 단축키
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        saveWork();
+                        break;
+                    case 'g':
+                        e.preventDefault();
+                        generateAll();
+                        break;
+                    case 'e':
+                        e.preventDefault();
+                        exportWork();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -693,7 +693,7 @@
                 </div>
                 <ul class="sidebar-menu">
                     <li class="sidebar-item">
-                        <a href="#" class="sidebar-link" onclick="showPage('smart-write')">
+                        <a href="#" class="sidebar-link" onclick="showSmartEditor(); return false;">
                             <i class="fas fa-pen-fancy"></i>
                             <span>스마트 에디터</span>
                         </a>
@@ -733,14 +733,14 @@
                 </div>
                 <ul class="sidebar-menu">
                     <li class="sidebar-item">
-                        <a href="#" class="sidebar-link" onclick="showAIPage('advanced-multi-model')">
+                        <a href="#" class="sidebar-link" onclick="showAIPage('advanced-multi-model'); return false;">
                             <i class="fas fa-microchip"></i>
                             <span>고급 멀티모델 AI</span>
                             <span class="sidebar-badge">NEW</span>
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a href="#" class="sidebar-link" onclick="showAIPage('multi-model-blog')">
+                        <a href="#" class="sidebar-link" onclick="showSmartEditor(); return false;">
                             <i class="fas fa-layer-group"></i>
                             <span>6-AI 동시생성</span>
                         </a>
@@ -1439,7 +1439,47 @@
     <!-- Scripts -->
     <script src="../js/data-manager.js"></script>
     <script src="../js/gemini-api.js"></script>
+    <script src="../js/ollama-cloud-api.js"></script>
     <script>
+        // 스마트 에디터 표시
+        function showSmartEditor() {
+            // 모든 페이지 숨기기
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.style.display = 'none';
+            });
+            
+            // iframe 컨테이너 찾기 또는 생성
+            let smartEditorContainer = document.getElementById('smart-editor-container');
+            if (!smartEditorContainer) {
+                smartEditorContainer = document.createElement('div');
+                smartEditorContainer.id = 'smart-editor-container';
+                smartEditorContainer.className = 'page-content';
+                smartEditorContainer.style.cssText = 'display: none; padding: 0;';
+                
+                const iframe = document.createElement('iframe');
+                iframe.src = '../integrated-smart-editor.html';
+                iframe.style.cssText = 'width: 100%; height: calc(100vh - 100px); border: none; background: white;';
+                smartEditorContainer.appendChild(iframe);
+                
+                const contentArea = document.querySelector('.content');
+                if (contentArea) {
+                    contentArea.appendChild(smartEditorContainer);
+                }
+            }
+            
+            // 스마트 에디터 표시
+            smartEditorContainer.style.display = 'block';
+            
+            // 사이드바 메뉴 활성화
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            if (event && event.target) {
+                const link = event.target.closest('.sidebar-link');
+                if (link) link.classList.add('active');
+            }
+        }
+        
         // 페이지 전환
         function showPage(pageId) {
             // 모든 페이지 숨기기
@@ -1629,12 +1669,25 @@
                 return;
             }
             
+            // 로딩 표시
+            document.getElementById('editor').innerHTML = '<div style="padding: 20px; text-align: center;"><i class="fas fa-spinner fa-spin"></i> AI가 콘텐츠를 생성하고 있습니다...</div>';
+            
             try {
-                const content = await window.geminiAPI.generateBlogPost(title);
+                // Ollama Cloud API 사용
+                let content;
+                if (window.ollamaCloudAPI) {
+                    content = await window.ollamaCloudAPI.generateBlogPost(title, []);
+                } else if (window.geminiAPI) {
+                    // 폴백: Gemini API 사용
+                    content = await window.geminiAPI.generateBlogPost(title);
+                } else {
+                    throw new Error('AI API를 사용할 수 없습니다');
+                }
+                
                 document.getElementById('editor').innerHTML = `<div style="white-space: pre-wrap;">${content}</div>`;
             } catch (error) {
                 console.error('AI 생성 오류:', error);
-                alert('AI 생성 중 오류가 발생했습니다');
+                document.getElementById('editor').innerHTML = '<div style="padding: 20px; color: red;">AI 생성 중 오류가 발생했습니다. 다시 시도해주세요.</div>';
             }
         }
         
@@ -1717,7 +1770,54 @@
         // 초기 로드
         document.addEventListener('DOMContentLoaded', function() {
             refreshDashboard();
+            checkAIStatus();
         });
+        
+        // AI API 상태 확인
+        async function checkAIStatus() {
+            console.log('AI API 상태 확인 중...');
+            
+            if (window.ollamaCloudAPI) {
+                try {
+                    const isConnected = await window.ollamaCloudAPI.checkAPIStatus();
+                    if (isConnected) {
+                        console.log('✅ Ollama Cloud API 연결 성공');
+                        // 상태 표시 (옵션)
+                        showNotification('AI 시스템 준비 완료', 'success');
+                    } else {
+                        console.warn('⚠️ Ollama Cloud API 연결 실패');
+                    }
+                } catch (error) {
+                    console.error('AI API 확인 오류:', error);
+                }
+            } else {
+                console.log('Ollama Cloud API 로드 중...');
+            }
+        }
+        
+        // 알림 표시 함수
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 12px 24px;
+                background: ${type === 'success' ? '#00d68f' : type === 'error' ? '#ff3d71' : '#0066ff'};
+                color: white;
+                border-radius: 8px;
+                font-weight: 600;
+                z-index: 9999;
+                animation: slideUp 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
     </script>
 </body>
 </html>

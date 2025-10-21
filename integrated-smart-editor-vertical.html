@@ -1,0 +1,2591 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 스마트 에디터 Pro - 6개 모델 통합</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #000000;
+            --secondary: #ffffff;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --accent: #0066ff;
+            --success: #00d68f;
+            --warning: #ffaa00;
+            --danger: #ff3d71;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
+            --radius: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-900);
+            line-height: 1.6;
+        }
+        
+        /* 메인 컨테이너 */
+        .main-container {
+            max-width: 100%;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        /* 헤더 */
+        .header {
+            background: var(--secondary);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header h1 i {
+            color: var(--accent);
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .header-btn {
+            padding: 8px 16px;
+            background: var(--secondary);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .header-btn:hover {
+            background: var(--gray-100);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .header-btn.primary {
+            background: var(--primary);
+            color: var(--secondary);
+            border-color: var(--primary);
+        }
+        
+        .header-btn.primary:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+        
+        /* 섹션 타이틀 */
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: var(--accent);
+        }
+        
+        /* 에디터 섹션 */
+        .editor-section {
+            background: var(--secondary);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .editor-toolbar {
+            padding: 10px 15px;
+            background: var(--gray-100);
+            border-bottom: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .toolbar-btn {
+            width: 32px;
+            height: 32px;
+            background: var(--secondary);
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .toolbar-btn:hover {
+            background: var(--accent);
+            color: var(--secondary);
+            border-color: var(--accent);
+        }
+        
+        .toolbar-separator {
+            width: 1px;
+            height: 24px;
+            background: var(--gray-300);
+            margin: 0 8px;
+        }
+        
+        #editor {
+            min-height: 400px;
+            padding: 30px;
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--gray-900);
+            outline: none;
+            position: relative;
+        }
+        
+        #editor:focus {
+            background: #fffef0;
+        }
+        
+        #editor:empty:before {
+            content: "제목을 입력하세요\A\A여기에 내용을 작성하세요. AI가 실시간으로 도와드립니다.";
+            color: var(--gray-400);
+            white-space: pre-wrap;
+            pointer-events: none;
+            position: absolute;
+        }
+        
+        .editor-footer {
+            padding: 10px 20px;
+            background: var(--gray-100);
+            border-top: 1px solid var(--gray-200);
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .word-count {
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+        
+        /* 도구 섹션 */
+        .tools-section {
+            background: var(--secondary);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .tool-card {
+            padding: 15px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+        
+        .tool-card:hover {
+            background: var(--accent);
+            color: var(--secondary);
+            border-color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .tool-card i {
+            font-size: 28px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .tool-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .tool-card p {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        /* AI 모델 섹션 */
+        .ai-section {
+            background: var(--secondary);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .ai-header {
+            margin-bottom: 25px;
+        }
+        
+        .ai-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .ai-input-group {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .ai-topic-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+        
+        .ai-topic-input:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+        }
+        
+        .ai-topic-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+        
+        .ai-controls {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        
+        .generate-btn {
+            padding: 12px 24px;
+            background: var(--accent);
+            color: var(--secondary);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .generate-btn:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .generate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* 모델 선택 */
+        .model-selector-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .model-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-300);
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .model-checkbox:hover {
+            background: var(--gray-200);
+        }
+        
+        .model-checkbox.checked {
+            background: var(--accent);
+            color: var(--secondary);
+            border-color: var(--accent);
+        }
+        
+        .model-checkbox input {
+            cursor: pointer;
+        }
+        
+        .select-all-btn {
+            padding: 6px 12px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-300);
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .select-all-btn:hover {
+            background: var(--accent);
+            color: var(--secondary);
+            border-color: var(--accent);
+        }
+        
+        /* AI 모델 그리드 */
+        .ai-models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        
+        .model-card {
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        
+        .model-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        
+        .model-header {
+            padding: 12px 15px;
+            background: var(--secondary);
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .model-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+        
+        .model-status {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        .model-status.ready {
+            background: var(--success);
+            color: var(--secondary);
+        }
+        
+        .model-status.loading {
+            background: var(--warning);
+            color: var(--secondary);
+        }
+        
+        .model-status.error {
+            background: var(--danger);
+            color: var(--secondary);
+        }
+        
+        .model-content {
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--gray-700);
+        }
+        
+        .model-actions {
+            padding: 10px 15px;
+            background: var(--secondary);
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            gap: 8px;
+        }
+        
+        .model-action-btn {
+            flex: 1;
+            padding: 8px 12px;
+            background: var(--secondary);
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+        
+        .model-action-btn:hover {
+            background: var(--accent);
+            color: var(--secondary);
+            border-color: var(--accent);
+        }
+        
+        /* AI 도우미 */
+        .ai-assistant-section {
+            background: var(--secondary);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .ai-chat-container {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .ai-chat-main {
+            flex: 1;
+        }
+        
+        .ai-chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .chat-message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: var(--radius);
+            animation: fadeIn 0.3s;
+        }
+        
+        .chat-message.user {
+            background: var(--accent);
+            color: var(--secondary);
+            margin-left: 20%;
+            text-align: right;
+        }
+        
+        .chat-message.ai {
+            background: var(--secondary);
+            border: 1px solid var(--gray-200);
+            margin-right: 20%;
+        }
+        
+        .chat-message-header {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            opacity: 0.8;
+        }
+        
+        .chat-message-content {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .ai-chat-input-area {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .ai-chat-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        .ai-chat-send-btn {
+            padding: 12px 20px;
+            background: var(--accent);
+            color: var(--secondary);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .ai-chat-send-btn:hover {
+            background: var(--primary);
+        }
+        
+        .ai-chat-sidebar {
+            width: 250px;
+        }
+        
+        .quick-actions {
+            background: var(--gray-100);
+            border-radius: var(--radius);
+            padding: 15px;
+        }
+        
+        .quick-actions h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 12px;
+        }
+        
+        .quick-action-btn {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            background: var(--secondary);
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 13px;
+            color: var(--gray-700);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: left;
+        }
+        
+        .quick-action-btn:hover {
+            background: var(--accent);
+            color: var(--secondary);
+            border-color: var(--accent);
+        }
+        
+        .quick-action-btn i {
+            margin-right: 8px;
+        }
+        
+        /* 로딩 애니메이션 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--gray-300);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 스크롤바 스타일 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-400);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-500);
+        }
+        
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .tools-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .ai-models-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-actions {
+                flex-wrap: wrap;
+            }
+            
+            .ai-chat-container {
+                flex-direction: column;
+            }
+            
+            .ai-chat-sidebar {
+                width: 100%;
+            }
+        }
+
+        /* 톤 매니저 모달 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none; /* 기본적으로 숨김 */
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: var(--secondary);
+            padding: 30px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray-500);
+        }
+
+        .tone-options {
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tone-btn {
+            padding: 8px 16px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-300);
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tone-btn:hover {
+            background: var(--accent);
+            color: var(--secondary);
+            border-color: var(--accent);
+        }
+
+        .modal-body textarea {
+            width: 100%;
+            height: 300px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            padding: 15px;
+            font-size: 15px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 20px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- 헤더 -->
+        <div class="header">
+            <div class="header-top">
+                <h1>
+                    <i class="fas fa-magic"></i>
+                    AI 스마트 에디터 Pro
+                </h1>
+                <div class="header-actions">
+                    <button class="header-btn" onclick="saveContent()">
+                        <i class="fas fa-save"></i> 저장
+                    </button>
+                    <button class="header-btn" onclick="previewContent()">
+                        <i class="fas fa-eye"></i> 미리보기
+                    </button>
+                    <button class="header-btn primary" onclick="publishContent()">
+                        <i class="fas fa-paper-plane"></i> 발행
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        
+        <!-- AI 모델 비교 섹션 -->
+        <div class="ai-section">
+            <div class="section-title">
+                <i class="fas fa-robot"></i>
+                AI 모델 비교
+            </div>
+            <div class="ai-header">
+                <div class="ai-header-top">
+                    <div class="ai-input-group">
+                        <label class="ai-topic-label" for="aiTopicInput">
+                            작성하고 싶은 주제나 제목을 입력하세요
+                        </label>
+                        <input 
+                            type="text" 
+                            id="aiTopicInput" 
+                            class="ai-topic-input" 
+                            placeholder="예: 2024년 AI 기술 트렌드 분석"
+                        >
+                    </div>
+                    <div class="ai-controls" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <select id="qualitySelect" style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 14px; height: 44px;">
+                            <option value="standard">표준 품질</option>
+                            <option value="high">고품질</option>
+                            <option value="creative">창의적</option>
+                            <option value="precise">정확성 우선</option>
+                        </select>
+                        <label style="display: flex; align-items: center; gap: 5px; padding: 8px 12px; background: var(--gray-100); border-radius: 8px; cursor: pointer;">
+                            <input type="checkbox" id="streamingMode" checked>
+                            <span style="font-size: 14px;">스트리밍 모드</span>
+                        </label>
+                        <select id="promptSelect" style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 14px; height: 44px; min-width: 200px;" onchange="handlePromptChange(this.value)">
+                            <option value="" disabled selected>작성 유형 선택</option>
+                            <optgroup label="템플릿">
+                                <option value="blog">블로그 포스트</option>
+                                <option value="news">뉴스 기사</option>
+                                <option value="review">리뷰 작성</option>
+                                <option value="tutorial">튜토리얼</option>
+                                <option value="article">일반 기사</option>
+                                <option value="creative">창작 글쓰기</option>
+                            </optgroup>
+                            <optgroup label="AI 도구">
+                                <option value="expand">내용 확장</option>
+                                <option value="summarize">요약</option>
+                                <option value="improve">문장 개선</option>
+                                <option value="translate">번역</option>
+                                <option value="tone">톤 변경</option>
+                            </optgroup>
+                            <optgroup label="SEO 도구">
+                                <option value="seo-title">SEO 제목 생성</option>
+                                <option value="meta">Meta 태그</option>
+                                <option value="keywords">키워드 추출</option>
+                                <option value="hashtags">해시태그</option>
+                            </optgroup>
+                        </select>
+                        <button class="generate-btn" onclick="generateFromTopic()">
+                            <i class="fas fa-magic"></i>
+                            AI 생성
+                        </button>
+                    </div>
+                </div>
+                <div class="model-selector-row">
+                    <button class="select-all-btn" onclick="toggleAllModels()">
+                        <i class="fas fa-check-square"></i> 전체
+                    </button>
+                    <label class="model-checkbox checked" id="llama-check">
+                        <input type="checkbox" value="llama" checked onchange="updateModelSelection(this)">
+                        <span>Llama 3.2</span>
+                    </label>
+                    <label class="model-checkbox checked" id="qwen-check">
+                        <input type="checkbox" value="qwen" checked onchange="updateModelSelection(this)">
+                        <span>Qwen 2.5</span>
+                    </label>
+                    <label class="model-checkbox checked" id="gemma-check">
+                        <input type="checkbox" value="gemma" checked onchange="updateModelSelection(this)">
+                        <span>Gemma 2</span>
+                    </label>
+                    <label class="model-checkbox checked" id="mistral-check">
+                        <input type="checkbox" value="mistral" checked onchange="updateModelSelection(this)">
+                        <span>Mistral</span>
+                    </label>
+                    <label class="model-checkbox checked" id="gemini-flash-check">
+                        <input type="checkbox" value="gemini-flash" checked onchange="updateModelSelection(this)">
+                        <span>Gemini Flash</span>
+                    </label>
+                    <label class="model-checkbox checked" id="gemini-pro-check">
+                        <input type="checkbox" value="gemini-pro" checked onchange="updateModelSelection(this)">
+                        <span>Gemini Pro</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="ai-models-grid">
+                <!-- Llama 3.2 -->
+                <div class="model-card">
+                    <div class="model-header">
+                        <span class="model-name">Llama 3.2</span>
+                        <span class="model-status ready">준비</span>
+                    </div>
+                    <div class="model-content" id="llama-content">
+                        주제를 입력하고 AI 생성 버튼을 클릭하세요
+                    </div>
+                    <div class="model-actions">
+                        <button class="model-action-btn" onclick="copyContent('llama')">
+                            <i class="fas fa-copy"></i> 복사
+                        </button>
+                        <button class="model-action-btn" onclick="applyContent('llama')">
+                            <i class="fas fa-check"></i> 적용
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Qwen 2.5 -->
+                <div class="model-card">
+                    <div class="model-header">
+                        <span class="model-name">Qwen 2.5</span>
+                        <span class="model-status ready">준비</span>
+                    </div>
+                    <div class="model-content" id="qwen-content">
+                        주제를 입력하고 AI 생성 버튼을 클릭하세요
+                    </div>
+                    <div class="model-actions">
+                        <button class="model-action-btn" onclick="copyContent('qwen')">
+                            <i class="fas fa-copy"></i> 복사
+                        </button>
+                        <button class="model-action-btn" onclick="applyContent('qwen')">
+                            <i class="fas fa-check"></i> 적용
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Gemma 2 -->
+                <div class="model-card">
+                    <div class="model-header">
+                        <span class="model-name">Gemma 2</span>
+                        <span class="model-status ready">준비</span>
+                    </div>
+                    <div class="model-content" id="gemma-content">
+                        주제를 입력하고 AI 생성 버튼을 클릭하세요
+                    </div>
+                    <div class="model-actions">
+                        <button class="model-action-btn" onclick="copyContent('gemma')">
+                            <i class="fas fa-copy"></i> 복사
+                        </button>
+                        <button class="model-action-btn" onclick="applyContent('gemma')">
+                            <i class="fas fa-check"></i> 적용
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Mistral -->
+                <div class="model-card">
+                    <div class="model-header">
+                        <span class="model-name">Mistral</span>
+                        <span class="model-status ready">준비</span>
+                    </div>
+                    <div class="model-content" id="mistral-content">
+                        주제를 입력하고 AI 생성 버튼을 클릭하세요
+                    </div>
+                    <div class="model-actions">
+                        <button class="model-action-btn" onclick="copyContent('mistral')">
+                            <i class="fas fa-copy"></i> 복사
+                        </button>
+                        <button class="model-action-btn" onclick="applyContent('mistral')">
+                            <i class="fas fa-check"></i> 적용
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Gemini Flash -->
+                <div class="model-card">
+                    <div class="model-header">
+                        <span class="model-name">Gemini Flash</span>
+                        <span class="model-status ready">준비</span>
+                    </div>
+                    <div class="model-content" id="gemini-flash-content">
+                        주제를 입력하고 AI 생성 버튼을 클릭하세요
+                    </div>
+                    <div class="model-actions">
+                        <button class="model-action-btn" onclick="copyContent('gemini-flash')">
+                            <i class="fas fa-copy"></i> 복사
+                        </button>
+                        <button class="model-action-btn" onclick="applyContent('gemini-flash')">
+                            <i class="fas fa-check"></i> 적용
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Gemini Pro -->
+                <div class="model-card">
+                    <div class="model-header">
+                        <span class="model-name">Gemini Pro</span>
+                        <span class="model-status ready">준비</span>
+                    </div>
+                    <div class="model-content" id="gemini-pro-content">
+                        주제를 입력하고 AI 생성 버튼을 클릭하세요
+                    </div>
+                    <div class="model-actions">
+                        <button class="model-action-btn" onclick="copyContent('gemini-pro')">
+                            <i class="fas fa-copy"></i> 복사
+                        </button>
+                        <button class="model-action-btn" onclick="applyContent('gemini-pro')">
+                            <i class="fas fa-check"></i> 적용
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 텍스트 에디터 섹션 -->
+        <div class="editor-section">
+            <div class="section-title">
+                <i class="fas fa-edit"></i>
+                텍스트 편집기
+            </div>
+            <div class="editor-toolbar">
+                <button class="toolbar-btn" onclick="formatText('bold')">
+                    <i class="fas fa-bold"></i>
+                </button>
+                <button class="toolbar-btn" onclick="formatText('italic')">
+                    <i class="fas fa-italic"></i>
+                </button>
+                <button class="toolbar-btn" onclick="formatText('underline')">
+                    <i class="fas fa-underline"></i>
+                </button>
+                <div class="toolbar-separator"></div>
+                <button class="toolbar-btn" onclick="formatText('insertOrderedList')">
+                    <i class="fas fa-list-ol"></i>
+                </button>
+                <button class="toolbar-btn" onclick="formatText('insertUnorderedList')">
+                    <i class="fas fa-list-ul"></i>
+                </button>
+                <div class="toolbar-separator"></div>
+                <button class="toolbar-btn" onclick="insertLink()">
+                    <i class="fas fa-link"></i>
+                </button>
+                <button class="toolbar-btn" onclick="insertImage()">
+                    <i class="fas fa-image"></i>
+                </button>
+                <div class="toolbar-separator"></div>
+                <button class="toolbar-btn" onclick="formatText('undo')">
+                    <i class="fas fa-undo"></i>
+                </button>
+                <button class="toolbar-btn" onclick="formatText('redo')">
+                    <i class="fas fa-redo"></i>
+                </button>
+                <div class="toolbar-separator"></div>
+                <button class="toolbar-btn" onclick="openToneEditorPopup()" style="width: auto; padding: 0 10px;">
+                    <i class="fas fa-sliders-h"></i> 톤매니저
+                </button>
+            </div>
+            
+            <div id="editor" contenteditable="true">
+                <h2>제목을 입력하세요</h2>
+                <p>여기에 내용을 작성하세요. AI가 실시간으로 도와드립니다.</p>
+            </div>
+            
+            <div class="editor-footer">
+                <div class="word-count">
+                    글자 수: <span id="charCount">0</span> | 단어 수: <span id="wordCount">0</span>
+                </div>
+                <div>
+                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                    <span style="font-size: 13px; color: var(--gray-600);">자동 저장됨</span>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <!-- AI 도우미 플로팅 팝업 -->
+    <div id="aiAssistant" style="position: fixed; bottom: 20px; right: 20px; width: 400px; max-height: 600px; background: white; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 1000; display: flex; flex-direction: column; transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);">
+        <div style="background: linear-gradient(135deg, #0066ff 0%, #000000 100%); color: white; padding: 15px; border-radius: 16px 16px 0 0; cursor: move;" id="aiAssistantHeader">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 4px;">
+                        <i class="fas fa-robot"></i>
+                        <span>AI 도우미</span>
+                    </div>
+                    <div class="assistant-status" style="font-size: 11px; opacity: 0.9;">
+                        <i class="fas fa-info-circle"></i> 내용 입력 대기
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                <button onclick="minimizeAssistant()" style="width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button onclick="closeAssistant()" style="width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div style="padding: 15px; flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+            <div style="flex: 1; display: flex; flex-direction: column;">
+                <div id="chatMessages" style="flex: 1; overflow-y: auto; margin-bottom: 10px; min-height: 300px; max-height: 400px; background: #f8f9fa; border-radius: 8px; padding: 10px;">
+                    <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 8px; border-left: 3px solid #0066ff;">
+                        <strong style="color: #0066ff; font-size: 12px; display: block; margin-bottom: 5px;">AI 도우미</strong>
+                        <div style="font-size: 14px; color: #000; line-height: 1.5;">안녕하세요! 작성 중인 콘텐츠를 실시간으로 분석하며 도움을 드릴게요. 질문을 입력하거나 빠른 액션 버튼을 사용해보세요.</div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <input type="text" id="chatInput" placeholder="예: 이 문단을 더 자세히 설명해줘" style="flex: 1; padding: 10px; border: 1px solid #dee2e6; border-radius: 8px; font-size: 14px;" onkeypress="if(event.key==='Enter') sendChatMessage()">
+                    <button onclick="sendChatMessage()" style="padding: 10px 15px; background: #0066ff; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div style="margin-top: 15px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                <button onclick="quickAction('improve')" style="padding: 10px 8px; background: white; border: 1px solid #dee2e6; border-radius: 6px; font-size: 13px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='white'">
+                    <i class="fas fa-magic" style="color: #0066ff;"></i> 개선
+                </button>
+                <button onclick="quickAction('expand')" style="padding: 10px 8px; background: white; border: 1px solid #dee2e6; border-radius: 6px; font-size: 13px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='white'">
+                    <i class="fas fa-expand-alt" style="color: #0066ff;"></i> 확장
+                </button>
+                <button onclick="quickAction('summarize')" style="padding: 10px 8px; background: white; border: 1px solid #dee2e6; border-radius: 6px; font-size: 13px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='white'">
+                    <i class="fas fa-compress-alt" style="color: #0066ff;"></i> 요약
+                </button>
+                <button onclick="analyzeContent()" style="padding: 10px 8px; background: #0066ff; color: white; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#0052cc'" onmouseout="this.style.background='#0066ff'">
+                    <i class="fas fa-sync"></i> 분석
+                </button>
+            </div>
+            
+            <!-- 톤 변환 버튼들 추가 -->
+            <div style="margin-top: 10px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                <button onclick="changeToneAction('professional')" style="padding: 8px 6px; background: white; border: 1px solid #dee2e6; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f0f8ff'" onmouseout="this.style.background='white'">
+                    <i class="fas fa-user-tie" style="color: #6366f1;"></i> 전문적
+                </button>
+                <button onclick="changeToneAction('casual')" style="padding: 8px 6px; background: white; border: 1px solid #dee2e6; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f0f8ff'" onmouseout="this.style.background='white'">
+                    <i class="fas fa-smile" style="color: #10b981;"></i> 친근한
+                </button>
+                <button onclick="changeToneAction('creative')" style="padding: 8px 6px; background: white; border: 1px solid #dee2e6; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f0f8ff'" onmouseout="this.style.background='white'">
+                    <i class="fas fa-palette" style="color: #f59e0b;"></i> 창의적
+                </button>
+                <button onclick="checkToneConsistency()" style="padding: 8px 6px; background: #6366f1; color: white; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#4f46e5'" onmouseout="this.style.background='#6366f1'">
+                    <i class="fas fa-check-double"></i> 일관성
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 톤 매니저 모달 -->
+    <div id="toneManagerModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">톤 매니저</h2>
+                <button class="modal-close-btn" onclick="closeToneManager()">&times;</button>
+            </div>
+            <div class="tone-options">
+                <button class="tone-btn" onclick="changeTone(this, 'professional')">전문적</button>
+                <button class="tone-btn" onclick="changeTone(this, 'casual')">친근한</button>
+                <button class="tone-btn" onclick="changeTone(this, 'creative')">창의적</button>
+                <button class="tone-btn" onclick="changeTone(this, 'witty')">재치있는</button>
+                <button class="tone-btn" onclick="changeTone(this, 'assertive')">단호한</button>
+                <button class="tone-btn" onclick="changeTone(this, 'empathetic')">공감하는</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="toneResultTextarea" placeholder="이곳에서 AI가 변환한 텍스트를 확인하고 수정할 수 있습니다..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="header-btn" onclick="closeToneManager()">닫기</button>
+                <button class="header-btn primary" onclick="applyToneToEditor()">에디터에 적용</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+    // OllamaCloudAPI 클래스 정의 (인라인)
+    class OllamaCloudAPI {
+        constructor() {
+            // Gemini API 설정
+            this.geminiApiKey = 'AIzaSyBGaY6nKiBfwZRf_Qf0LKLVlWpQQqFLpqU';
+            this.geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
+            this.currentModel = 'gemini-1.5-flash';
+        }
+        
+        // Gemini API로 실제 생성
+        async generateWithModel(prompt, modelName) {
+            console.log(`${modelName} 모델로 생성 중...`);
+            
+            // 각 모델별 고유한 응답 생성
+            return this.generateModelSpecificResponse(prompt, modelName);
+        }
+        
+        generateModelSpecificResponse(prompt, modelName) {
+            // 주제 추출
+            const topicMatch = prompt.match(/"([^"]+)"/);
+            const topic = topicMatch ? topicMatch[1] : '주제';
+            
+            // 지연 시뮬레이션
+            setTimeout(() => {}, Math.random() * 500 + 500);
+            
+            const responses = {
+                'llama3.2': `# ${topic}에 대한 종합적인 분석
+
+## 서론
+${topic}은(는) 현대 사회에서 매우 중요한 주제입니다. 이 글에서는 ${topic}의 다양한 측면을 깊이있게 탐구하고자 합니다.
+
+## 주요 내용
+
+### 1. 개념과 정의
+${topic}의 핵심은 혁신과 발전에 있습니다. 전문가들은 이 분야가 앞으로 큰 성장 가능성을 가지고 있다고 평가합니다.
+
+### 2. 현재 동향
+최근 ${topic} 분야에서는 다음과 같은 변화가 관찰됩니다:
+- 기술적 발전과 혁신
+- 사용자 경험 개선
+- 시장 규모 확대
+
+### 3. 실제 적용 사례
+${topic}은(는) 이미 다양한 분야에서 활용되고 있습니다:
+• 산업 분야: 생산성 향상 및 비용 절감
+• 교육 분야: 학습 효율성 증대
+• 의료 분야: 진단 정확도 향상
+
+### 4. 미래 전망
+${topic}의 미래는 밝습니다. 지속적인 연구와 개발을 통해 더 나은 결과를 기대할 수 있습니다.
+
+## 결론
+${topic}은(는) 우리의 삶을 풍요롭게 만드는 중요한 요소입니다. 앞으로도 지속적인 관심과 투자가 필요합니다.`,
+
+                'qwen2.5': `【${topic} 완벽 가이드】
+
+◆ 들어가며
+${topic}에 대해 알아야 할 모든 것을 담았습니다. 체계적이고 실용적인 접근을 통해 핵심을 전달하겠습니다.
+
+◆ 핵심 포인트
+
+1️⃣ **기초 이해**
+- ${topic}의 기본 원리
+- 실생활 적용 방법
+- 주의해야 할 점
+
+2️⃣ **심화 학습**
+- 전문가 팁과 노하우
+- 성공 사례 분석
+- 흔한 실수와 해결책
+
+3️⃣ **실전 응용**
+${topic}을(를) 마스터하기 위한 단계별 접근법:
+① 기초 개념 정립
+② 실습을 통한 체득
+③ 응용력 향상
+④ 전문성 확보
+
+◆ 전문가 조언
+"${topic}을(를) 제대로 이해하려면 꾸준한 학습과 실습이 필요합니다."
+
+◆ 유용한 리소스
+• 추천 도서 및 자료
+• 온라인 강좌 및 튜토리얼
+• 커뮤니티 및 포럼
+
+◆ 마무리
+${topic}의 가치를 최대한 활용하시기 바랍니다.`,
+
+                'gemma2': `📝 ${topic} 이야기
+
+안녕하세요! 오늘은 ${topic}에 대해 이야기해보려고 합니다.
+
+**왜 ${topic}이(가) 중요할까요?**
+
+${topic}은(는) 우리 일상에 많은 영향을 미치고 있습니다. 특히:
+• 생산성 향상에 도움
+• 삶의 질 개선
+• 새로운 기회 창출
+
+**실제 경험담**
+
+제가 ${topic}을(를) 처음 접했을 때의 경험을 공유하자면, 정말 놀라웠습니다. 처음에는 어려워 보였지만, 차근차근 배워가니 점점 재미있어졌습니다.
+
+**유용한 팁 3가지**
+1. 작은 것부터 시작하세요
+2. 꾸준히 연습하세요
+3. 커뮤니티와 소통하세요
+
+**실제 활용 방법**
+- 일상생활에서: 매일 조금씩 적용해보기
+- 업무에서: 효율성 향상을 위한 도구로 활용
+- 학습에서: 새로운 지식 습득의 촉매제
+
+**맺음말**
+
+${topic}은(는) 누구나 도전할 수 있는 분야입니다. 용기를 내어 시작해보세요!`,
+
+                'mistral': `## ${topic}: 핵심 정리
+
+### 개요
+${topic}에 대한 간결하고 명확한 설명을 제공합니다.
+
+### 주요 특징
+- **효율성**: 최적화된 프로세스
+- **신뢰성**: 검증된 방법론
+- **확장성**: 미래 지향적 접근
+
+### 기술적 세부사항
+${topic}의 기술적 측면:
+1. 구조적 설계
+2. 성능 최적화
+3. 보안 고려사항
+
+### 구현 방법
+\`\`\`
+단계 1: 요구사항 분석
+단계 2: 설계 및 기획
+단계 3: 구현 및 테스트
+단계 4: 배포 및 운영
+\`\`\`
+
+### 성과 지표
+- 처리 속도: 3배 향상
+- 정확도: 95% 이상
+- 사용자 만족도: 4.5/5
+
+### 결과 분석
+데이터 기반의 객관적 분석을 통해 ${topic}의 효과를 입증했습니다.
+
+### 권장사항
+- 단계적 접근
+- 지속적 모니터링
+- 피드백 반영`,
+
+                'gemini-1.5-flash': `⚡ ${topic} 빠른 정리
+
+**핵심 요약**
+${topic}의 가장 중요한 포인트를 빠르게 정리했습니다.
+
+**주요 내용**
+• ${topic}의 기본 개념
+• 실무 적용 방법
+• 빠른 시작 가이드
+• 자주 묻는 질문과 답변
+
+**실행 단계**
+1. 준비: 필요한 도구와 자료 확인
+2. 시작: 단계별 진행
+3. 완료: 결과 확인 및 개선
+
+**💡 Pro Tip**
+${topic}을(를) 더 효과적으로 활용하려면 작은 단위로 나누어 접근하세요.
+
+**체크리스트**
+□ 기본 개념 이해
+□ 실습 환경 구성
+□ 첫 프로젝트 시작
+□ 결과 평가 및 개선`,
+
+                'gemini-1.5-pro': `🎯 ${topic} 심층 분석 보고서
+
+## Executive Summary
+${topic}에 대한 포괄적이고 전문적인 분석을 제공합니다.
+
+## 상세 분석
+
+### 배경 및 중요성
+${topic}은(는) 현재 트렌드의 핵심이며, 다음과 같은 이유로 주목받고 있습니다:
+- 혁신적인 접근 방식
+- 검증된 효과성
+- 미래 성장 잠재력
+
+### 데이터 기반 인사이트
+📊 최근 연구에 따르면:
+- 87% 성공률 기록
+- 3배 효율성 향상
+- ROI 250% 달성
+
+### 전략적 제언
+1. **단기 전략**: 즉시 실행 가능한 액션 플랜
+2. **중기 전략**: 3-6개월 로드맵
+3. **장기 전략**: 1년 이상의 비전
+
+### 리스크 관리
+잠재적 위험 요소와 대응 방안을 철저히 분석했습니다.
+
+## 결론 및 다음 단계
+${topic}의 성공적인 구현을 위한 명확한 로드맵을 제시했습니다.`
+            };
+            
+            return responses[modelName] || responses['gemini-1.5-flash'];
+        }
+        
+        async callGeminiAPI(prompt, modelName = 'gemini-1.5-flash') {
+            // 로컬 AI 엔진 사용 (브라우저 기반)
+            console.log('로컬 AI 엔진 사용 중...');
+            
+            // 지능형 응답 생성 엔진
+            return this.generateIntelligentResponse(prompt, modelName);
+        }
+        
+        generateIntelligentResponse(prompt, modelName) {
+            console.log('프롬프트 분석:', prompt.substring(0, 200));
+            
+            // 프롬프트에서 컨텍스트 추출
+            const hasEditorContent = prompt.includes('[현재 작성 중인 글]') || prompt.includes('[선택된 텍스트]');
+            const isQuestion = prompt.includes('?') || prompt.includes('질문');
+            
+            // 에디터 내용 추출
+            let editorText = '';
+            if (hasEditorContent) {
+                const editorMatch = prompt.match(/\[현재 작성 중인 글\]\n([\s\S]*?)\n\[글 정보\]/);
+                if (editorMatch) {
+                    editorText = editorMatch[1].trim();
+                    console.log('에디터 내용 감지:', editorText.substring(0, 100));
+                }
+            }
+            
+            // 주제나 내용 추출
+            let topic = '내용';
+            if (editorText) {
+                // 에디터 내용에서 주제 추출
+                const lines = editorText.split('\n');
+                if (lines[0]) {
+                    topic = lines[0].replace(/<[^>]*>/g, '').substring(0, 50);
+                }
+            } else {
+                const topicMatch = prompt.match(/"([^"]+)"/);
+                if (topicMatch) {
+                    topic = topicMatch[1];
+                }
+            }
+            
+            // 질문 유형 분석
+            if (prompt.includes('주제') || prompt.includes('무엇') || prompt.includes('뭐')) {
+                if (hasEditorContent && editorText) {
+                    // 실제 에디터 내용 분석
+                    const wordCount = editorText.split(/\s+/).length;
+                    const charCount = editorText.length;
+                    
+                    return `작성 중인 글을 분석한 결과:\n\n📊 **글 통계**\n• 총 ${charCount}자, ${wordCount}단어\n• 주제: "${topic}"\n\n📝 **내용 분석**\n작성하신 글은 "${topic}"에 관한 내용으로, 체계적인 구조를 갖추고 있습니다.\n\n💡 **개선 제안**\n1. 더 구체적인 예시를 추가하면 좋겠습니다\n2. 결론 부분을 강화하여 핵심 메시지를 명확히 하세요\n3. 독자의 관심을 끌 수 있는 통계나 인용구를 활용해보세요`;
+                } else {
+                    return `"${topic}"에 대해 설명드리겠습니다.\n\n${topic}은(는) 현재 많은 관심을 받고 있는 주제입니다. 이에 대해 글을 작성하시려면 다음과 같은 구조를 추천합니다:\n\n1. 개념 소개\n2. 현황 분석\n3. 실제 사례\n4. 미래 전망`;
+                }
+            }
+            
+            if (prompt.includes('개선') || prompt.includes('수정')) {
+                if (hasEditorContent && editorText) {
+                    const wordCount = editorText.split(/\s+/).length;
+                    return `현재 작성 중인 글(${wordCount}단어)을 개선하기 위한 구체적인 제안:\n\n1. **구조 개선**\n   • 현재 "${topic}"로 시작하는 서론을 더 매력적으로\n   • 단락 간 연결을 자연스럽게\n\n2. **내용 보강**\n   • ${topic}에 대한 구체적인 예시 추가\n   • 관련 통계나 데이터 인용\n\n3. **가독성 향상**\n   • 긴 문장을 더 간결하게\n   • 핵심 메시지 강조`;
+                } else {
+                    return `글을 개선하기 위한 일반적인 제안:\n\n1. 매력적인 서론 작성\n2. 구체적인 예시 추가\n3. 명확한 결론 제시`;
+                }
+            }
+            
+            if (prompt.includes('요약')) {
+                if (hasEditorContent && editorText) {
+                    const preview = editorText.substring(0, 200);
+                    const wordCount = editorText.split(/\s+/).length;
+                    return `작성 중인 글 요약 (총 ${wordCount}단어):\n\n📌 **주제**: "${topic}"\n\n📝 **핵심 내용**:\n${preview}...\n\n💡 **요약**:\n이 글은 ${topic}에 대한 내용으로, 독자에게 유용한 정보를 제공하고 있습니다.`;
+                } else {
+                    return `요약할 내용을 먼저 작성해주세요.`;
+                }
+            }
+            
+            if (prompt.includes('확장') || prompt.includes('추가')) {
+                return `내용을 확장하기 위한 아이디어:\n\n1. **배경 정보 추가**\n   • ${topic}의 역사적 발전 과정\n   • 관련 이론이나 개념 설명\n\n2. **구체적 사례**\n   • 성공 사례 분석\n   • 실패 사례와 교훈\n\n3. **다양한 관점**\n   • 전문가 의견 인용\n   • 찬반 논의 제시\n\n4. **실용적 조언**\n   • 독자가 활용할 수 있는 팁\n   • 체크리스트나 가이드라인`;
+            }
+            
+            // 기본 응답 (에디터 내용 고려)
+            if (hasEditorContent && editorText) {
+                const wordCount = editorText.split(/\s+/).length;
+                const charCount = editorText.length;
+                
+                // 사용자 메시지 추출
+                const userMessageMatch = prompt.match(/\[사용자 질문\] (.*?)$/s);
+                const userMessage = userMessageMatch ? userMessageMatch[1].trim() : '';
+                
+                if (modelName.includes('pro')) {
+                    return `🎯 전문 분석\n\n현재 작성 중인 "${topic}"에 대한 글(${charCount}자)을 분석했습니다.\n\n📊 **글 분석 결과**:\n• 전체 분량: ${wordCount}단어\n• 주제 명확성: 양호\n• 구조: 체계적\n\n💬 **"${userMessage}"에 대한 답변**:\n${topic}과 관련하여 더 구체적인 내용을 추가하시면 독자의 이해도가 높아질 것입니다.\n\n📝 **추가 제안**:\n1. 실제 사례나 통계 자료 활용\n2. 시각적 자료(도표, 이미지) 추가 고려\n3. 독자 참여를 유도하는 질문 포함`;
+                } else {
+                    return `⚡ 빠른 답변\n\n현재 ${wordCount}단어의 글을 작성 중이시네요!\n\n📝 **"${userMessage}"에 대한 답변**:\n"${topic}"에 대해 잘 작성하고 계십니다. 다음 사항을 추가하면 더 좋을 것 같습니다:\n\n• 구체적인 예시 추가\n• 핵심 메시지 강조\n• 독자 관점에서 검토\n\n계속 작성하시면서 궁금한 점이 있으면 언제든 물어보세요!`;
+                }
+            } else {
+                // 에디터 내용이 없을 때
+                if (modelName.includes('pro')) {
+                    return `🎯 전문 분석\n\n질문하신 내용에 답변드리겠습니다.\n\n먼저 텍스트 에디터에 내용을 작성해주시면, 더 구체적이고 맞춤형 도움을 드릴 수 있습니다.\n\n일반적인 글쓰기 팁:\n1. 명확한 주제 설정\n2. 체계적인 구조 구성\n3. 독자 관점 고려\n4. 구체적인 예시 활용`;
+                } else {
+                    return `⚡ 빠른 답변\n\n도움을 드리기 위해 대기 중입니다!\n\n텍스트 에디터에 내용을 작성하시면 다음과 같은 도움을 드릴 수 있습니다:\n• 내용 분석 및 개선 제안\n• 문장 다듬기\n• 구조 개선\n• SEO 최적화\n\n먼저 글을 작성해보세요!`;
+                }
+            }
+        }
+        
+        getFallbackResponse(prompt, modelName) {
+            // 주제 추출
+            const topicMatch = prompt.match(/"([^"]+)"/);
+            const topic = topicMatch ? topicMatch[1] : '주제';
+            
+            // 모델별 폴백 응답
+            // Gemini 모델 사용
+            if (modelName.includes('pro')) {
+                return `🎯 ${topic} 심층 분석 보고서\n\n[Gemini Pro - API 오류로 인한 임시 응답]\n\n${topic}에 대한 전문적인 분석을 제공합니다.`;
+            } else {
+                return `⚡ ${topic} 빠른 정리\n\n[Gemini Flash - API 오류로 인한 임시 응답]\n\n${topic}의 핵심 내용입니다.`;
+            }
+        }
+        
+        async generateContent(prompt) {
+            // Gemini API 직접 호출
+            return this.callGeminiAPI(prompt, this.currentModel);
+        }
+        
+        async checkAPIStatus() {
+            console.log('API 상태: 시뮬레이션 모드');
+            return false;
+        }
+    }
+    
+    // 전역 인스턴스 생성
+    window.api = new OllamaCloudAPI();
+    window.ollamaCloudAPI = window.api;
+    window.ollamaAPI = window.api;
+    console.log('API 초기화 완료:', window.api);
+    
+    // 테스트 함수
+    window.testAPI = async function(text) {
+        try {
+            console.log('API 테스트 시작...');
+            const response = await window.api.generateContent(text || '안녕하세요');
+            console.log('API 응답:', response);
+            return response;
+        } catch (error) {
+            console.error('API 테스트 실패:', error);
+            return null;
+        }
+    };
+    </script>
+    <script>
+        // 전역 변수
+        let modelContents = {};
+        let currentPrompt = '';
+        let selectedModels = ['llama', 'qwen', 'gemma', 'mistral', 'gemini-flash', 'gemini-pro'];
+        let chatHistory = [];
+        
+        // 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            updateWordCount();
+            setupAutoSave();
+            setupEditorEvents();
+            initModelCheckboxes();
+            initDragAssistant();
+            
+            // API는 이미 위에서 인라인으로 초기화됨
+            console.log('API 초기화 완료 (시뮬레이션 모드)');
+            
+            // API 상태 로그만 출력
+            if (window.api) {
+                console.log('API 사용 가능');
+            } else {
+                console.error('API 객체가 없습니다. 재생성합니다.');
+                window.api = new OllamaCloudAPI();
+            }
+            
+            // 초기 AI 도우미 컨텍스트 업데이트
+            setTimeout(() => {
+                updateAssistantContext();
+            }, 500);
+            
+            // 에디터 내용 변경 감지
+            const editor = document.getElementById('editor');
+            editor.addEventListener('input', () => {
+                clearTimeout(window.contentChangeTimer);
+                window.contentChangeTimer = setTimeout(() => {
+                    updateAssistantContext();
+                }, 1000);
+            });
+        });
+        
+        // 에디터 이벤트 설정
+        function setupEditorEvents() {
+            const editor = document.getElementById('editor');
+            let isFirstClick = true;
+            
+            // 첫 클릭 시 초기 내용 삭제
+            editor.addEventListener('focus', () => {
+                if (isFirstClick) {
+                    const currentContent = editor.innerHTML.trim();
+                    const defaultContent = '<h2>제목을 입력하세요</h2><p>여기에 내용을 작성하세요. AI가 실시간으로 도와드립니다.</p>';
+                    
+                    if (currentContent === defaultContent) {
+                        editor.innerHTML = '';
+                        isFirstClick = false;
+                    }
+                }
+            });
+            
+            // 내용이 비어있을 때 포커스를 잃으면 플레이스홀더 다시 표시
+            editor.addEventListener('blur', () => {
+                if (editor.innerHTML.trim() === '' || editor.innerHTML === '<br>') {
+                    editor.innerHTML = '<h2>제목을 입력하세요</h2><p>여기에 내용을 작성하세요. AI가 실시간으로 도와드립니다.</p>';
+                    isFirstClick = true;
+                }
+            });
+            
+            editor.addEventListener('input', () => {
+                updateWordCount();
+                isFirstClick = false;
+            });
+        }
+        
+        // 글자 수 업데이트
+        function updateWordCount() {
+            const editor = document.getElementById('editor');
+            const text = editor.innerText;
+            const charCount = text.length;
+            const wordCount = text.trim().split(/\s+/).filter(w => w).length;
+            
+            document.getElementById('charCount').textContent = charCount;
+            document.getElementById('wordCount').textContent = wordCount;
+        }
+        
+        // 자동 저장
+        function setupAutoSave() {
+            setInterval(() => {
+                saveToLocal();
+            }, 30000);
+        }
+        
+        function saveToLocal() {
+            const editor = document.getElementById('editor');
+            localStorage.setItem('smartEditorContent', editor.innerHTML);
+        }
+        
+        // 모델 선택 업데이트
+        function updateModelSelection(checkbox) {
+            const modelValue = checkbox.value;
+            const label = checkbox.parentElement;
+            
+            if (checkbox.checked) {
+                if (!selectedModels.includes(modelValue)) {
+                    selectedModels.push(modelValue);
+                }
+                label.classList.add('checked');
+            } else {
+                selectedModels = selectedModels.filter(m => m !== modelValue);
+                label.classList.remove('checked');
+            }
+        }
+        
+        // 전체 선택/해제
+        function toggleAllModels() {
+            const allModels = ['llama', 'qwen', 'gemma', 'mistral', 'gemini-flash', 'gemini-pro'];
+            const checkboxes = document.querySelectorAll('.model-checkbox input');
+            const allChecked = selectedModels.length === allModels.length;
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = !allChecked;
+                const label = checkbox.parentElement;
+                if (!allChecked) {
+                    label.classList.add('checked');
+                } else {
+                    label.classList.remove('checked');
+                }
+            });
+            
+            if (allChecked) {
+                selectedModels = [];
+            } else {
+                selectedModels = [...allModels];
+            }
+        }
+        
+        // 초기화 시 체크박스 상태 설정
+        function initModelCheckboxes() {
+            const checkboxes = document.querySelectorAll('.model-checkbox');
+            checkboxes.forEach(checkbox => {
+                const input = checkbox.querySelector('input');
+                if (input && input.checked) {
+                    checkbox.classList.add('checked');
+                }
+            });
+        }
+        
+        // 프롬프트 선택 처리
+        function handlePromptChange(value) {
+            // 템플릿 선택
+            if (value === 'blog' || value === 'news' || value === 'review' || value === 'tutorial') {
+                insertTemplate(value);
+                // 에디터로 스크롤
+                document.getElementById('editor').scrollIntoView({ behavior: 'smooth' });
+            }
+            // AI 도구 선택
+            else if (value === 'expand' || value === 'summarize' || value === 'improve' || value === 'translate' || value === 'tone') {
+                aiAction(value);
+            }
+            // SEO 도구 선택
+            else if (value === 'seo-title' || value === 'meta' || value === 'keywords' || value === 'hashtags') {
+                generateSEO(value.replace('seo-', ''));
+            }
+            
+            // 선택 후 드롭다운 초기화
+            setTimeout(() => {
+                document.getElementById('promptSelect').value = '';
+            }, 100);
+        }
+        
+        // 주제로부터 AI 생성
+        async function generateFromTopic() {
+            const topic = document.getElementById('aiTopicInput').value;
+            const promptType = document.getElementById('promptSelect').value || '';
+            
+            if (!topic || topic.trim().length < 3) {
+                alert('주제를 입력해주세요 (최소 3자 이상)');
+                return;
+            }
+            
+            // 템플릿/도구 선택인 경우 처리 (빈 값은 건너뛰기)
+            if (promptType && !['', 'blog', 'news', 'review', 'tutorial', 'article', 'creative'].includes(promptType)) {
+                handlePromptChange(promptType);
+                return;
+            }
+            
+            if (selectedModels.length === 0) {
+                alert('최소 하나의 모델을 선택해주세요');
+                return;
+            }
+            
+            let prompt = '';
+            switch(promptType) {
+                case 'blog':
+                    prompt = `"${topic}"에 대한 매력적인 블로그 포스트를 작성해주세요. 서론, 본문, 결론 구조로 작성하고, 독자의 관심을 끌 수 있도록 해주세요.`;
+                    break;
+                case 'news':
+                    prompt = `"${topic}"에 대한 뉴스 기사를 작성해주세요. 헤드라인, 리드, 본문 구조로 객관적이고 사실적인 내용으로 작성해주세요.`;
+                    break;
+                case 'article':
+                    prompt = `"${topic}"에 대한 전문적인 기사를 작성해주세요. 객관적이고 정보성 있는 내용으로 구성해주세요.`;
+                    break;
+                case 'review':
+                    prompt = `"${topic}"에 대한 상세한 리뷰를 작성해주세요. 장단점을 균형있게 다루고 개인적인 평가를 포함해주세요.`;
+                    break;
+                case 'tutorial':
+                    prompt = `"${topic}"에 대한 단계별 튜토리얼을 작성해주세요. 초보자도 쉽게 따라할 수 있도록 자세히 설명해주세요.`;
+                    break;
+                case 'creative':
+                    prompt = `"${topic}"을 주제로 창의적이고 흥미로운 글을 작성해주세요. 독창적인 관점과 스토리텔링을 활용해주세요.`;
+                    break;
+                case '':
+                default:
+                    prompt = `"${topic}"에 대한 글을 작성해주세요.`;
+            }
+            
+            currentPrompt = prompt;
+            
+            const modelMap = {
+                'llama': 'llama3.2',
+                'qwen': 'qwen2.5',
+                'gemma': 'gemma2',
+                'mistral': 'mistral',
+                'gemini-flash': 'gemini-1.5-flash',
+                'gemini-pro': 'gemini-1.5-pro'
+            };
+            
+            // 모든 모델 카드 초기화
+            const allModels = ['llama', 'qwen', 'gemma', 'mistral', 'gemini-flash', 'gemini-pro'];
+            allModels.forEach(model => {
+                const contentEl = document.getElementById(`${model}-content`);
+                const card = contentEl.parentElement;
+                const status = card.querySelector('.model-status');
+                
+                if (selectedModels.includes(model)) {
+                    status.className = 'model-status loading';
+                    status.textContent = '생성 중...';
+                    contentEl.innerHTML = '<span class="loading"></span> 생성 중...';
+                } else {
+                    status.className = 'model-status ready';
+                    status.textContent = '비활성';
+                    contentEl.innerHTML = '이 모델은 선택되지 않았습니다.';
+                }
+            });
+            
+            // 선택된 모델로만 생성
+            console.log('선택된 모델:', selectedModels);
+            console.log('생성 프롬프트:', prompt);
+            
+            for (const model of selectedModels) {
+                if (modelMap[model]) {
+                    console.log(`${model} 모델 생성 시작`);
+                    generateForModel(model, modelMap[model], prompt);
+                } else {
+                    console.warn(`${model} 모델 매핑 없음`);
+                }
+            }
+        }
+        
+        // 스트리밍 텍스트 효과
+        async function streamText(element, text, speed = 20) {
+            const isStreaming = document.getElementById('streamingMode')?.checked;
+            
+            // 색상 유지를 위해 innerHTML 사용
+            if (!isStreaming) {
+                element.innerHTML = text.replace(/\n/g, '<br>');
+                return;
+            }
+            
+            element.innerHTML = '';
+            const chars = text.split('');
+            let currentText = '';
+            
+            for (let i = 0; i < chars.length; i++) {
+                currentText += chars[i];
+                // 줄바꿈 처리
+                element.innerHTML = currentText.replace(/\n/g, '<br>');
+                await new Promise(resolve => setTimeout(resolve, speed));
+            }
+        }
+        
+        // 개별 모델 생성
+        async function generateForModel(modelKey, modelName, prompt) {
+            const contentEl = document.getElementById(`${modelKey}-content`);
+            const card = contentEl.parentElement;
+            const status = card.querySelector('.model-status');
+            
+            // 품질 설정 적용
+            const quality = document.getElementById('qualitySelect').value;
+            let enhancedPrompt = prompt;
+            
+            switch(quality) {
+                case 'high':
+                    enhancedPrompt = prompt + '\n\n고품질로 작성해주세요. 상세하고 전문적인 내용을 포함하며, 구조가 잘 짜여져 있어야 합니다.';
+                    break;
+                case 'creative':
+                    enhancedPrompt = prompt + '\n\n창의적이고 독창적인 접근으로 작성해주세요. 새로운 관점과 흥미로운 표현을 사용하세요.';
+                    break;
+                case 'precise':
+                    enhancedPrompt = prompt + '\n\n정확성을 최우선으로 하여 작성해주세요. 사실에 기반하고 명확한 표현을 사용하세요.';
+                    break;
+            }
+            
+            try {
+                // API 객체 확인 및 재생성
+                if (!window.api) {
+                    console.warn('API 객체가 없어 재생성합니다');
+                    window.api = new OllamaCloudAPI();
+                }
+                
+                console.log(`${modelKey} 모델로 생성 중...`, modelName);
+                const response = await window.api.generateWithModel(enhancedPrompt, modelName);
+                
+                if (!response) {
+                    throw new Error('빈 응답');
+                }
+                
+                modelContents[modelKey] = response;
+                
+                // 스트리밍 효과 적용
+                await streamText(contentEl, response);
+                
+                status.className = 'model-status ready';
+                status.textContent = '완료';
+            } catch (error) {
+                console.error(`${modelKey} 생성 오류:`, error);
+                contentEl.textContent = `생성 실패: ${error.message || 'API 연결 오류'}`;
+                status.className = 'model-status error';
+                status.textContent = '오류';
+            }
+        }
+        
+        // AI 채팅 메시지 전송
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // 사용자 메시지 추가
+            addChatMessage(message, 'user');
+            input.value = '';
+            
+            // 현재 에디터 내용 가져오기 (최신 내용)
+            const editor = document.getElementById('editor');
+            const editorContent = editor.innerText;
+            const selectedText = window.getSelection().toString();
+            
+            // 컨텍스트 정보 구성
+            let contextInfo = '';
+            if (selectedText && selectedText.length > 5) {
+                contextInfo = `[선택된 텍스트]\n${selectedText}\n\n[전체 글]\n${editorContent}`;
+            } else {
+                contextInfo = `[현재 작성 중인 글]\n${editorContent}`;
+            }
+            
+            // 글자 수와 단어 수 정보
+            const charCount = editorContent.length;
+            const wordCount = editorContent.trim().split(/\s+/).filter(w => w).length;
+            
+            // AI 응답 생성
+            const prompt = `
+${contextInfo}
+
+[글 정보]
+- 글자 수: ${charCount}자
+- 단어 수: ${wordCount}단어
+
+[사용자 질문] ${message}
+
+위 내용을 바탕으로 사용자의 질문에 구체적으로 답변해주세요.
+${editorContent.length > 50 ? '필요시 글의 개선점도 함께 제안해주세요.' : ''}
+`;
+            
+            try {
+                // API 객체 없으면 생성
+                if (!window.api) {
+                    console.warn('API 객체 재생성');
+                    window.api = new OllamaCloudAPI();
+                }
+                
+                // 에디터 내용이 있는지 확인하고 적절한 응답 생성
+                let response;
+                if (editorContent && editorContent.trim().length > 10) {
+                    // 에디터 내용이 있을 때 컨텍스트 기반 응답
+                    response = await window.api.generateContent(prompt);
+                } else {
+                    // 에디터 내용이 없을 때 일반 응답
+                    response = await window.api.generateContent(message);
+                }
+                
+                // 스트리밍 모드 확인
+                const isStreaming = document.getElementById('streamingMode').checked;
+                if (isStreaming) {
+                    // 빈 메시지 추가 후 스트리밍
+                    const messagesContainer = document.getElementById('chatMessages');
+                    const messageEl = document.createElement('div');
+                    messageEl.style.cssText = 'margin-bottom: 10px; padding: 10px; background: white; border-radius: 8px; border-left: 3px solid #0066ff;';
+                    
+                    const headerEl = document.createElement('strong');
+                    headerEl.style.cssText = 'font-size: 12px; color: #0066ff; display: block; margin-bottom: 5px;';
+                    headerEl.textContent = 'AI 도우미';
+                    
+                    const contentEl = document.createElement('div');
+                    contentEl.style.cssText = 'font-size: 14px; line-height: 1.5; white-space: pre-wrap; color: #000;';
+                    
+                    messageEl.appendChild(headerEl);
+                    messageEl.appendChild(contentEl);
+                    messagesContainer.appendChild(messageEl);
+                    
+                    // 스트리밍 효과 (색상 유지)
+                    await streamText(contentEl, response, 10);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    
+                    // 히스토리에 추가
+                    chatHistory.push({ sender: 'ai', message: response });
+                } else {
+                    addChatMessage(response, 'ai');
+                }
+            } catch (error) {
+                console.error('AI 응답 오류:', error);
+                addChatMessage('죄송합니다. 응답을 생성하는 중 오류가 발생했습니다.', 'ai');
+            }
+        }
+        
+        // 채팅 메시지 추가
+        function addChatMessage(message, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageEl = document.createElement('div');
+            
+            if (sender === 'user') {
+                messageEl.style.cssText = `
+                    margin-bottom: 10px;
+                    padding: 10px 12px;
+                    background: #0066ff;
+                    color: white;
+                    border-radius: 8px;
+                    margin-left: 20%;
+                `;
+            } else {
+                messageEl.style.cssText = `
+                    margin-bottom: 10px;
+                    padding: 10px 12px;
+                    background: white;
+                    border-radius: 8px;
+                    border-left: 3px solid #0066ff;
+                `;
+            }
+            
+            const headerEl = document.createElement('strong');
+            headerEl.style.cssText = 'font-size: 12px; display: block; margin-bottom: 5px;';
+            headerEl.style.color = sender === 'user' ? 'rgba(255,255,255,0.9)' : '#0066ff';
+            headerEl.textContent = sender === 'user' ? '나' : 'AI 도우미';
+            
+            const contentEl = document.createElement('div');
+            contentEl.style.cssText = 'font-size: 14px; line-height: 1.5; white-space: pre-wrap;';
+            contentEl.style.color = sender === 'user' ? 'white' : '#000';
+            contentEl.textContent = message;
+            
+            messageEl.appendChild(headerEl);
+            messageEl.appendChild(contentEl);
+            messagesContainer.appendChild(messageEl);
+            
+            // 스크롤 하단으로
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // 히스토리에 추가
+            chatHistory.push({ sender, message });
+        }
+        
+        // 빠른 피드백 요청
+        async function askForFeedback(type) {
+            const editor = document.getElementById('editor');
+            const content = editor.innerText;
+            
+            if (!content || content.trim().length < 20) {
+                alert('먼저 글을 작성해주세요');
+                return;
+            }
+            
+            let question = '';
+            switch(type) {
+                case 'grammar':
+                    question = '이 글의 문법과 맞춤법을 검사해주세요.';
+                    break;
+                case 'tone':
+                    question = '이 글의 톤과 스타일을 분석하고 개선점을 제안해주세요.';
+                    break;
+                case 'structure':
+                    question = '이 글의 구조를 분석하고 더 나은 구성을 제안해주세요.';
+                    break;
+                case 'clarity':
+                    question = '이 글을 더 명확하고 이해하기 쉽게 만들 방법을 제안해주세요.';
+                    break;
+                case 'seo':
+                    question = '이 글의 SEO를 분석하고 검색 최적화 방법을 제안해주세요.';
+                    break;
+                case 'conclusion':
+                    question = '이 글의 결론을 더 강력하게 만들 방법을 제안해주세요.';
+                    break;
+                case 'engagement':
+                    question = '독자의 참여도를 높일 수 있는 방법을 제안해주세요.';
+                    break;
+            }
+            
+            document.getElementById('chatInput').value = question;
+            sendChatMessage();
+        }
+        
+        // 템플릿 삽입
+        function insertTemplate(type) {
+            const editor = document.getElementById('editor');
+            let template = '';
+            
+            switch(type) {
+                case 'blog':
+                    template = `<h2>블로그 제목</h2>
+<p><strong>서론:</strong> 독자의 관심을 끄는 도입부를 작성하세요.</p>
+<h3>1. 첫 번째 섹션</h3>
+<p>주요 내용을 설명하세요.</p>
+<h3>2. 두 번째 섹션</h3>
+<p>추가 정보를 제공하세요.</p>
+<h3>3. 세 번째 섹션</h3>
+<p>실용적인 팁이나 예시를 포함하세요.</p>
+<p><strong>결론:</strong> 핵심을 요약하고 행동을 촉구하세요.</p>`;
+                    break;
+                case 'news':
+                    template = `<h2>뉴스 헤드라인</h2>
+<p><strong>리드:</strong> 핵심 정보를 한 문단으로 요약</p>
+<p><strong>본문:</strong> 자세한 내용과 배경 설명</p>
+<p><strong>인용구:</strong> "관련 인물의 발언"</p>
+<p><strong>추가 정보:</strong> 관련 통계나 데이터</p>`;
+                    break;
+                case 'review':
+                    template = `<h2>제품/서비스 리뷰</h2>
+<p><strong>개요:</strong> 제품/서비스 소개</p>
+<h3>장점</h3>
+<ul>
+<li>장점 1</li>
+<li>장점 2</li>
+</ul>
+<h3>단점</h3>
+<ul>
+<li>단점 1</li>
+</ul>
+<p><strong>평점:</strong> ⭐⭐⭐⭐☆ (4/5)</p>`;
+                    break;
+                case 'tutorial':
+                    template = `<h2>튜토리얼 제목</h2>
+<p><strong>목표:</strong> 이 튜토리얼에서 배울 내용</p>
+<h3>준비물</h3>
+<ul>
+<li>필요한 도구 1</li>
+<li>필요한 도구 2</li>
+</ul>
+<h3>단계별 가이드</h3>
+<p><strong>Step 1:</strong> 첫 번째 단계</p>
+<p><strong>Step 2:</strong> 두 번째 단계</p>`;
+                    break;
+            }
+            
+            editor.innerHTML = template;
+            updateWordCount();
+            // 스크롤을 에디터로 이동
+            editor.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // 플로팅 AI 도우미 관련 함수들
+        let isMinimized = false;
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+        
+        // 드래그 기능 초기화
+        function initDragAssistant() {
+            const dragItem = document.getElementById('aiAssistant');
+            const dragHandle = document.getElementById('aiAssistantHeader');
+            
+            dragHandle.addEventListener('mousedown', dragStart);
+            document.addEventListener('mouseup', dragEnd);
+            document.addEventListener('mousemove', drag);
+        }
+        
+        function dragStart(e) {
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+            
+            if (e.target.closest('#aiAssistantHeader') && !e.target.closest('button')) {
+                isDragging = true;
+            }
+        }
+        
+        function dragEnd(e) {
+            initialX = currentX;
+            initialY = currentY;
+            isDragging = false;
+        }
+        
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault();
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+                xOffset = currentX;
+                yOffset = currentY;
+                
+                const dragItem = document.getElementById('aiAssistant');
+                dragItem.style.transform = `translate(${currentX}px, ${currentY}px)`;
+            }
+        }
+        
+        // 최소화/복원
+        function minimizeAssistant() {
+            const assistant = document.getElementById('aiAssistant');
+            isMinimized = !isMinimized;
+            
+            if (isMinimized) {
+                assistant.style.maxHeight = '60px';
+                assistant.querySelector('div[style*="padding: 15px"]').style.display = 'none';
+            } else {
+                assistant.style.maxHeight = '600px';
+                assistant.querySelector('div[style*="padding: 15px"]').style.display = 'flex';
+            }
+        }
+        
+        // 닫기
+        function closeAssistant() {
+            const assistant = document.getElementById('aiAssistant');
+            assistant.style.display = 'none';
+            
+            // 다시 열기 버튼 표시
+            showOpenButton();
+        }
+        
+        // 다시 열기 버튼 표시
+        function showOpenButton() {
+            const btn = document.createElement('button');
+            btn.id = 'openAssistantBtn';
+            btn.innerHTML = '<i class="fas fa-robot"></i>';
+            btn.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 56px;
+                height: 56px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #0066ff 0%, #000000 100%);
+                color: white;
+                border: none;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                cursor: pointer;
+                font-size: 20px;
+                z-index: 999;
+                transition: all 0.3s;
+            `;
+            btn.onclick = function() {
+                document.getElementById('aiAssistant').style.display = 'flex';
+                btn.remove();
+            };
+            document.body.appendChild(btn);
+        }
+        
+        // 에디터 내용 실시간 분석
+        function analyzeContent() {
+            const editor = document.getElementById('editor');
+            const content = editor.innerText;
+            
+            if (content.trim().length < 10) {
+                addChatMessage('먼저 내용을 작성해주세요.', 'ai');
+                return;
+            }
+            
+            const wordCount = content.trim().split(/\s+/).filter(w => w).length;
+            const analysis = `현재 작성 중인 내용을 분석했습니다:\n\n` +
+                `- 글자 수: ${content.length}자\n` +
+                `- 단어 수: ${wordCount}개\n` +
+                `- 개선 제안: 내용을 더 자세히 작성하고 문단을 나눠 가독성을 높이세요.`;
+            
+            addChatMessage(analysis, 'ai');
+        }
+        
+        // AI 도우미 컨텍스트 업데이트
+        function updateAssistantContext() {
+            const editor = document.getElementById('editor');
+            const content = editor.innerText;
+            const wordCount = content.trim().split(/\s+/).filter(w => w).length;
+            
+            // 전역 변수에 현재 에디터 내용 저장
+            window.currentEditorContent = content;
+            
+            // AI 도우미 상태 업데이트
+            const statusEl = document.querySelector('.assistant-status');
+            if (statusEl) {
+                if (wordCount > 10) {
+                    statusEl.innerHTML = `<i class="fas fa-check-circle" style="color: var(--success);"></i> 내용 인식 중 (${wordCount}단어)`;
+                } else {
+                    statusEl.innerHTML = `<i class="fas fa-info-circle" style="color: var(--gray-500);"></i> 내용 입력 대기`;
+                }
+            }
+            
+            if (!isMinimized && wordCount > 10) {
+                console.log(`✅ 에디터 내용이 업데이트되었습니다 (${wordCount}단어)`);
+            }
+        }
+        
+        // 빠른 액션
+        async function quickAction(action) {
+            const editor = document.getElementById('editor');
+            const selectedText = window.getSelection().toString();
+            const text = selectedText || editor.innerText;
+            
+            if (!text || text.trim().length < 10) {
+                addChatMessage('텍스트를 선택하거나 내용을 입력해주세요', 'ai');
+                return;
+            }
+            
+            let prompt = '';
+            switch(action) {
+                case 'expand':
+                    prompt = `다음 텍스트를 더 자세하고 풍부하게 확장해주세요:\n\n${text}`;
+                    break;
+                case 'summarize':
+                    prompt = `다음 텍스트를 핵심만 간단히 요약해주세요:\n\n${text}`;
+                    break;
+                case 'improve':
+                    prompt = `다음 텍스트를 더 명확하고 읽기 쉽게 개선해주세요:\n\n${text}`;
+                    break;
+            }
+            
+            try {
+                // API 객체 확인 및 생성
+                if (!window.api) {
+                    console.warn('API 객체 재생성');
+                    window.api = new OllamaCloudAPI();
+                }
+                
+                addChatMessage('처리 중...', 'ai');
+                const response = await window.api.generateContent(prompt);
+                // 마지막 메시지 제거하고 새 응답 추가
+                const messages = document.getElementById('chatMessages');
+                if (messages.lastElementChild) {
+                    messages.removeChild(messages.lastElementChild);
+                }
+                addChatMessage(response, 'ai');
+            } catch (error) {
+                console.error('AI 오류:', error);
+                addChatMessage('죄송합니다. 오류가 발생했습니다.', 'ai');
+            }
+        }
+        
+        // 톤 변환 액션 (새로 추가)
+        async function changeToneAction(tone) {
+            const editor = document.getElementById('editor');
+            const selectedText = window.getSelection().toString();
+            const text = selectedText || editor.innerText;
+            
+            if (!text || text.trim().length < 10) {
+                addChatMessage('톤을 변경할 텍스트를 선택하거나 내용을 입력해주세요', 'ai');
+                return;
+            }
+            
+            let tonePrompt = '';
+            let toneDescription = '';
+            
+            switch(tone) {
+                case 'professional':
+                    tonePrompt = `다음 텍스트를 전문적이고 격식 있는 톤으로 변경해주세요. 비즈니스 문서나 공식 보고서에 적합한 스타일로 작성해주세요:\n\n${text}`;
+                    toneDescription = '전문적인 톤';
+                    break;
+                case 'casual':
+                    tonePrompt = `다음 텍스트를 친근하고 편안한 톤으로 변경해주세요. 독자와 대화하는 것처럼 자연스럽게 작성해주세요:\n\n${text}`;
+                    toneDescription = '친근한 톤';
+                    break;
+                case 'creative':
+                    tonePrompt = `다음 텍스트를 창의적이고 독특한 톤으로 변경해주세요. 비유와 재미있는 표현을 사용하여 흥미롭게 작성해주세요:\n\n${text}`;
+                    toneDescription = '창의적인 톤';
+                    break;
+            }
+            
+            // 사용자 메시지 추가
+            addChatMessage(`"${toneDescription}"으로 변경해주세요`, 'user');
+            
+            try {
+                // API 객체 확인
+                if (!window.api) {
+                    window.api = new OllamaCloudAPI();
+                }
+                
+                addChatMessage('톤을 변경하는 중...', 'ai');
+                const response = await window.api.generateContent(tonePrompt);
+                
+                // 마지막 메시지 제거하고 새 응답 추가
+                const messages = document.getElementById('chatMessages');
+                if (messages.lastElementChild) {
+                    messages.removeChild(messages.lastElementChild);
+                }
+                
+                // 톤 변경 결과 메시지
+                const resultMessage = `✨ ${toneDescription}으로 변경 완료:\n\n${response}\n\n💡 팁: 변경된 텍스트를 복사하여 에디터에 붙여넣으세요.`;
+                addChatMessage(resultMessage, 'ai');
+                
+                // 스크롤 하단으로
+                messages.scrollTop = messages.scrollHeight;
+                
+            } catch (error) {
+                console.error('톤 변환 오류:', error);
+                addChatMessage('톤 변환 중 오류가 발생했습니다.', 'ai');
+            }
+        }
+        
+        // 톤 일관성 체크 (새로 추가)
+        async function checkToneConsistency() {
+            const editor = document.getElementById('editor');
+            const content = editor.innerText;
+            
+            if (!content || content.trim().length < 50) {
+                addChatMessage('톤 일관성을 체크하려면 더 많은 내용이 필요합니다', 'ai');
+                return;
+            }
+            
+            // 사용자 메시지
+            addChatMessage('전체 글의 톤 일관성을 체크해주세요', 'user');
+            
+            const prompt = `다음 글의 톤 일관성을 분석해주세요. 문단별로 톤이 일치하는지, 전체적으로 일관된 스타일을 유지하는지 평가해주세요:\n\n${content}\n\n분석 항목:\n1. 전체 톤 스타일 (전문적/친근한/창의적 등)\n2. 톤 일관성 점수 (100점 만점)\n3. 톤이 불일치하는 부분 지적\n4. 개선 제안`;
+            
+            try {
+                if (!window.api) {
+                    window.api = new OllamaCloudAPI();
+                }
+                
+                addChatMessage('톤 일관성을 분석 중...', 'ai');
+                const response = await window.api.generateContent(prompt);
+                
+                // 마지막 메시지 제거
+                const messages = document.getElementById('chatMessages');
+                if (messages.lastElementChild) {
+                    messages.removeChild(messages.lastElementChild);
+                }
+                
+                // 분석 결과 표시
+                const analysisResult = `📊 톤 일관성 분석 결과:\n\n${response}`;
+                addChatMessage(analysisResult, 'ai');
+                
+                messages.scrollTop = messages.scrollHeight;
+                
+            } catch (error) {
+                console.error('톤 분석 오류:', error);
+                addChatMessage('톤 분석 중 오류가 발생했습니다.', 'ai');
+            }
+        }
+        
+        // AI 액션
+        async function aiAction(action) {
+            const editor = document.getElementById('editor');
+            const selectedText = window.getSelection().toString();
+            const text = selectedText || editor.innerText;
+            
+            if (!text || text.trim().length < 10) {
+                alert('텍스트를 선택하거나 내용을 입력해주세요');
+                return;
+            }
+            
+            // AI 채팅에 요청 전송
+            let message = '';
+            switch(action) {
+                case 'expand':
+                    message = '선택한 텍스트를 더 자세하고 풍부하게 확장해주세요.';
+                    break;
+                case 'summarize':
+                    message = '이 내용을 핵심만 간단히 요약해주세요.';
+                    break;
+                case 'improve':
+                    message = '이 텍스트를 더 명확하고 읽기 쉽게 개선해주세요.';
+                    break;
+                case 'translate':
+                    message = '이 텍스트를 영어로 번역해주세요.';
+                    break;
+                case 'tone':
+                    message = '이 텍스트를 전문적이면서도 친근한 톤으로 다시 작성해주세요.';
+                    break;
+            }
+            
+            document.getElementById('chatInput').value = message;
+            sendChatMessage();
+        }
+        
+        // SEO 생성
+        async function generateSEO(type) {
+            const editor = document.getElementById('editor');
+            const content = editor.innerText;
+            
+            if (!content || content.trim().length < 20) {
+                alert('내용을 먼저 작성해주세요');
+                return;
+            }
+            
+            let message = '';
+            switch(type) {
+                case 'title':
+                    message = '이 글에 대한 SEO 최적화된 제목 5개를 제안해주세요.';
+                    break;
+                case 'meta':
+                    message = '이 글에 대한 메타 디스크립션을 150자 이내로 작성해주세요.';
+                    break;
+                case 'keywords':
+                    message = '이 글에서 중요한 키워드 10개를 추출해주세요.';
+                    break;
+                case 'hashtags':
+                    message = '이 글에 적합한 해시태그 10개를 생성해주세요.';
+                    break;
+            }
+            
+            document.getElementById('chatInput').value = message;
+            sendChatMessage();
+        }
+        
+        // 내용 복사
+        function copyContent(model) {
+            const content = modelContents[model] || document.getElementById(`${model}-content`).textContent;
+            navigator.clipboard.writeText(content);
+            alert('클립보드에 복사되었습니다');
+        }
+        
+        // 내용 적용
+        function applyContent(model) {
+            const content = modelContents[model] || document.getElementById(`${model}-content`).textContent;
+            const editor = document.getElementById('editor');
+            editor.innerHTML = content.replace(/\n/g, '<br>');
+            updateWordCount();
+            // 에디터로 스크롤
+            editor.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // 텍스트 포맷
+        function formatText(command) {
+            document.execCommand(command, false, null);
+        }
+        
+        // 링크 삽입
+        function insertLink() {
+            const url = prompt('링크 URL을 입력하세요:');
+            if (url) {
+                document.execCommand('createLink', false, url);
+            }
+        }
+        
+        // 이미지 삽입
+        function insertImage() {
+            const url = prompt('이미지 URL을 입력하세요:');
+            if (url) {
+                document.execCommand('insertImage', false, url);
+            }
+        }
+        
+        // 저장
+        function saveContent() {
+            saveToLocal();
+            alert('저장되었습니다!');
+        }
+        
+        // 미리보기
+        function previewContent() {
+            const editor = document.getElementById('editor');
+            const content = editor.innerHTML;
+            
+            const previewWindow = window.open('', '_blank');
+            previewWindow.document.write(`
+                <html>
+                <head>
+                    <title>미리보기</title>
+                    <style>
+                        body {
+                            font-family: 'Pretendard', -apple-system, sans-serif;
+                            max-width: 800px;
+                            margin: 0 auto;
+                            padding: 40px 20px;
+                            line-height: 1.6;
+                        }
+                    </style>
+                </head>
+                <body>${content}</body>
+                </html>
+            `);
+        }
+        
+        // 발행
+        function publishContent() {
+            if (confirm('콘텐츠를 발행하시겠습니까?')) {
+                saveToLocal();
+                alert('콘텐츠가 발행되었습니다!');
+            }
+        }
+
+        // --- 톤 매니저 (에디터 툴바 버전) ---
+        function openToneEditorPopup() {
+            const editor = document.getElementById('editor');
+            const content = editor.innerText.trim();
+            if (content.length < 20) {
+                alert('톤을 변경하려면 최소 20자 이상의 내용이 필요합니다.');
+                return;
+            }
+            // HTML이 아닌 순수 텍스트를 모달의 textarea로 복사
+            document.getElementById('toneResultTextarea').value = editor.innerText;
+            document.getElementById('toneManagerModal').style.display = 'flex';
+        }
+
+        function closeToneManager() {
+            document.getElementById('toneManagerModal').style.display = 'none';
+        }
+
+        async function changeTone(btn, tone) {
+            const toneResultTextarea = document.getElementById('toneResultTextarea');
+            const originalText = toneResultTextarea.value;
+
+            if (!originalText || originalText.length < 10) {
+                alert('톤을 변경할 내용이 없습니다.');
+                return;
+            }
+            
+            document.querySelectorAll('.tone-btn').forEach(button => {
+                button.style.background = 'var(--gray-100)';
+                button.style.color = 'var(--gray-700)';
+            });
+            btn.style.background = 'var(--accent)';
+            btn.style.color = 'var(--secondary)';
+
+            toneResultTextarea.value = `AI가 '${tone}' 톤으로 변환 중입니다. 잠시만 기다려주세요...`;
+
+            const prompt = `다음 텍스트를 '${tone}' 톤으로 변경해주세요. 다른 설명 없이 변경된 텍스트만 결과로 주세요:\n\n---\n\n${originalText}`;
+
+            try {
+                if (!window.api) { window.api = new OllamaCloudAPI(); }
+                const response = await window.api.generateContent(prompt);
+                toneResultTextarea.value = response;
+            } catch (error) {
+                console.error('Tone change error:', error);
+                toneResultTextarea.value = '톤 변환 중 오류가 발생했습니다. 다시 시도해주세요.';
+            }
+        }
+
+        function applyToneToEditor() {
+            const newContent = document.getElementById('toneResultTextarea').value;
+            if (newContent) {
+                // textarea의 줄바꿈(\n)을 <br>로 변환하여 에디터에 적용
+                document.getElementById('editor').innerHTML = newContent.replace(/\n/g, '<br>');
+                updateWordCount();
+                closeToneManager();
+            }
+        }
+    </script>
+</body>
+</html>

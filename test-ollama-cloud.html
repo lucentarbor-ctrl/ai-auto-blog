@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ollama Cloud API 테스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .status {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status.checking {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        
+        .test-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #495057;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #495057;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            min-height: 100px;
+            white-space: pre-wrap;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,.1);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .model-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .model-chip {
+            padding: 8px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        
+        .model-chip:hover {
+            border-color: #667eea;
+        }
+        
+        .model-chip.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Ollama Cloud API 테스트</h1>
+        <p class="subtitle">AWS 배포용 AI API 연결 테스트</p>
+        
+        <!-- API 상태 -->
+        <div id="status" class="status checking">
+            <span class="loading"></span>
+            <span>API 연결 상태 확인 중...</span>
+        </div>
+        
+        <!-- 모델 선택 -->
+        <div class="test-section">
+            <div class="test-title">AI 모델 선택</div>
+            <div class="model-selector" id="modelSelector">
+                <div class="model-chip active" data-model="llama3.2">Llama 3.2</div>
+                <div class="model-chip" data-model="qwen2.5">Qwen 2.5</div>
+                <div class="model-chip" data-model="gemma2">Gemma 2</div>
+                <div class="model-chip" data-model="mistral">Mistral</div>
+            </div>
+        </div>
+        
+        <!-- 블로그 포스트 생성 테스트 -->
+        <div class="test-section">
+            <div class="test-title">📝 블로그 포스트 생성</div>
+            <div class="input-group">
+                <label>주제</label>
+                <input type="text" id="blogTopic" placeholder="예: AI가 바꾸는 미래의 교육" value="AI가 바꾸는 미래의 교육">
+            </div>
+            <div class="input-group">
+                <label>키워드 (쉼표로 구분)</label>
+                <input type="text" id="blogKeywords" placeholder="예: 인공지능, 교육혁신, 에듀테크" value="인공지능, 교육혁신, 에듀테크">
+            </div>
+            <button onclick="generateBlogPost()">블로그 포스트 생성</button>
+            <div id="blogResult" class="result-box" style="display: none;"></div>
+        </div>
+        
+        <!-- 제목 생성 테스트 -->
+        <div class="test-section">
+            <div class="test-title">💡 제목 생성</div>
+            <div class="input-group">
+                <label>주제</label>
+                <input type="text" id="titleTopic" placeholder="예: 챗GPT 활용법" value="챗GPT 활용법">
+            </div>
+            <button onclick="generateTitles()">제목 5개 생성</button>
+            <div id="titleResult" class="result-box" style="display: none;"></div>
+        </div>
+        
+        <!-- 자유 프롬프트 테스트 -->
+        <div class="test-section">
+            <div class="test-title">🎯 자유 프롬프트</div>
+            <div class="input-group">
+                <label>프롬프트</label>
+                <textarea id="freePrompt" placeholder="AI에게 물어보고 싶은 것을 입력하세요">한국의 전통 음식 김치에 대해 3줄로 설명해주세요.</textarea>
+            </div>
+            <button onclick="generateFreeContent()">생성</button>
+            <div id="freeResult" class="result-box" style="display: none;"></div>
+        </div>
+    </div>
+    
+    <!-- Ollama Cloud API 스크립트 -->
+    <script src="js/ollama-cloud-api.js"></script>
+    
+    <script>
+        // 페이지 로드 시 API 상태 확인
+        window.addEventListener('DOMContentLoaded', async () => {
+            await checkAPIStatus();
+            setupModelSelector();
+        });
+        
+        // API 상태 확인
+        async function checkAPIStatus() {
+            const statusEl = document.getElementById('status');
+            
+            try {
+                // 간단한 테스트 요청
+                const response = await window.ollamaCloudAPI.generateContent('안녕하세요', {
+                    maxTokens: 50
+                });
+                
+                if (response) {
+                    statusEl.className = 'status success';
+                    statusEl.innerHTML = '✅ API 연결 성공! 모든 기능을 사용할 수 있습니다.';
+                } else {
+                    throw new Error('응답 없음');
+                }
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.innerHTML = `⚠️ API 연결 실패: ${error.message}`;
+                console.error('API 상태 확인 실패:', error);
+            }
+        }
+        
+        // 모델 선택 설정
+        function setupModelSelector() {
+            const chips = document.querySelectorAll('.model-chip');
+            chips.forEach(chip => {
+                chip.addEventListener('click', () => {
+                    chips.forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    window.ollamaCloudAPI.setModel(chip.dataset.model);
+                    console.log('모델 변경:', chip.dataset.model);
+                });
+            });
+        }
+        
+        // 블로그 포스트 생성
+        async function generateBlogPost() {
+            const topic = document.getElementById('blogTopic').value;
+            const keywords = document.getElementById('blogKeywords').value.split(',').map(k => k.trim());
+            const resultEl = document.getElementById('blogResult');
+            
+            if (!topic) {
+                alert('주제를 입력해주세요');
+                return;
+            }
+            
+            resultEl.style.display = 'block';
+            resultEl.innerHTML = '⏳ 블로그 포스트 생성 중... (10-20초 소요)';
+            
+            try {
+                const content = await window.ollamaCloudAPI.generateBlogPost(topic, keywords);
+                resultEl.innerHTML = content;
+            } catch (error) {
+                resultEl.innerHTML = `❌ 오류 발생: ${error.message}`;
+                console.error('블로그 생성 오류:', error);
+            }
+        }
+        
+        // 제목 생성
+        async function generateTitles() {
+            const topic = document.getElementById('titleTopic').value;
+            const resultEl = document.getElementById('titleResult');
+            
+            if (!topic) {
+                alert('주제를 입력해주세요');
+                return;
+            }
+            
+            resultEl.style.display = 'block';
+            resultEl.innerHTML = '⏳ 제목 생성 중...';
+            
+            try {
+                const titles = await window.ollamaCloudAPI.generateTitles(topic, 5);
+                resultEl.innerHTML = titles;
+            } catch (error) {
+                resultEl.innerHTML = `❌ 오류 발생: ${error.message}`;
+                console.error('제목 생성 오류:', error);
+            }
+        }
+        
+        // 자유 콘텐츠 생성
+        async function generateFreeContent() {
+            const prompt = document.getElementById('freePrompt').value;
+            const resultEl = document.getElementById('freeResult');
+            
+            if (!prompt) {
+                alert('프롬프트를 입력해주세요');
+                return;
+            }
+            
+            resultEl.style.display = 'block';
+            resultEl.innerHTML = '⏳ 생성 중...';
+            
+            try {
+                const content = await window.ollamaCloudAPI.generateContent(prompt);
+                resultEl.innerHTML = content;
+            } catch (error) {
+                resultEl.innerHTML = `❌ 오류 발생: ${error.message}`;
+                console.error('콘텐츠 생성 오류:', error);
+            }
+        }
+    </script>
+</body>
+</html>
