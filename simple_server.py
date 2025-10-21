@@ -13,17 +13,18 @@ PORT = int(sys.argv[1]) if len(sys.argv) > 1 else int(os.getenv('PORT', 8080))
 
 class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory="frontend", **kwargs)
-    
+        # 프로젝트 루트 디렉토리를 서빙 (full-featured-blog.html 접근 가능)
+        super().__init__(*args, directory=".", **kwargs)
+
     def do_GET(self):
         # 경로 파싱
         parsed_path = urlparse(self.path)
         path = parsed_path.path
-        
-        # 루트 경로를 blog.html로 리다이렉트
+
+        # 루트 경로를 full-featured-blog.html로 리다이렉트
         if path == "/" or path == "":
-            self.path = "/blog.html"
-        
+            self.path = "/full-featured-blog.html"
+
         # 기본 핸들러 호출
         return super().do_GET()
     
@@ -37,8 +38,9 @@ if __name__ == "__main__":
     
     with socketserver.TCPServer(("", PORT), MyHTTPRequestHandler) as httpd:
         print(f"🚀 AI Auto Blog 서버가 시작되었습니다!")
-        print(f"📍 메인 블로그: http://localhost:{PORT}/blog.html")
-        print(f"📍 관리자 페이지: http://localhost:{PORT}/admin/dashboard.html")
+        print(f"📍 메인 블로그: http://localhost:{PORT}/full-featured-blog.html")
+        print(f"📍 프론트엔드: http://localhost:{PORT}/frontend/")
+        print(f"📍 관리자 페이지: http://localhost:{PORT}/frontend/admin/dashboard.html")
         print(f"\n종료하려면 Ctrl+C를 누르세요.")
         
         try:
